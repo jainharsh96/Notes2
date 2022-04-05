@@ -1,0 +1,48 @@
+package com.harsh.notes.models
+
+
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
+import java.util.*
+
+@Entity(tableName = "Notes")
+data class Note @JvmOverloads constructor(
+    @PrimaryKey(autoGenerate = true)
+    var id: Int = 0,
+    var body: String? = null,
+    @ColumnInfo(name = "updated_date")
+    var date: Date? = null,
+    var state: Int = SAVED,
+) {
+    companion object {
+        var SAVED = 0
+        var DRAFTED = 1
+    }
+
+    @Ignore
+    private var firstLine: String = ""
+
+    @Ignore
+    private var secondLine: String = ""
+
+    fun firstLineData(): String {
+        if (firstLine.isEmpty()) {
+            firstLine = body?.split("\n")?.get(0) ?: ""
+        }
+        return firstLine
+    }
+
+    fun secondLineData(): String {
+        if (secondLine.isEmpty()) {
+            val index = body?.indexOf("\n") ?: 0
+            if (index != -1) {
+                secondLine = body?.substring(index + 1) ?: ""
+            } else {
+                secondLine = firstLineData()
+            }
+        }
+        return secondLine
+    }
+}

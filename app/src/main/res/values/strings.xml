@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Notes</string>
+    <string name="action_settings">Reset</string>
+    <string name="write_here_hint">Write here ...</string>
+    <string name="edit_note_title">Edit Note</string>
+    <string name="note_deleted_msg">Note deleted</string>
+    <string name="App_Title">Notes</string>
+    <string name="title_activity_note_setting">NoteSettingActivity</string>
+</resources>
