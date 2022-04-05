@@ -26,11 +26,11 @@ object NotesDb {
     private val sSQLiteDatabaseHook: SQLiteDatabaseHook = object : SQLiteDatabaseHook {
         override fun preKey(database: SQLiteDatabase) {}
         override fun postKey(database: SQLiteDatabase) {
-            database.rawExecSQL("PRAGMA cipher_compatibility = 3;")
-            database.rawExecSQL("PRAGMA cipher_page_size = 1024;")
-            database.rawExecSQL("PRAGMA kdf_iter = 64000;")
-            database.rawExecSQL("PRAGMA cipher_hmac_algorithm = HMAC_SHA1;")
-            database.rawExecSQL("PRAGMA cipher_kdf_algorithm = PBKDF2_HMAC_SHA1;")
+//            database.rawExecSQL("PRAGMA cipher_compatibility = 3;")
+//            database.rawExecSQL("PRAGMA cipher_page_size = 1024;")
+//            database.rawExecSQL("PRAGMA kdf_iter = 64000;")
+//            database.rawExecSQL("PRAGMA cipher_hmac_algorithm = HMAC_SHA1;")
+//            database.rawExecSQL("PRAGMA cipher_kdf_algorithm = PBKDF2_HMAC_SHA1;")
         }
     }
 
