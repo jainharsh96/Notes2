@@ -14,7 +14,7 @@ interface NotesRepository {
     suspend fun updateOrInsertNote(note: Note): Int
     suspend fun deleteNote(noteId: Int): Int
     suspend fun draftNote(note: Note): Int
-    suspend fun draftNote(noteId: Int): Int
+    suspend fun changeNoteState(noteId: Int, state: Int): Int
 }
 
 @Singleton
@@ -51,7 +51,7 @@ class NotesRepositoryImpl @Inject constructor(private val notesDao: NotesDao) : 
         return updateOrInsertNote(note)
     }
 
-    override suspend fun draftNote(noteId: Int): Int {
-        return notesDao.changeNoteState(id = noteId, state = Note.DRAFTED)
+    override suspend fun changeNoteState(noteId: Int, state: Int): Int {
+        return notesDao.changeNoteState(id = noteId, state = state)
     }
 }

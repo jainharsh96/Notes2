@@ -1,6 +1,5 @@
 package com.harsh.notes.ui
 
-import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Intent
@@ -9,12 +8,10 @@ import android.net.Uri
 import android.os.Process
 import android.provider.Settings
 import android.speech.RecognizerIntent
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.harsh.Notes.NoteUtils.REQUEST_CODE_APP_PERMISSION
 import com.example.harsh.Notes.NoteUtils.RESULT_SPEECH
@@ -29,10 +26,6 @@ open class BaseActivity : AppCompatActivity() {
             requestPermissions(getNotesAllPermissions(), REQUEST_CODE_APP_PERMISSION)
             Process.killProcess(Process.myPid())
         }
-    }
-
-    fun checkPermissionForAudio() {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.RECORD_AUDIO), 99)
     }
 
     private fun checkPermissions(permissionList: Array<String>): Boolean {
@@ -51,9 +44,7 @@ open class BaseActivity : AppCompatActivity() {
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US")
         try {
             startActivityForResult(intent, RESULT_SPEECH)
-            Log.e("harshtag", "show voice")
         } catch (a: ActivityNotFoundException) {
-            Log.e("harshtag", a.stackTraceToString())
             showToast("Download Voice Search App")
         }
     }

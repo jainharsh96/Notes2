@@ -16,6 +16,7 @@ sealed class NotesAction {
     data class InsertNote(val note: Note) : NotesAction()
     data class DeleteNote(val noteId: Int) : NotesAction()
     data class DraftNote(val noteId: Int) : NotesAction()
+    data class RestoreNote(val noteId: Int) : NotesAction()
     // add load more notes action
 }
 

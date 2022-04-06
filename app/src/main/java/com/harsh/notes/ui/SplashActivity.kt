@@ -8,9 +8,10 @@ import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import com.example.harsh.Notes.NoteUtils.BIOMETRIC_CLICK_CANCEL
 import com.example.harsh.Notes.NoteUtils.REQUEST_CODE_APP_PERMISSION
 import com.example.harsh.Notes.NoteUtils.getNotesAllPermissions
 import com.harsh.notes.BuildConfig
@@ -30,8 +31,7 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_layout)
         if (checkPermissions(permissionList)) {
-            openNotesActivity()
-            // validateBiometric()  todo correct this
+            validateBiometric()
         } else {
             requestPermissions(permissionList, REQUEST_CODE_APP_PERMISSION)
         }
@@ -98,9 +98,10 @@ class SplashActivity : AppCompatActivity() {
                 }
             })
         val promptInfo = BiometricPrompt.PromptInfo.Builder()
-            .setTitle("Biometric login")
-            .setSubtitle("Log in using your biometric credential")
-            .setNegativeButtonText(BIOMETRIC_CLICK_CANCEL)
+            .setTitle("Unlock Notes")
+            .setDescription("Tap on Sensor")
+            //.setNegativeButtonText("Enter Pin")
+            .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
             .build()
         biometricPrompt.authenticate(promptInfo)
     }

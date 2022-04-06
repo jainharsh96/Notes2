@@ -7,6 +7,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Drafts
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,7 +20,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.harsh.Notes.NoteUtils.formated
@@ -27,7 +30,6 @@ import com.harsh.notes.models.NotesState
 import com.harsh.notes.ui.notesscreen.NotesViewModel
 import java.util.*
 
-@Preview
 @Composable
 fun TestCompose() {
     NoteHolder(Note(body = "harsh notes", date = Date(System.currentTimeMillis())), {})
@@ -165,22 +167,53 @@ fun NotesList(isDraftScreen: Boolean, notes: List<Note>, handleAction: (NotesAct
         items(items = notes, key = { it.id }) { note ->
             val dismissState = rememberDismissState(
                 confirmStateChange = {
-                    if (it == DismissValue.DismissedToEnd || it == DismissValue.DismissedToStart) {
-                        handleAction(
-                            if (isDraftScreen) NotesAction.DeleteNote(noteId = note.id) else NotesAction.DraftNote(
+                    when (it) {
+                        DismissValue.DismissedToEnd -> if (isDraftScreen) handleAction(
+                            NotesAction.RestoreNote(
+                                noteId = note.id
+                            )
+                        ) else handleAction(
+                            NotesAction.DraftNote(
                                 noteId = note.id
                             )
                         )
+                        DismissValue.DismissedToStart -> if (isDraftScreen) handleAction(
+                            NotesAction.DeleteNote(
+                                noteId = note.id
+                            )
+                        )
+                        else -> {}
                     }
                     true
                 }
             )
-            SwipeToDismiss(state = dismissState, directions = setOf(
+            SwipeToDismiss(state = dismissState, directions = if (isDraftScreen) setOf(
                 DismissDirection.StartToEnd,
                 DismissDirection.EndToStart
+            ) else setOf(
+                DismissDirection.StartToEnd
             ), dismissThresholds = { direction ->
                 FractionalThreshold(0.8f)
-            }, background = {}) {
+            }, background = {
+                val alignment = when (dismissState.dismissDirection ?: return@SwipeToDismiss) {
+                    DismissDirection.StartToEnd -> Alignment.CenterStart
+                    DismissDirection.EndToStart -> Alignment.CenterEnd
+                }
+                val icon = when (dismissState.dismissDirection ?: return@SwipeToDismiss) {
+                    DismissDirection.StartToEnd -> if (isDraftScreen) Icons.Default.Restore else Icons.Default.Drafts
+                    DismissDirection.EndToStart -> Icons.Default.Delete
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    contentAlignment = alignment
+                ) {
+                    Icon(
+                        icon,
+                        contentDescription = "", modifier = Modifier.padding(horizontal = 8.dp)
+                    )
+                }
+            }) {
                 NoteHolder(note, handleAction)
             }
         }

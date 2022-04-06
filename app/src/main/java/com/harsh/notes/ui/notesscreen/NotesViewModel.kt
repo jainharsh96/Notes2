@@ -39,6 +39,7 @@ class NotesViewModel @Inject constructor(private val notesRepository: NotesRepos
                 is NotesAction.FetchNotes -> fetchNotes(action.state)
                 is NotesAction.DeleteNote -> deleteNote(action.noteId)
                 is NotesAction.DraftNote -> draftNote(action.noteId)
+                is NotesAction.RestoreNote -> restoreNote(action.noteId)
                 is NotesAction.InsertNote -> insertNote(action.note)
                 is NotesAction.ClickBack -> _handleOnUi.emit(action)
                 is NotesAction.OpenNote -> if (isDraftScreen.not()) _handleOnUi.emit(action)
@@ -58,7 +59,11 @@ class NotesViewModel @Inject constructor(private val notesRepository: NotesRepos
     }
 
     private suspend fun draftNote(noteId: Int) {
-        notesRepository.draftNote(noteId)
+        notesRepository.changeNoteState(noteId = noteId, state = Note.DRAFTED)
+    }
+
+    private suspend fun restoreNote(noteId: Int) {
+        notesRepository.changeNoteState(noteId = noteId, state = Note.SAVED)
     }
 
     private suspend fun fetchNotes(state: Int) {
