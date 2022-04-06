@@ -1,4 +1,4 @@
-package com.harsh.notes.utils;
+package com.harsh.notes.db;
 
 import androidx.room.TypeConverter;
 

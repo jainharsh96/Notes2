@@ -12,8 +12,10 @@ data class Note @JvmOverloads constructor(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
     var body: String? = null,
+    @ColumnInfo(name = "created_date")
+    var createdDate: Date? = null,
     @ColumnInfo(name = "updated_date")
-    var date: Date? = null,
+    var updatedDate: Date? = null,
     var state: Int = SAVED,
 ) {
     companion object {

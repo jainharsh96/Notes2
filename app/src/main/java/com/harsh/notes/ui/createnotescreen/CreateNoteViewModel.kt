@@ -54,9 +54,9 @@ class CreateNoteViewModel @Inject constructor(private val notesRepository: Notes
 
     private suspend fun insertNote() {
         if (noteState.isNotEmpty()) {
-            val note = originalNote?.copy(body = noteState, date = Date()) ?: Note(
-                body = noteState,
-                date = Date()
+            val note = originalNote?.copy(body = noteState, updatedDate = Date()) ?: Note(
+                body = noteState, createdDate = Date(),
+                updatedDate = Date()
             )
             val isSaved = notesRepository.updateOrInsertNote(note)
             if (isSaved > 0) {

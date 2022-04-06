@@ -32,7 +32,7 @@ import java.util.*
 
 @Composable
 fun TestCompose() {
-    NoteHolder(Note(body = "harsh notes", date = Date(System.currentTimeMillis())), {})
+    NoteHolder(Note(body = "harsh notes", updatedDate = Date(System.currentTimeMillis())), {})
 }
 
 @Composable
@@ -244,7 +244,7 @@ fun NoteHolder(note: Note, handleAction: (NotesAction) -> Unit) {
                     maxLines = 1
                 )
                 Text(
-                    text = note.date?.formated() ?: "",
+                    text = note.updatedDate?.formated() ?: "",
                     color = colorResource(id = R.color.disable),
                     style = TextStyle(fontSize = 12.sp)
                 )

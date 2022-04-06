@@ -1,6 +1,7 @@
 package com.harsh.notes.repository
 
 import com.harsh.notes.db.NotesDao
+import com.harsh.notes.models.DeletedNote
 import com.harsh.notes.models.Note
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -44,6 +45,11 @@ class NotesRepositoryImpl @Inject constructor(private val notesDao: NotesDao) : 
 
     override
     suspend fun deleteNote(noteId: Int): Int {
+        // for testing
+        val deletingNote = fetchNote(noteId = noteId)
+        deletingNote?.let {
+            notesDao.insertDeletedNote(DeletedNote.cloneNote(it))
+        }
         return notesDao.deleteNote(noteId)
     }
 

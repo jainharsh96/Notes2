@@ -1,6 +1,7 @@
 package com.harsh.notes.db
 
 import androidx.room.*
+import com.harsh.notes.models.DeletedNote
 import com.harsh.notes.models.Note
 import kotlinx.coroutines.flow.Flow
 
@@ -26,4 +27,7 @@ interface NotesDao {
 
     @Query("update Notes set state = :state where id = :id")
     suspend fun changeNoteState(id: Int, state: Int): Int
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertDeletedNote(note: DeletedNote): Long
 }
