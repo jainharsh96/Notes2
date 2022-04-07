@@ -1,6 +1,7 @@
 package com.harsh.notes.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -154,8 +155,7 @@ fun NotesHeader(heading: String, isDraftScreen: Boolean, handleAction: (NotesAct
 @Composable
 fun NotesList(isDraftScreen: Boolean, notes: List<Note>, handleAction: (NotesAction) -> Unit) {
     LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(horizontal = 8.dp)
+        modifier = Modifier.fillMaxSize()
     ) {
         if (notes.isEmpty()) {
             item {
@@ -205,12 +205,17 @@ fun NotesList(isDraftScreen: Boolean, notes: List<Note>, handleAction: (NotesAct
                 }
                 Box(
                     modifier = Modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .background(color = colorResource(id = R.color.light_red)),
                     contentAlignment = alignment
                 ) {
                     Icon(
                         icon,
-                        contentDescription = "", modifier = Modifier.padding(horizontal = 8.dp)
+                        contentDescription = "",
+                        modifier = Modifier.padding(horizontal = 20.dp),
+                        tint = colorResource(
+                            id = R.color.red
+                        )
                     )
                 }
             }) {
@@ -225,7 +230,7 @@ fun NoteHolder(note: Note, handleAction: (NotesAction) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { handleAction(NotesAction.OpenNote(note.id)) },
         shape = RoundedCornerShape(8.dp),
         elevation = 2.dp

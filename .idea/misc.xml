@@ -11,15 +11,24 @@
         <entry key="../../../../../layout/compose-model-1648142069867.xml" value="0.45" />
         <entry key="../../../../../layout/compose-model-1648147718335.xml" value="0.3391047297297297" />
         <entry key="app/src/main/res/drawable-v24/add_notes.xml" value="0.214" />
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2135" />
+        <entry key="app/src/main/res/drawable-v24/voice_note.xml" value="0.2135" />
         <entry key="app/src/main/res/drawable/app_icon.xml" value="0.2135" />
         <entry key="app/src/main/res/drawable/ic_add_black_24dp.xml" value="0.2535" />
         <entry key="app/src/main/res/drawable/ic_arrow_back_black_24dp.xml" value="0.2615" />
         <entry key="app/src/main/res/drawable/ic_check_black_24dp.xml" value="0.2535" />
         <entry key="app/src/main/res/drawable/ic_restore.xml" value="0.2135" />
         <entry key="app/src/main/res/drawable/ic_setting.xml" value="0.2535" />
+        <entry key="app/src/main/res/drawable/ic_undo.xml" value="0.2135" />
+        <entry key="app/src/main/res/drawable/notes_text.xml" value="0.2135" />
+        <entry key="app/src/main/res/drawable/voice_note.xml" value="0.2535" />
         <entry key="app/src/main/res/layout/activity_main_layout.xml" value="0.20625" />
+        <entry key="app/src/main/res/layout/activity_note_setting.xml" value="0.39166666666666666" />
         <entry key="app/src/main/res/layout/activity_notes_layout.xml" value="0.2495071411132812" />
+        <entry key="app/src/main/res/layout/cardview_layout.xml" value="0.39166666666666666" />
+        <entry key="app/src/main/res/layout/create_notes_layout.xml" value="0.39166666666666666" />
         <entry key="app/src/main/res/menu/menu_createnotes.xml" value="0.20625" />
+        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2135" />
       </map>
     </option>
   </component>
