@@ -212,7 +212,7 @@ fun NotesList(isDraftScreen: Boolean, notes: List<Note>, handleAction: (NotesAct
                     Icon(
                         icon,
                         contentDescription = "",
-                        modifier = Modifier.padding(horizontal = 20.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp),
                         tint = colorResource(
                             id = R.color.red
                         )

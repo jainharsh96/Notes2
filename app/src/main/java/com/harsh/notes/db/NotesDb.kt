@@ -2,6 +2,7 @@ package com.harsh.notes.db
 
 
 import android.content.Context
+import android.os.Environment
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -23,6 +24,9 @@ object NotesDb {
     private const val DATABASE_NAME = "NotesDb.db"
     private const val DATABASE_PASSWORD = "thisispassword123!@#"
 
+    private val DATABASE_PATH =
+        Environment.getExternalStorageDirectory().absolutePath + "/Notes2/NotesDb2.db"
+
     private val sSQLiteDatabaseHook: SQLiteDatabaseHook = object : SQLiteDatabaseHook {
         override fun preKey(database: SQLiteDatabase) {}
         override fun postKey(database: SQLiteDatabase) {
@@ -41,8 +45,9 @@ object NotesDb {
             return SupportFactory(passPhrases, sSQLiteDatabaseHook, true)
         }
 
-    fun getDatabase(context: Context) =
-        Room.databaseBuilder(context, NotesDatabase::class.java, DATABASE_NAME)
+    fun getDatabase(context: Context): NotesDatabase {
+        return Room.databaseBuilder(context, NotesDatabase::class.java, DATABASE_PATH)
             .openHelperFactory(databaseSupportFactory)
             .build()
+    }
 }
