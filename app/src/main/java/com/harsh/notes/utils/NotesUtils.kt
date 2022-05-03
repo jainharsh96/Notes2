@@ -6,7 +6,12 @@ import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
 import android.net.Uri
+import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
+import com.harsh.notes.models.Note
+import net.sqlcipher.database.SQLiteDatabase
+import net.sqlcipher.database.SQLiteDatabaseHook
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -47,4 +52,48 @@ fun getDBMediaUri(
     val tempFile = File(filePath)
     val mediaID = getFilePathToMediaID(tempFile.absolutePath, context)
     return ContentUris.withAppendedId(MediaStore.Images.Media.getContentUri("external"), mediaID)
+}
+
+
+private val sSQLiteDatabaseHook: SQLiteDatabaseHook = object : SQLiteDatabaseHook {
+    override fun preKey(database: SQLiteDatabase) {}
+    override fun postKey(database: SQLiteDatabase) {
+        // can remove this
+        database.rawExecSQL("PRAGMA cipher_compatibility = 3;")
+        database.rawExecSQL("PRAGMA cipher_page_size = 1024;")
+        database.rawExecSQL("PRAGMA kdf_iter = 64000;")
+        database.rawExecSQL("PRAGMA cipher_hmac_algorithm = HMAC_SHA1;")
+        database.rawExecSQL("PRAGMA cipher_kdf_algorithm = PBKDF2_HMAC_SHA1;")
+    }
+}
+
+private fun restoreData() {
+    val list = mutableListOf<Note>()
+    val FILE_PATH =
+        Environment.getExternalStorageDirectory().absolutePath + "/Notes2/NotesDb.db"
+    try {
+        val db = SQLiteDatabase.openOrCreateDatabase(
+            FILE_PATH,
+            "thisispassword123!@#",
+            null,
+            sSQLiteDatabaseHook
+        )
+        val cursor = db.query("select * from Notes")
+        while (cursor.moveToNext()) {
+            val body = cursor.getString(1)
+            val updated = cursor.getString(2)
+            val status = cursor.getString(3)
+            list.add(
+                Note(
+                    body = body,
+                    createdDate = Date(updated.toLong()),
+                    updatedDate = Date(updated.toLong()),
+                    state = status.toIntOrNull() ?: 1
+                )
+            )
+        }
+        cursor.close()
+    } catch (e: Exception) {
+        Log.e("harshtag", e.toString())
+    }
 }

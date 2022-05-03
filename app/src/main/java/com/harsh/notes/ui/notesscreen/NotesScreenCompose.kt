@@ -254,7 +254,7 @@ fun NoteHolder(note: Note, handleAction: (NotesAction) -> Unit) {
                     style = TextStyle(fontSize = 12.sp)
                 )
             }
-            Spacer(modifier = Modifier.padding(4.dp))
+           // Spacer(modifier = Modifier.padding(.dp))
             Text(
                 text = note.secondLineData(),
                 color = colorResource(id = R.color.disable),

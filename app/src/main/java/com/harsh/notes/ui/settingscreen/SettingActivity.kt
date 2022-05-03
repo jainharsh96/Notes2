@@ -4,11 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import com.harsh.notes.models.SettingAction
 import com.harsh.notes.ui.BaseActivity
 import com.harsh.notes.ui.notesscreen.NotesActivity
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class SettingActivity : BaseActivity() {
 
     companion object {
@@ -16,6 +18,8 @@ class SettingActivity : BaseActivity() {
             return Intent(context, SettingActivity::class.java)
         }
     }
+
+    private val viewModel by viewModels<SettingViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

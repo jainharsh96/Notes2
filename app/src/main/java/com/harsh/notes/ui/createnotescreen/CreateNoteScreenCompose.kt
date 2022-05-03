@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -109,12 +110,20 @@ fun NoteInfo(viewModel: CreateNoteViewModel, handleAction: (CreateNoteAction) ->
             .fillMaxSize()
     ) {
         val focusRequester = remember { FocusRequester() }
+        var textFieldValueState = remember {
+            mutableStateOf(
+                TextFieldValue(
+                    text = viewModel.noteState,
+                    selection = TextRange(viewModel.noteState.length)
+                )
+            )
+        }
         TextField(
-            value = TextFieldValue(
-                text = viewModel.noteState,
-                selection = TextRange(viewModel.noteState.length)
-            ),
-            onValueChange = { newVal -> viewModel.noteState = newVal.text },
+            value = textFieldValueState.value,
+            onValueChange = { newVal ->
+                viewModel.noteState = newVal.text
+                textFieldValueState.value = newVal
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
