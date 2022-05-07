@@ -110,19 +110,19 @@ fun NoteInfo(viewModel: CreateNoteViewModel, handleAction: (CreateNoteAction) ->
             .fillMaxSize()
     ) {
         val focusRequester = remember { FocusRequester() }
-        var textFieldValueState = remember {
+        val textRangeState = remember {
             mutableStateOf(
-                TextFieldValue(
-                    text = viewModel.noteState,
-                    selection = TextRange(viewModel.noteState.length)
-                )
+                TextRange(viewModel.noteState.length)
             )
         }
         TextField(
-            value = textFieldValueState.value,
+            value = TextFieldValue(
+                text = viewModel.noteState,
+                selection = textRangeState.value
+            ),
             onValueChange = { newVal ->
                 viewModel.noteState = newVal.text
-                textFieldValueState.value = newVal
+                textRangeState.value = newVal.selection
             },
             modifier = Modifier
                 .fillMaxWidth()
