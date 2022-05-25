@@ -1,41 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="DesignSurface">
-    <option name="filePathToZoomLevelMap">
-      <map>
-        <entry key="../../../../../layout/compose-model-1643738769913.xml" value="0.375" />
-        <entry key="../../../../../layout/compose-model-1643739484083.xml" value="0.29096283783783783" />
-        <entry key="../../../../../layout/compose-model-1646067957952.xml" value="0.25" />
-        <entry key="../../../../../layout/compose-model-1646068634746.xml" value="0.375" />
-        <entry key="../../../../../layout/compose-model-1646071774695.xml" value="0.3962962962962963" />
-        <entry key="../../../../../layout/compose-model-1648142069867.xml" value="0.45" />
-        <entry key="../../../../../layout/compose-model-1648147718335.xml" value="0.3391047297297297" />
-        <entry key="app/src/main/res/drawable-v24/add_notes.xml" value="0.214" />
-        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.2135" />
-        <entry key="app/src/main/res/drawable-v24/voice_note.xml" value="0.2135" />
-        <entry key="app/src/main/res/drawable/app_icon.xml" value="0.2135" />
-        <entry key="app/src/main/res/drawable/ic_add_black_24dp.xml" value="0.2535" />
-        <entry key="app/src/main/res/drawable/ic_arrow_back_black_24dp.xml" value="0.2615" />
-        <entry key="app/src/main/res/drawable/ic_check_black_24dp.xml" value="0.2535" />
-        <entry key="app/src/main/res/drawable/ic_restore.xml" value="0.2135" />
-        <entry key="app/src/main/res/drawable/ic_setting.xml" value="0.2535" />
-        <entry key="app/src/main/res/drawable/ic_undo.xml" value="0.2135" />
-        <entry key="app/src/main/res/drawable/notes_text.xml" value="0.2135" />
-        <entry key="app/src/main/res/drawable/voice_note.xml" value="0.2535" />
-        <entry key="app/src/main/res/layout/activity_main_layout.xml" value="0.20625" />
-        <entry key="app/src/main/res/layout/activity_note_setting.xml" value="0.39166666666666666" />
-        <entry key="app/src/main/res/layout/activity_notes_layout.xml" value="0.2495071411132812" />
-        <entry key="app/src/main/res/layout/cardview_layout.xml" value="0.39166666666666666" />
-        <entry key="app/src/main/res/layout/create_notes_layout.xml" value="0.39166666666666666" />
-        <entry key="app/src/main/res/menu/menu_createnotes.xml" value="0.20625" />
-        <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml" value="0.2135" />
-      </map>
-    </option>
-  </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
-    <output url="file://$PROJECT_DIR$/build/classes" />
-  </component>
-  <component name="ProjectType">
-    <option name="id" value="Android" />
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="11" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>

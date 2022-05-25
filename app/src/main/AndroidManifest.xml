@@ -42,25 +42,5 @@
             android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
-
-        <!--        <activity-->
-        <!--            android:name=".DraftedNotes"-->
-        <!--            android:launchMode="singleTop"-->
-        <!--            android:parentActivityName=".NotesActivity"-->
-        <!--            android:theme="@style/AppTheme.NoActionBar" />-->
-
-        <!--        <activity-->
-        <!--            android:name=".CreateNotesActivity"-->
-        <!--            android:label="Edit Notes"-->
-        <!--            android:parentActivityName=".MainActivity"-->
-        <!--            android:theme="@style/AppTheme.NoActionBar"-->
-        <!--            android:windowSoftInputMode="stateVisible|adjustResize" />-->
-
-        <!--        <activity-->
-        <!--            android:name=".NoteSettingActivity"-->
-        <!--            android:label="Setting"-->
-        <!--            android:parentActivityName=".MainActivity"-->
-        <!--            android:theme="@style/AppTheme.NoActionBar"-->
-        <!--            android:windowSoftInputMode="stateVisible|adjustResize" />-->
     </application>
 </manifest>
