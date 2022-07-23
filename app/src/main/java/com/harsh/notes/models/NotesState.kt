@@ -3,7 +3,7 @@ package com.harsh.notes.models
 
 sealed class NotesState {
     object NoData : NotesState()
-    data class Notes(val notes: List<Note>) : NotesState()
+    data class Notes(val notes: List<Note>, val confirmToDeleteNoteId : Int? = null) : NotesState()
 }
 
 sealed class NotesAction {
@@ -11,9 +11,11 @@ sealed class NotesAction {
     object AddNotes : NotesAction()
     object RecordNotes : NotesAction()
     object OpenSettings : NotesAction()
+    object DismissConfirmToDeleteNote : NotesAction()
     data class OpenNote(val noteId: Int) : NotesAction()
     data class FetchNotes(val state: Int) : NotesAction()
     data class InsertNote(val note: Note) : NotesAction()
+    data class ConfirmDeleteNote(val noteId: Int) : NotesAction()
     data class DeleteNote(val noteId: Int) : NotesAction()
     data class DraftNote(val noteId: Int) : NotesAction()
     data class RestoreNote(val noteId: Int) : NotesAction()

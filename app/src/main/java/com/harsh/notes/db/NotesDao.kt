@@ -30,4 +30,7 @@ interface NotesDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertDeletedNote(note: DeletedNote): Long
+
+    @Query("SELECT * FROM deleted_note WHERE id = :id")
+        suspend fun findDeletedNoteById(id: Int): DeletedNote?
 }

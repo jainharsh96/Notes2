@@ -31,6 +31,7 @@ object NotesDb {
         override fun preKey(database: SQLiteDatabase) {}
         override fun postKey(database: SQLiteDatabase) {
             // can remove this
+            database.rawExecSQL("PRAGMA journal_mode=DELETE")
 //            database.rawExecSQL("PRAGMA cipher_compatibility = 3;")
 //            database.rawExecSQL("PRAGMA cipher_page_size = 1024;")
 //            database.rawExecSQL("PRAGMA kdf_iter = 64000;")
@@ -48,6 +49,7 @@ object NotesDb {
     fun getDatabase(context: Context): NotesDatabase {
         return Room.databaseBuilder(context, NotesDatabase::class.java, DATABASE_PATH)
             .openHelperFactory(databaseSupportFactory)
+            .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .build()
     }
 }

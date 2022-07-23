@@ -1,5 +1,6 @@
-package com.harsh.notes.ui
+package com.harsh.notes.ui.notesscreen
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,7 +29,6 @@ import com.harsh.notes.R
 import com.harsh.notes.models.Note
 import com.harsh.notes.models.NotesAction
 import com.harsh.notes.models.NotesState
-import com.harsh.notes.ui.notesscreen.NotesViewModel
 import java.util.*
 
 @Composable
@@ -82,11 +82,47 @@ fun NotesContent(viewModel: NotesViewModel) {
         )
         when (noteState) {
             is NotesState.NoData -> NoDataView()
-            is NotesState.Notes -> NotesList(
-                isDraftScreen = viewModel.isDraftScreen,
-                notes = noteState.notes,
-                handleAction = viewModel.handleAction
-            )
+            is NotesState.Notes -> {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    NotesList(
+                        isDraftScreen = viewModel.isDraftScreen,
+                        notes = noteState.notes,
+                        handleAction = viewModel.handleAction
+                    )
+                    if (noteState.confirmToDeleteNoteId != null) {
+                        AlertDialog(
+                            onDismissRequest = {
+                                viewModel.handleAction(NotesAction.DismissConfirmToDeleteNote)
+                            },
+                            title = {
+                                Text(
+                                    text = "Are you sure, you want to delete this note ?",
+                                    style = TextStyle(fontSize = 18.sp)
+                                )
+                            },
+                            buttons = {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth().padding(all = 8.dp),
+                                    horizontalArrangement = Arrangement.Center
+                                ) {
+                                    Button(
+                                        modifier = Modifier.width(100.dp),
+                                        onClick = {
+                                            viewModel.handleAction(
+                                                NotesAction.DeleteNote(
+                                                    noteState.confirmToDeleteNoteId
+                                                )
+                                            )
+                                        }
+                                    ) {
+                                        Text("Yes", style = TextStyle(fontSize = 20.sp))
+                                    }
+                                }
+                            }
+                        )
+                    }
+                }
+            }
             else -> Unit
         }
     }
@@ -178,7 +214,7 @@ fun NotesList(isDraftScreen: Boolean, notes: List<Note>, handleAction: (NotesAct
                             )
                         )
                         DismissValue.DismissedToStart -> if (isDraftScreen) handleAction(
-                            NotesAction.DeleteNote(
+                            NotesAction.ConfirmDeleteNote(
                                 noteId = note.id
                             )
                         )

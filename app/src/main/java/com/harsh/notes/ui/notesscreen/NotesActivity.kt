@@ -9,7 +9,6 @@ import androidx.lifecycle.lifecycleScope
 import com.harsh.notes.models.Note
 import com.harsh.notes.models.NotesAction
 import com.harsh.notes.ui.BaseActivity
-import com.harsh.notes.ui.NotesScreen
 import com.harsh.notes.ui.createnotescreen.CreateNoteActivity
 import com.harsh.notes.ui.settingscreen.SettingActivity
 import dagger.hilt.android.AndroidEntryPoint

@@ -1,5 +1,6 @@
 package com.harsh.notes.ui.notesscreen
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -37,6 +38,8 @@ class NotesViewModel @Inject constructor(private val notesRepository: NotesRepos
         viewModelScope.launch(Dispatchers.IO) {
             when (action) {
                 is NotesAction.FetchNotes -> fetchNotes(action.state)
+                is NotesAction.ConfirmDeleteNote -> confirmDeleteNote(action.noteId)
+                is NotesAction.DismissConfirmToDeleteNote -> confirmDeleteNote(null)
                 is NotesAction.DeleteNote -> deleteNote(action.noteId)
                 is NotesAction.DraftNote -> draftNote(action.noteId)
                 is NotesAction.RestoreNote -> restoreNote(action.noteId)
@@ -50,12 +53,19 @@ class NotesViewModel @Inject constructor(private val notesRepository: NotesRepos
         }
     }
 
+    private fun confirmDeleteNote(noteId: Int?) {
+        if (notesState is NotesState.Notes){
+            notesState = (notesState as NotesState.Notes).copy(confirmToDeleteNoteId = noteId)
+        }
+    }
+
     private suspend fun insertNote(note: Note) {
         notesRepository.insertNote(note)
     }
 
     private suspend fun deleteNote(noteId: Int) {
         notesRepository.deleteNote(noteId)
+        confirmDeleteNote(null)
     }
 
     private suspend fun draftNote(noteId: Int) {
@@ -76,5 +86,9 @@ class NotesViewModel @Inject constructor(private val notesRepository: NotesRepos
                 }
             }
         }
+    }
+
+    fun restoreDeletedNote(noteId: Int) = viewModelScope.launch(Dispatchers.IO) {
+        notesRepository.restoreDeletedNote(noteId)
     }
 }

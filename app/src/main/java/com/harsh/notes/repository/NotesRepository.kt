@@ -16,6 +16,9 @@ interface NotesRepository {
     suspend fun deleteNote(noteId: Int): Int
     suspend fun draftNote(note: Note): Int
     suspend fun changeNoteState(noteId: Int, state: Int): Int
+
+    // for testing
+    suspend fun restoreDeletedNote(noteId: Int)
 }
 
 @Singleton
@@ -59,5 +62,11 @@ class NotesRepositoryImpl @Inject constructor(private val notesDao: NotesDao) : 
 
     override suspend fun changeNoteState(noteId: Int, state: Int): Int {
         return notesDao.changeNoteState(id = noteId, state = state)
+    }
+
+    override suspend fun restoreDeletedNote(noteId: Int) {
+        notesDao.findDeletedNoteById(noteId)?.let { deleteNote ->
+            notesDao.insertNote(Note(id = deleteNote.id, body = deleteNote.body, createdDate = deleteNote.createdDate, updatedDate = deleteNote.date, state = Note.SAVED))
+        }
     }
 }
