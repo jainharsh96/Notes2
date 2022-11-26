@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -110,31 +111,20 @@ fun NoteInfo(viewModel: CreateNoteViewModel, handleAction: (CreateNoteAction) ->
             .fillMaxSize()
     ) {
         val focusRequester = remember { FocusRequester() }
-        val textRangeState = remember {
-            mutableStateOf(
-                TextRange(viewModel.noteState.length)
-            )
-        }
-        TextField(
-            value = TextFieldValue(
-                text = viewModel.noteState,
-                selection = textRangeState.value
-            ),
+        BasicTextField(
+            value = viewModel.noteState,
             onValueChange = { newVal ->
-                viewModel.noteState = newVal.text
-                textRangeState.value = newVal.selection
+                viewModel.noteState = newVal
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(1f).padding(16.dp)
                 .focusRequester(focusRequester),
             textStyle = TextStyle(fontSize = 20.sp),
-            colors = TextFieldDefaults.textFieldColors(
-                textColor = colorResource(id = R.color.colorPrimaryDark),
-                backgroundColor = colorResource(id = R.color.white),
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
-            )
+            decorationBox = { innerTextField ->
+                SetHint(hint = "Write Note", showHint = viewModel.noteState.isEmpty())
+                innerTextField()
+            }
         )
         if (viewModel.hasNote.not()) {
             LaunchedEffect(Unit) {
@@ -159,6 +149,23 @@ fun NoteInfo(viewModel: CreateNoteViewModel, handleAction: (CreateNoteAction) ->
                 contentDescription = "", colorFilter = ColorFilter.tint(
                     colorResource(id = R.color.white)
                 )
+            )
+        }
+    }
+}
+
+@Composable
+fun SetHint(hint: String, showHint : Boolean) {
+    if (showHint) {
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                modifier = Modifier
+                    .background(Color.Transparent),
+                text = hint,
+                color = colorResource(id = R.color.disable),
+                fontSize = 20.sp
             )
         }
     }
