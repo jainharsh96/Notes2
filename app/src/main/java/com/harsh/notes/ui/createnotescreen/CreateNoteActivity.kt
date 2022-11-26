@@ -8,7 +8,6 @@ import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.harsh.notes.models.CreateNoteAction
 import com.harsh.notes.ui.BaseActivity
-import com.harsh.notes.ui.CreateNoteScreen
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
