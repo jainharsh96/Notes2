@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Drafts
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -190,8 +192,14 @@ fun NotesHeader(heading: String, isDraftScreen: Boolean, handleAction: (NotesAct
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun NotesList(isDraftScreen: Boolean, notes: List<Note>, handleAction: (NotesAction) -> Unit) {
+    val listState = rememberLazyListState()
+    LaunchedEffect(key1 = notes) {
+        if (notes.isNotEmpty())
+            listState.scrollToItem(0)
+    }
     LazyColumn(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
+        state = listState
     ) {
         if (notes.isEmpty()) {
             item {
