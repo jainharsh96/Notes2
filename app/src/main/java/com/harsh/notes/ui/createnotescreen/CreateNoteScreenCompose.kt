@@ -43,9 +43,9 @@ fun CreateNoteScreen(viewModel: CreateNoteViewModel) {
     ) {
         CreateNoteHeader(
             hasNote = viewModel.hasNote,
-            handleAction = viewModel.handleAction
+            handleAction = viewModel::handleAction
         )
-        NoteInfo(viewModel = viewModel, handleAction = viewModel.handleAction)
+        NoteInfo(viewModel = viewModel, handleAction = viewModel::handleAction)
     }
 }
 

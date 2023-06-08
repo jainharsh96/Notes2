@@ -3,6 +3,7 @@ package com.harsh.notes.db
 
 import android.content.Context
 import android.os.Environment
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -14,7 +15,14 @@ import net.sqlcipher.database.SQLiteDatabaseHook
 import net.sqlcipher.database.SupportFactory
 
 @TypeConverters(DateConverter::class)
-@Database(entities = arrayOf(Note::class, DeletedNote::class), version = 1, exportSchema = false)
+@Database(
+    entities = arrayOf(Note::class, DeletedNote::class),
+    exportSchema = true,
+    autoMigrations = [
+        AutoMigration(from = 1, to = 2)
+    ],
+    version = 2,
+)
 abstract class NotesDatabase : RoomDatabase() {
     abstract fun notesDao(): NotesDao
 }

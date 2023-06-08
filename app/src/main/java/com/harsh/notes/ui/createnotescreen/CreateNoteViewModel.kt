@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.util.*
@@ -31,20 +32,20 @@ class CreateNoteViewModel @Inject constructor(private val notesRepository: Notes
 
     var noteState by mutableStateOf("")
 
-    val handleAction = { action: CreateNoteAction ->
-        handleAction(action)
+    private fun scopeIO(content : suspend ()-> Unit){
+        viewModelScope.launch(Dispatchers.IO) {
+            content.invoke()
+        }
     }
 
-    private fun handleAction(action: CreateNoteAction) {
-        viewModelScope.launch(Dispatchers.IO) {
-            when (action) {
-                is CreateNoteAction.ClickBack -> _handleOnUi.emit(action)
-                is CreateNoteAction.ClickRecordNotes -> _handleOnUi.emit(action)
-                is CreateNoteAction.ClickUndo -> clickUndo()
-                is CreateNoteAction.SaveNote -> insertNote()
-                is CreateNoteAction.FetchNote -> fetchNote(action.noteId)
-                else -> Unit
-            }
+    fun handleAction(action: CreateNoteAction) = scopeIO {
+        when (action) {
+            is CreateNoteAction.ClickBack -> _handleOnUi.emit(action)
+            is CreateNoteAction.ClickRecordNotes -> _handleOnUi.emit(action)
+            is CreateNoteAction.ClickUndo -> clickUndo()
+            is CreateNoteAction.SaveNote -> insertNote()
+            is CreateNoteAction.FetchNote -> fetchNote(action.noteId)
+            else -> Unit
         }
     }
 
