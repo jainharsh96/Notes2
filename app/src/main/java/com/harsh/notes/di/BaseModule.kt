@@ -1,6 +1,8 @@
 package com.harsh.notes.di
 
 import android.content.Context
+import com.harsh.notes.AppDispatcherProvider
+import com.harsh.notes.AppDispatcherImpl
 import com.harsh.notes.db.NotesDao
 import com.harsh.notes.db.NotesDatabase
 import com.harsh.notes.db.NotesDb
@@ -31,4 +33,7 @@ internal object BaseModule {
 internal interface NotesModule {
     @[Binds Singleton]
     fun provideNotesRepository(impl: NotesRepositoryImpl): NotesRepository
+
+    @[Binds Singleton]
+    fun provideDispatcher(dispatcherImpl: AppDispatcherImpl): AppDispatcherProvider
 }

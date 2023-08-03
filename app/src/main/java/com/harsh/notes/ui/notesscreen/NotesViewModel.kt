@@ -1,26 +1,27 @@
 package com.harsh.notes.ui.notesscreen
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.harsh.notes.AppDispatcherProvider
 import com.harsh.notes.models.Note
 import com.harsh.notes.models.NotesAction
 import com.harsh.notes.models.NotesState
 import com.harsh.notes.repository.NotesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class NotesViewModel @Inject constructor(private val notesRepository: NotesRepository) :
+class NotesViewModel @Inject constructor(private val notesRepository: NotesRepository, private val dispatcher : AppDispatcherProvider) :
     ViewModel() {
 
     var notesState: NotesState by mutableStateOf(NotesState.NoData)
@@ -35,7 +36,7 @@ class NotesViewModel @Inject constructor(private val notesRepository: NotesRepos
     }
 
     private fun handleAction(action: NotesAction) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher.IO) {
             when (action) {
                 is NotesAction.FetchNotes -> fetchNotes(action.state)
                 is NotesAction.ConfirmDeleteNote -> confirmDeleteNote(action.noteId)
@@ -77,7 +78,7 @@ class NotesViewModel @Inject constructor(private val notesRepository: NotesRepos
     }
 
     private suspend fun fetchNotes(state: Int) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher.IO) {
             notesRepository.fetchAllNotes(state).catch { emptyList<Note>() }.collect { notes ->
                 notesState = if (notes.isEmpty()) {
                     NotesState.NoData
@@ -88,7 +89,17 @@ class NotesViewModel @Inject constructor(private val notesRepository: NotesRepos
         }
     }
 
-    fun restoreDeletedNote(noteId: Int) = viewModelScope.launch(Dispatchers.IO) {
+    fun restoreDeletedNote(noteId: Int) = viewModelScope.launch(dispatcher.IO) {
         notesRepository.restoreDeletedNote(noteId)
+    }
+
+    suspend fun testingCoroutine() = withContext(dispatcher.IO){
+        delay(5000)
+        return@withContext notesRepository.deleteNote(123)
+    }
+
+    suspend fun testviewModelScope() = viewModelScope.launch(dispatcher.Main) {
+        delay(5000)
+        notesRepository.deleteNote(123)
     }
 }

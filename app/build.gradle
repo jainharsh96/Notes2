@@ -86,8 +86,6 @@ dependencies {
     // Integration with observables
     implementation 'androidx.compose.runtime:runtime-livedata:1.1.1'
     implementation 'androidx.compose.runtime:runtime-rxjava2:1.1.1'
-    // UI Tests
-    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.1.1'
 
     implementation "androidx.core:core-ktx:1.7.0"
     implementation "androidx.fragment:fragment-ktx:1.4.1"
@@ -107,4 +105,12 @@ dependencies {
 
     //biometric
     implementation 'androidx.biometric:biometric:1.1.0'
+
+   // implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
+
+    // UI Tests
+    androidTestImplementation 'androidx.compose.ui:ui-test-junit4:1.4.3'
+    testImplementation 'org.mockito:mockito-core:4.8.1'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'
+    testImplementation 'app.cash.turbine:turbine:0.12.1'
 }
