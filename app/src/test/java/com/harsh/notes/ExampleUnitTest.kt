@@ -65,7 +65,7 @@ class ExampleUnitTest {
     fun testViewModel() = runTest(UnconfinedTestDispatcher()) {
         Mockito.doReturn(1).`when`(repo).deleteNote(123)
         Mockito.`when`(repo.changeNoteState(1, 1)).thenReturn(1)
-        viewModel.testviewModelScope()
+      //  viewModel.testviewModelScope()
         advanceUntilIdle()
         Mockito.verify(repo, Mockito.times(1)).deleteNote(123)
     }

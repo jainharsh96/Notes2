@@ -7,7 +7,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.harsh.notes.models.Note
-import com.harsh.notes.models.NotesAction
 import com.harsh.notes.ui.BaseActivity
 import com.harsh.notes.ui.createnotescreen.CreateNoteActivity
 import com.harsh.notes.ui.settingscreen.SettingActivity
@@ -38,14 +37,14 @@ class NotesActivity : BaseActivity() {
         }
 
         lifecycleScope.launchWhenResumed {
-            viewModel.handleAction(NotesAction.FetchNotes(if (viewModel.isDraftScreen) Note.DRAFTED else Note.SAVED))
-            viewModel.handleOnUi.collect { action ->
-                when (action) {
-                    is NotesAction.ClickBack -> finish()
-                    is NotesAction.OpenNote -> openNote(action.noteId)
-                    is NotesAction.AddNotes -> clickAddNote()
-                    is NotesAction.RecordNotes -> clickRecordNote()
-                    is NotesAction.OpenSettings -> clickSetting()
+            viewModel.event(NotesContract.Event.FetchNotes(if (viewModel.isDraftScreen) Note.DRAFTED else Note.SAVED))
+            viewModel.sideEffect.collect { effect ->
+                when (effect) {
+                    is NotesContract.SideEffect.ClickBack -> finish()
+                    is NotesContract.SideEffect.OpenNote -> openNote(effect.noteId)
+                    is NotesContract.SideEffect.AddNotes -> clickAddNote()
+                    is NotesContract.SideEffect.RecordNotes -> clickRecordNote()
+                    is NotesContract.SideEffect.OpenSettings -> clickSetting()
                     else -> Unit
                 }
             }

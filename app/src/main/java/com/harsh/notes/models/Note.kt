@@ -39,11 +39,11 @@ data class Note @JvmOverloads constructor(
     fun secondLineData(): String {
         if (secondLine.isEmpty()) {
             val index = body?.indexOf("\n") ?: 0
-            if (index != -1) {
-                secondLine = body?.substring(index + 1) ?: ""
+            secondLine = if (index != -1) {
+                body?.substring(index + 1) ?: ""
             } else {
-                secondLine = firstLineData()
-            }
+                firstLineData()
+            }.trim()
         }
         return secondLine
     }

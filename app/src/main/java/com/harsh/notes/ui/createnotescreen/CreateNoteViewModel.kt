@@ -1,11 +1,8 @@
 package com.harsh.notes.ui.createnotescreen
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.harsh.notes.models.CreateNoteAction
+import com.harsh.notes.AppDispatcherProvider
 import com.harsh.notes.models.Note
 import com.harsh.notes.repository.NotesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,65 +11,93 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-class CreateNoteViewModel @Inject constructor(private val notesRepository: NotesRepository) :
-    ViewModel() {
+class CreateNoteViewModel @Inject constructor(
+    private val notesRepository: NotesRepository,
+    private val dispatcher: AppDispatcherProvider
+) : ViewModel(), CreateNoteContract {
 
-    private val _handleOnUi = MutableSharedFlow<CreateNoteAction>()
-    val handleOnUi = _handleOnUi.asSharedFlow()
+    private val _state = MutableStateFlow(CreateNoteContract.State.initialState())
+    override val state = _state.asStateFlow()
 
-    private var originalNote: Note? = null
+    private val _sideEffect = MutableSharedFlow<CreateNoteContract.SideEffect>()
+    override val sideEffect = _sideEffect.asSharedFlow()
 
-    var hasNote by mutableStateOf(false)
-        private set
+    override fun event(event: CreateNoteContract.Event) {
+        viewModelScope.launch {
+            when (event) {
+                CreateNoteContract.Event.ClickBack -> _sideEffect.emit(CreateNoteContract.SideEffect.ClickBack)
+                CreateNoteContract.Event.ClickRecordNotes -> _sideEffect.emit(CreateNoteContract.SideEffect.ClickRecordNotes)
+                CreateNoteContract.Event.ClickUndo -> clickUndo()
+                is CreateNoteContract.Event.FetchNote -> fetchNote(event.noteId)
+                CreateNoteContract.Event.SaveNote -> insertNote()
+                is CreateNoteContract.Event.OnType -> onType(event.msg)
+                is CreateNoteContract.Event.AddMessage -> addMsg(event.msg)
+            }
+        }
+    }
 
-    var noteState by mutableStateOf("")
-
-    private fun scopeIO(content : suspend ()-> Unit){
+    private fun scopeIO(content: suspend () -> Unit) {
         viewModelScope.launch(Dispatchers.IO) {
             content.invoke()
         }
     }
 
-    fun handleAction(action: CreateNoteAction) = scopeIO {
-        when (action) {
-            is CreateNoteAction.ClickBack -> _handleOnUi.emit(action)
-            is CreateNoteAction.ClickRecordNotes -> _handleOnUi.emit(action)
-            is CreateNoteAction.ClickUndo -> clickUndo()
-            is CreateNoteAction.SaveNote -> insertNote()
-            is CreateNoteAction.FetchNote -> fetchNote(action.noteId)
-            else -> Unit
+    private fun onType(newMsg: String) {
+        _state.update {
+            it.copy(enteredMsg = newMsg)
+        }
+    }
+
+    private fun addMsg(newMsg: String) {
+        _state.update {
+            it.copy(enteredMsg = it.enteredMsg.plus(newMsg))
         }
     }
 
     private fun clickUndo() {
-        noteState = originalNote?.body ?: ""
+        _state.update {
+            it.copy(
+                enteredMsg = it.originalNote?.body ?: ""
+            )
+        }
     }
 
-    private suspend fun insertNote() {
-        if (noteState.isNotEmpty()) {
-            val note = originalNote?.copy(body = noteState, updatedDate = Date()) ?: Note(
-                body = noteState, createdDate = Date(),
-                updatedDate = Date()
-            )
-            val isSaved = notesRepository.updateOrInsertNote(note)
-            if (isSaved > 0) {
-                _handleOnUi.emit(CreateNoteAction.SavedNote)
+    private suspend fun insertNote() = withContext(dispatcher.IO) {
+        with(_state.value) {
+            if (enteredMsg.isNotEmpty()) {
+                val note = originalNote?.copy(body = enteredMsg, updatedDate = Date()) ?: Note(
+                    body = enteredMsg, createdDate = Date(),
+                    updatedDate = Date()
+                )
+                val isSaved = notesRepository.updateOrInsertNote(note)
+                if (isSaved > 0) {
+                    _sideEffect.emit(CreateNoteContract.SideEffect.SavedNote)
+                } else {
+                    _sideEffect.emit(CreateNoteContract.SideEffect.ShowError("note not saved"))
+                }
             }
         }
     }
 
-    private suspend fun fetchNote(noteId: Int?) {
+    private suspend fun fetchNote(noteId: Int?) = withContext(dispatcher.IO) {
         noteId?.let {
-            originalNote = notesRepository.fetchNote(noteId = noteId)
-            hasNote = originalNote?.body?.isNotEmpty() ?: false
-            noteState = originalNote?.body ?: ""
+            _state.update {
+                val originalNote = notesRepository.fetchNote(noteId = noteId)
+                it.copy(
+                    originalNote = originalNote,
+                    enteredMsg = originalNote?.body ?: ""
+                )
+            }
         }
         delay(50)
-        _handleOnUi.emit(CreateNoteAction.NoteRendered)
+        _sideEffect.emit(CreateNoteContract.SideEffect.NoteRendered)
     }
 }

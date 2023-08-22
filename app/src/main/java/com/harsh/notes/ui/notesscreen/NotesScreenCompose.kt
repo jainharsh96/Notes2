@@ -1,6 +1,5 @@
 package com.harsh.notes.ui.notesscreen
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,6 +15,8 @@ import androidx.compose.material.icons.filled.Drafts
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -29,22 +30,21 @@ import androidx.compose.ui.unit.sp
 import com.example.harsh.Notes.NoteUtils.formated
 import com.harsh.notes.R
 import com.harsh.notes.models.Note
-import com.harsh.notes.models.NotesAction
-import com.harsh.notes.models.NotesState
 import java.util.*
 
 @Composable
-fun TestCompose() {
-    NoteHolder(Note(body = "harsh notes", updatedDate = Date(System.currentTimeMillis())), {})
-}
-
-@Composable
 fun NotesScreen(viewModel: NotesViewModel) {
+    val state by viewModel.state.collectAsState()
+    val effect = viewModel.sideEffect    // TODO HANDLE THIS HERE
     Box(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        NotesContent(viewModel = viewModel)
+        NotesContent(
+            noteState = state,
+            isDraftScreen = viewModel.isDraftScreen,
+            event = viewModel::event
+        )
         if (viewModel.isDraftScreen.not()) {
             Column(
                 modifier = Modifier
@@ -53,7 +53,10 @@ fun NotesScreen(viewModel: NotesViewModel) {
             ) {
                 FloatingActionButton(
                     backgroundColor = colorResource(id = R.color.colorPrimaryDark),
-                    onClick = { viewModel.handleAction(NotesAction.RecordNotes) }) {
+                    onClick = {
+                        viewModel.event(NotesContract.Event.RecordNotes)
+                    }
+                ) {
                     Image(
                         painter = painterResource(id = R.drawable.voice_note),
                         contentDescription = ""
@@ -62,7 +65,7 @@ fun NotesScreen(viewModel: NotesViewModel) {
                 Spacer(modifier = Modifier.padding(8.dp))
                 FloatingActionButton(
                     backgroundColor = colorResource(id = R.color.colorPrimaryDark),
-                    onClick = { viewModel.handleAction(NotesAction.AddNotes) }) {
+                    onClick = { viewModel.event(NotesContract.Event.AddNotes) }) {
                     Image(
                         painter = painterResource(id = R.drawable.add_notes),
                         contentDescription = ""
@@ -74,27 +77,30 @@ fun NotesScreen(viewModel: NotesViewModel) {
 }
 
 @Composable
-fun NotesContent(viewModel: NotesViewModel) {
-    val noteState = viewModel.notesState
+fun NotesContent(
+    noteState: NotesContract.State,
+    isDraftScreen: Boolean,
+    event: (NotesContract.Event) -> Unit
+) {
     Column(modifier = Modifier.fillMaxSize()) {
         NotesHeader(
-            if (viewModel.isDraftScreen) "Drafted Note" else "Notes",
-            viewModel.isDraftScreen,
-            viewModel.handleAction
+            if (isDraftScreen) "Drafted Note" else "Notes",
+            isDraftScreen,
+            event
         )
         when (noteState) {
-            is NotesState.NoData -> NoDataView()
-            is NotesState.Notes -> {
+            is NotesContract.State.NoData -> NoDataView()
+            is NotesContract.State.Notes -> {
                 Box(modifier = Modifier.fillMaxSize()) {
                     NotesList(
-                        isDraftScreen = viewModel.isDraftScreen,
+                        isDraftScreen = isDraftScreen,
                         notes = noteState.notes,
-                        handleAction = viewModel.handleAction
+                        event = event
                     )
                     if (noteState.confirmToDeleteNoteId != null) {
                         AlertDialog(
                             onDismissRequest = {
-                                viewModel.handleAction(NotesAction.DismissConfirmToDeleteNote)
+                                event.invoke(NotesContract.Event.DismissConfirmToDeleteNote)
                             },
                             title = {
                                 Text(
@@ -104,14 +110,16 @@ fun NotesContent(viewModel: NotesViewModel) {
                             },
                             buttons = {
                                 Row(
-                                    modifier = Modifier.fillMaxWidth().padding(all = 8.dp),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(all = 8.dp),
                                     horizontalArrangement = Arrangement.Center
                                 ) {
                                     Button(
                                         modifier = Modifier.width(100.dp),
                                         onClick = {
-                                            viewModel.handleAction(
-                                                NotesAction.DeleteNote(
+                                            event.invoke(
+                                                NotesContract.Event.DeleteNote(
                                                     noteState.confirmToDeleteNoteId
                                                 )
                                             )
@@ -125,6 +133,7 @@ fun NotesContent(viewModel: NotesViewModel) {
                     }
                 }
             }
+
             else -> Unit
         }
     }
@@ -149,7 +158,7 @@ fun NoDataView() {
 }
 
 @Composable
-fun NotesHeader(heading: String, isDraftScreen: Boolean, handleAction: (NotesAction) -> Unit) {
+fun NotesHeader(heading: String, isDraftScreen: Boolean, event: (NotesContract.Event) -> Unit) {
     Row(
         modifier = Modifier
             .padding(16.dp),
@@ -162,7 +171,7 @@ fun NotesHeader(heading: String, isDraftScreen: Boolean, handleAction: (NotesAct
                 modifier = Modifier
                     .width(24.dp)
                     .height(24.dp)
-                    .clickable { handleAction(NotesAction.ClickBack) },
+                    .clickable { event.invoke(NotesContract.Event.ClickBack) },
                 alpha = 0.5f
             )
         }
@@ -183,7 +192,7 @@ fun NotesHeader(heading: String, isDraftScreen: Boolean, handleAction: (NotesAct
                 modifier = Modifier
                     .width(24.dp)
                     .height(24.dp)
-                    .clickable { handleAction(NotesAction.OpenSettings) }
+                    .clickable { event.invoke(NotesContract.Event.OpenSettings) }
             )
         }
     }
@@ -191,7 +200,7 @@ fun NotesHeader(heading: String, isDraftScreen: Boolean, handleAction: (NotesAct
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun NotesList(isDraftScreen: Boolean, notes: List<Note>, handleAction: (NotesAction) -> Unit) {
+fun NotesList(isDraftScreen: Boolean, notes: List<Note>, event: (NotesContract.Event) -> Unit) {
     val listState = rememberLazyListState()
     LaunchedEffect(key1 = notes) {
         if (notes.isNotEmpty())
@@ -212,20 +221,22 @@ fun NotesList(isDraftScreen: Boolean, notes: List<Note>, handleAction: (NotesAct
             val dismissState = rememberDismissState(
                 confirmStateChange = {
                     when (it) {
-                        DismissValue.DismissedToEnd -> if (isDraftScreen) handleAction(
-                            NotesAction.RestoreNote(
+                        DismissValue.DismissedToEnd -> if (isDraftScreen) event.invoke(
+                            NotesContract.Event.RestoreNote(
                                 noteId = note.id
                             )
-                        ) else handleAction(
-                            NotesAction.DraftNote(
-                                noteId = note.id
-                            )
-                        )
-                        DismissValue.DismissedToStart -> if (isDraftScreen) handleAction(
-                            NotesAction.ConfirmDeleteNote(
+                        ) else event.invoke(
+                            NotesContract.Event.DraftNote(
                                 noteId = note.id
                             )
                         )
+
+                        DismissValue.DismissedToStart -> if (isDraftScreen) event(
+                            NotesContract.Event.ConfirmDeleteNote(
+                                noteId = note.id
+                            )
+                        )
+
                         else -> {}
                     }
                     true
@@ -263,19 +274,19 @@ fun NotesList(isDraftScreen: Boolean, notes: List<Note>, handleAction: (NotesAct
                     )
                 }
             }) {
-                NoteHolder(note, handleAction)
+                NoteHolder(note, event)
             }
         }
     }
 }
 
 @Composable
-fun NoteHolder(note: Note, handleAction: (NotesAction) -> Unit) {
+fun NoteHolder(note: Note, event: (NotesContract.Event) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { handleAction(NotesAction.OpenNote(note.id)) },
+            .clickable { event.invoke(NotesContract.Event.OpenNote(note.id)) },
         shape = RoundedCornerShape(8.dp),
         elevation = 2.dp
     ) {
@@ -298,14 +309,19 @@ fun NoteHolder(note: Note, handleAction: (NotesAction) -> Unit) {
                     style = TextStyle(fontSize = 12.sp)
                 )
             }
-           // Spacer(modifier = Modifier.padding(.dp))
+            Spacer(modifier = Modifier.padding(4.dp))
             Text(
                 text = note.secondLineData(),
                 color = colorResource(id = R.color.disable),
                 style = TextStyle(fontSize = 14.sp),
                 overflow = TextOverflow.Ellipsis,
-                maxLines = 2
+                maxLines = 1
             )
         }
     }
+}
+
+@Composable
+fun TestCompose() {
+    NoteHolder(Note(body = "harsh notes", updatedDate = Date(System.currentTimeMillis())), {})
 }

@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import com.harsh.notes.models.SettingAction
 import com.harsh.notes.ui.BaseActivity
 import com.harsh.notes.ui.notesscreen.NotesActivity
 import dagger.hilt.android.AndroidEntryPoint
@@ -24,20 +23,15 @@ class SettingActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            SettingScreen(handleAction)
+            SettingScreen(::sideEffect)
         }
     }
 
-    private val handleAction = { action: SettingAction ->
-        handleAction(action)
-    }
-
-    private fun handleAction(action: SettingAction) {
+    private fun sideEffect(action: SettingContract.Effect) {
         when (action) {
-            is SettingAction.ClickBack -> finish()
-            is SettingAction.RestoreData -> restoreData()
-            is SettingAction.OpenDraftNote -> openNotesActivity()
-            else -> Unit
+            is SettingContract.Effect.ClickBack -> finish()
+            is SettingContract.Effect.RestoreData -> restoreData()
+            is SettingContract.Effect.OpenDraftNote -> openNotesActivity()
         }
     }
 
