@@ -1,4 +1,4 @@
-package com.harsh.notes.models
+package com.harsh.notes.db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

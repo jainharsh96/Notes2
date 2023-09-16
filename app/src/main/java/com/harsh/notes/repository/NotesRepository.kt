@@ -1,8 +1,8 @@
 package com.harsh.notes.repository
 
 import com.harsh.notes.db.NotesDao
-import com.harsh.notes.models.DeletedNote
-import com.harsh.notes.models.Note
+import com.harsh.notes.db.DeletedNote
+import com.harsh.notes.db.Note
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 import javax.inject.Singleton

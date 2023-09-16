@@ -1,9 +1,10 @@
 package com.harsh.notes.ui.notesscreen
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.harsh.notes.AppDispatcherProvider
-import com.harsh.notes.models.Note
+import com.harsh.notes.db.Note
 import com.harsh.notes.repository.NotesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,6 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NotesViewModel @Inject constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val notesRepository: NotesRepository,
     private val dispatcher: AppDispatcherProvider
 ) : ViewModel(), NotesContract {

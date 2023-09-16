@@ -92,6 +92,11 @@ dependencies {
     implementation "androidx.activity:activity-ktx:1.4.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0-alpha03"
 
+    // compose navigation
+//    def nav_version = "2.5.0"
+//    implementation "androidx.navigation:navigation-compose:$nav_version"
+//    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
+
     // room
     def room_version = "2.4.2"
     implementation "androidx.room:room-runtime:$room_version"

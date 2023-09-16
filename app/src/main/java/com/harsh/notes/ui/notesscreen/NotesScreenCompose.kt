@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.harsh.Notes.NoteUtils.formated
 import com.harsh.notes.R
-import com.harsh.notes.models.Note
+import com.harsh.notes.db.Note
 import java.util.*
 
 @Composable

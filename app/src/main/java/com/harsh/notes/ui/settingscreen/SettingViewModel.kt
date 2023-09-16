@@ -2,7 +2,7 @@ package com.harsh.notes.ui.settingscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.harsh.notes.models.Note
+import com.harsh.notes.db.Note
 import com.harsh.notes.repository.NotesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers

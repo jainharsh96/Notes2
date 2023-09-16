@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.harsh.notes.models.Note
+import com.harsh.notes.db.Note
 import com.harsh.notes.ui.BaseActivity
 import com.harsh.notes.ui.createnotescreen.CreateNoteActivity
 import com.harsh.notes.ui.settingscreen.SettingActivity
@@ -33,6 +33,8 @@ class NotesActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         viewModel.isDraftScreen = isDraftScreen()
         setContent {
+//            val navController = rememberNavController()
+//            NotesNavigationGraph(navController = navController)
             NotesScreen(viewModel)
         }
 

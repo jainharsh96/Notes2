@@ -1,7 +1,7 @@
 package com.harsh.notes.ui.notesscreen
 
 import com.harsh.notes.coreUi.UniDirectionalViewModel
-import com.harsh.notes.models.Note
+import com.harsh.notes.db.Note
 
 interface NotesContract :
     UniDirectionalViewModel<NotesContract.State, NotesContract.Event, NotesContract.SideEffect> {

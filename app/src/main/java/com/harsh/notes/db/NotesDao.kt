@@ -1,8 +1,6 @@
 package com.harsh.notes.db
 
 import androidx.room.*
-import com.harsh.notes.models.DeletedNote
-import com.harsh.notes.models.Note
 import kotlinx.coroutines.flow.Flow
 
 @Dao
