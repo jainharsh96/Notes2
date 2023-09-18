@@ -9,7 +9,7 @@ import java.util.*
 for testing app
  */
 @Entity(tableName = "deleted_note")
-data class DeletedNote @JvmOverloads constructor(
+data class DeletedNote(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
     var body: String? = null,

@@ -8,7 +8,7 @@ import androidx.room.PrimaryKey
 import java.util.*
 
 @Entity(tableName = "Notes")
-data class Note @JvmOverloads constructor(
+data class Note(
     @PrimaryKey(autoGenerate = true)
     var id: Int = 0,
     var body: String? = null,
