@@ -31,7 +31,7 @@ class CreateNoteActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            CreateNoteScreen(viewModel)
+           // CreateNoteScreen(viewModel)
         }
         lifecycleScope.launchWhenResumed {
             viewModel.sideEffect.collect { sideEffect ->

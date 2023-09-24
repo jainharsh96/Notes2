@@ -23,7 +23,7 @@ class SettingActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            SettingScreen(::sideEffect)
+          //  SettingScreen(::sideEffect)
         }
     }
 

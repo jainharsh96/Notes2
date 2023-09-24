@@ -4,19 +4,19 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
-import com.harsh.notes.db.Note
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.harsh.notes.ui.BaseActivity
+import com.harsh.notes.ui.NavigationAction
+import com.harsh.notes.ui.NotesNavigation
+import com.harsh.notes.ui.NotesNavigationGraph
 import com.harsh.notes.ui.createnotescreen.CreateNoteActivity
 import com.harsh.notes.ui.settingscreen.SettingActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class NotesActivity : BaseActivity() {
-
-    private val viewModel by viewModels<NotesViewModel>()
 
     companion object {
         private val TAG = NotesActivity::class.java.simpleName
@@ -31,34 +31,51 @@ class NotesActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.isDraftScreen = isDraftScreen()
         setContent {
-//            val navController = rememberNavController()
-//            NotesNavigationGraph(navController = navController)
-            NotesScreen(viewModel)
+            val navController = rememberNavController()
+            NotesNavigationGraph(navController = navController,
+                startDestination = NotesNavigation.NotesScreen.path(isDraftScreen = isDraftScreen()),
+                onAction = {
+                    handleNavigationActions(navController, it)
+                })
         }
+    }
 
+    private fun handleNavigationActions(
+        navController: NavHostController,
+        action: NavigationAction
+    ) {
         lifecycleScope.launchWhenResumed {
-            viewModel.event(NotesContract.Event.FetchNotes(if (viewModel.isDraftScreen) Note.DRAFTED else Note.SAVED))
-            viewModel.sideEffect.collect { effect ->
-                when (effect) {
-                    is NotesContract.SideEffect.ClickBack -> finish()
-                    is NotesContract.SideEffect.OpenNote -> openNote(effect.noteId)
-                    is NotesContract.SideEffect.AddNotes -> clickAddNote()
-                    is NotesContract.SideEffect.RecordNotes -> clickRecordNote()
-                    is NotesContract.SideEffect.OpenSettings -> clickSetting()
-                    else -> Unit
-                }
+            when (action) {
+                is NavigationAction.NavigateToCreateNoteScreen -> navController.navigate(
+                    NotesNavigation.CreateNotesScreen.path(
+                        notesId = action.noteId,
+                        openRecording = action.openRecording
+                    )
+                )
+                NavigationAction.NavigateToNotesScreen -> navController.navigate(NotesNavigation.NotesScreen.path())
+                NavigationAction.NavigateToSettingScreen -> navController.navigate(
+                    NotesNavigation.NotesSettingScreen.path()
+                )
+                NavigationAction.Back -> navController.popBackStack()
+                NavigationAction.ClickRecordNotes -> clickRecordNote()
+                NavigationAction.None -> Unit
+                NavigationAction.OpenDraftNote -> navController.navigate(
+                    NotesNavigation.NotesScreen.path(
+                        isDraftScreen = true
+                    )
+                )
+                NavigationAction.RestoreData -> Unit // todo
             }
         }
     }
 
-    private fun clickSetting() {
-        startActivity(SettingActivity.getIntent(this))
+    private fun clickRecordNote() {
+        startRecognizeVoice()
     }
 
-    private fun clickRecordNote() {
-        startActivity(CreateNoteActivity.getIntent(this, openRecording = true))
+    private fun clickSetting() {
+        startActivity(SettingActivity.getIntent(this))
     }
 
     private fun clickAddNote() {

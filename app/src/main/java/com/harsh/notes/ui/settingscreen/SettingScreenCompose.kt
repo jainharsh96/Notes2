@@ -18,28 +18,39 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.harsh.notes.R
+import com.harsh.notes.ui.NavigationAction
 
 
 @Composable
-fun SettingScreen(effect: (SettingContract.Effect) -> Unit) {
+fun SettingScreen(onAction: (NavigationAction) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(color = colorResource(id = R.color.white))
     ) {
-        SettingScreenHeader(effect)
-        RestoreDataCard(effect)
-        DraftNoteCard(effect)
+        SettingScreenHeader {
+            onAction.invoke(NavigationAction.Back)
+        }
+        RestoreDataCard(restoreData = {
+            onAction.invoke(NavigationAction.RestoreData)
+        }, onClickBack = {
+            onAction.invoke(NavigationAction.Back)
+        })
+        DraftNoteCard(openDraftNote = {
+            onAction.invoke(NavigationAction.OpenDraftNote)
+        }, onClickBack = {
+            onAction.invoke(NavigationAction.Back)
+        })
     }
 }
 
 @Composable
-fun RestoreDataCard(handleAction: (SettingContract.Effect) -> Unit) {
+fun RestoreDataCard(restoreData: () -> Unit, onClickBack: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
-            .clickable { handleAction(SettingContract.Effect.RestoreData) },
+            .clickable { restoreData.invoke() },
         shape = RoundedCornerShape(8.dp),
         elevation = 2.dp
     ) {
@@ -54,7 +65,7 @@ fun RestoreDataCard(handleAction: (SettingContract.Effect) -> Unit) {
                 contentDescription = "",
                 modifier = Modifier
                     .padding(end = 16.dp)
-                    .clickable { handleAction(SettingContract.Effect.ClickBack) },
+                    .clickable { onClickBack.invoke() },
                 alpha = 0.4f
             )
             Text(
@@ -68,12 +79,12 @@ fun RestoreDataCard(handleAction: (SettingContract.Effect) -> Unit) {
 }
 
 @Composable
-fun DraftNoteCard(handleAction: (SettingContract.Effect) -> Unit) {
+fun DraftNoteCard(openDraftNote: () -> Unit, onClickBack: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
-            .clickable { handleAction(SettingContract.Effect.OpenDraftNote) },
+            .clickable { openDraftNote.invoke() },
         shape = RoundedCornerShape(8.dp),
         elevation = 2.dp
     ) {
@@ -88,7 +99,7 @@ fun DraftNoteCard(handleAction: (SettingContract.Effect) -> Unit) {
                 contentDescription = "",
                 modifier = Modifier
                     .padding(end = 16.dp)
-                    .clickable { handleAction(SettingContract.Effect.ClickBack) },
+                    .clickable { onClickBack },
                 alpha = 0.4f
             )
             Text(
@@ -102,7 +113,7 @@ fun DraftNoteCard(handleAction: (SettingContract.Effect) -> Unit) {
 }
 
 @Composable
-fun SettingScreenHeader(handleAction: (SettingContract.Effect) -> Unit) {
+fun SettingScreenHeader(onClickBack: () -> Unit) {
     Row(
         modifier = Modifier
             .padding(12.dp),
@@ -114,7 +125,7 @@ fun SettingScreenHeader(handleAction: (SettingContract.Effect) -> Unit) {
             modifier = Modifier
                 .width(24.dp)
                 .height(24.dp)
-                .clickable { handleAction(SettingContract.Effect.ClickBack) },
+                .clickable { onClickBack.invoke() },
             alpha = 0.5f
         )
         Text(

@@ -1,10 +1,12 @@
 package com.harsh.notes.ui.createnotescreen
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.harsh.notes.AppDispatcherProvider
 import com.harsh.notes.db.Note
 import com.harsh.notes.repository.NotesRepository
+import com.harsh.notes.ui.NotesRoutes
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -20,9 +22,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateNoteViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val notesRepository: NotesRepository,
     private val dispatcher: AppDispatcherProvider
 ) : ViewModel(), CreateNoteContract {
+
+    val noteId : Int? = savedStateHandle[NotesRoutes.ARG_NOTES_ID]
+    val isOpenRecording = savedStateHandle[NotesRoutes.ARG_OPEN_RECORDING] ?: false   // todo add support
 
     private val _state = MutableStateFlow(CreateNoteContract.State.initialState())
     override val state = _state.asStateFlow()

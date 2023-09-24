@@ -27,15 +27,49 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.harsh.Notes.NoteUtils.formated
 import com.harsh.notes.R
 import com.harsh.notes.db.Note
+import com.harsh.notes.ui.NavigationAction
+import kotlinx.coroutines.flow.collectLatest
 import java.util.*
 
 @Composable
-fun NotesScreen(viewModel: NotesViewModel) {
+fun NotesScreen(viewModel: NotesViewModel = hiltViewModel(), onAction: (NavigationAction) -> Unit) {
     val state by viewModel.state.collectAsState()
-    val effect = viewModel.sideEffect    // TODO HANDLE THIS HERE
+    val effect = viewModel.sideEffect
+    LaunchedEffect(key1 = Unit) {
+        viewModel.event(NotesContract.Event.FetchNotes(if (viewModel.isDraftScreen) Note.DRAFTED else Note.SAVED))
+    }
+    LaunchedEffect(key1 = Unit) {
+        effect.collectLatest { sideEffect ->
+            when (sideEffect) {
+                NotesContract.SideEffect.AddNotes -> onAction.invoke(
+                    NavigationAction.NavigateToCreateNoteScreen(
+                        noteId = null,
+                        openRecording = false
+                    )
+                )
+
+                NotesContract.SideEffect.ClickBack -> onAction.invoke(NavigationAction.Back)
+                is NotesContract.SideEffect.OpenNote -> onAction.invoke(
+                    NavigationAction.NavigateToCreateNoteScreen(
+                        noteId = sideEffect.noteId,
+                        openRecording = false
+                    )
+                )
+
+                NotesContract.SideEffect.OpenSettings -> onAction.invoke(NavigationAction.NavigateToSettingScreen)
+                NotesContract.SideEffect.RecordNotes -> onAction.invoke(
+                    NavigationAction.NavigateToCreateNoteScreen(
+                        noteId = null,
+                        openRecording = true
+                    )
+                )
+            }
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()

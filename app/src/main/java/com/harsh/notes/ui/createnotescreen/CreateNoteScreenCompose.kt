@@ -26,13 +26,31 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.harsh.notes.R
+import com.harsh.notes.ui.NavigationAction
+import kotlinx.coroutines.flow.collectLatest
 
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun CreateNoteScreen(viewModel: CreateNoteViewModel) {
+fun CreateNoteScreen(viewModel: CreateNoteViewModel = hiltViewModel(), onAction: (NavigationAction) -> Unit) {
     val state by viewModel.state.collectAsState()
-    val effect = viewModel.sideEffect    // TODO HANDLE THIS HERE
+    val effect = viewModel.sideEffect
+    LaunchedEffect(key1 = Unit){
+        viewModel.event(CreateNoteContract.Event.FetchNote(viewModel.noteId))   // todo refactor this
+    }
+    LaunchedEffect(key1 = Unit){
+        effect.collectLatest { sideEffect ->
+            when(sideEffect){
+                CreateNoteContract.SideEffect.ClickBack -> onAction.invoke(NavigationAction.Back)
+                CreateNoteContract.SideEffect.ClickRecordNotes -> onAction.invoke(NavigationAction.ClickRecordNotes)
+                CreateNoteContract.SideEffect.NoteRendered -> Unit // todo fix this
+                CreateNoteContract.SideEffect.SavedNote -> onAction.invoke(NavigationAction.Back)
+                is CreateNoteContract.SideEffect.ShowError -> Unit // todo show toast
+            }
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()

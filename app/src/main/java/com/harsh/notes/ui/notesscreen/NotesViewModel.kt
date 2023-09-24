@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.harsh.notes.AppDispatcherProvider
 import com.harsh.notes.db.Note
 import com.harsh.notes.repository.NotesRepository
+import com.harsh.notes.ui.NavigationManager
+import com.harsh.notes.ui.NotesRoutes.ARG_IS_DRAFT_SCREEN
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,10 +23,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NotesViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
     private val notesRepository: NotesRepository,
     private val dispatcher: AppDispatcherProvider
 ) : ViewModel(), NotesContract {
+
+    val isDraftScreen = savedStateHandle[ARG_IS_DRAFT_SCREEN] ?: false   // move this in state also
 
     private val _state = MutableStateFlow<NotesContract.State>(NotesContract.State.NoData)
     override val state: StateFlow<NotesContract.State> = _state.asStateFlow()
@@ -50,12 +54,10 @@ class NotesViewModel @Inject constructor(
                 is NotesContract.Event.AddNotes -> _sideEffect.emit(NotesContract.SideEffect.AddNotes)
                 is NotesContract.Event.RecordNotes -> _sideEffect.emit(NotesContract.SideEffect.RecordNotes)
                 is NotesContract.Event.OpenSettings -> _sideEffect.emit(NotesContract.SideEffect.OpenSettings)
-                is NotesContract.Event.IsDraftScreen -> isDraftScreen = true
+                is NotesContract.Event.IsDraftScreen -> Unit
             }
         }
     }
-
-    var isDraftScreen = false
 
     private fun confirmDeleteNote(noteId: Int?) {
         _state.update {

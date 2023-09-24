@@ -92,9 +92,8 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0-alpha02"
 
     // compose navigation
-//    def nav_version = "2.5.0"
-//    implementation "androidx.navigation:navigation-compose:$nav_version"
-//    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
+    implementation "androidx.navigation:navigation-compose:2.7.2"
+    implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
 
     // room
     def room_version = "2.5.2"
@@ -104,8 +103,8 @@ dependencies {
     annotationProcessor "androidx.room:room-compiler:$room_version"
 
     //sqlcipher
-    implementation "androidx.sqlite:sqlite-ktx:2.2.0"
-    implementation 'net.zetetic:android-database-sqlcipher:4.3.0@aar'
+    implementation "androidx.sqlite:sqlite-ktx:2.3.1"
+    implementation 'net.zetetic:android-database-sqlcipher:4.5.4@aar'
 
     //biometric
     implementation 'androidx.biometric:biometric:1.1.0'

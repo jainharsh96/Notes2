@@ -29,7 +29,8 @@
         <activity
             android:name=".ui.notesscreen.NotesActivity"
             android:launchMode="standard"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize"/>
 
         <activity
             android:name=".ui.createnotescreen.CreateNoteActivity"
