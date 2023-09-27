@@ -19,3 +19,5 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile  token -> 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
+-keep class net.sqlcipher.** { *; }
+-keep class net.sqlcipher.database.** { *; }

@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -77,7 +78,9 @@ fun NotesScreen(viewModel: NotesViewModel = hiltViewModel(), onAction: (Navigati
         NotesContent(
             noteState = state,
             isDraftScreen = viewModel.isDraftScreen,
-            event = viewModel::event
+            event = remember {
+                viewModel::event
+            }
         )
         if (viewModel.isDraftScreen.not()) {
             Column(
@@ -87,8 +90,10 @@ fun NotesScreen(viewModel: NotesViewModel = hiltViewModel(), onAction: (Navigati
             ) {
                 FloatingActionButton(
                     backgroundColor = colorResource(id = R.color.colorPrimaryDark),
-                    onClick = {
-                        viewModel.event(NotesContract.Event.RecordNotes)
+                    onClick = remember {
+                        {
+                            viewModel.event(NotesContract.Event.RecordNotes)
+                        }
                     }
                 ) {
                     Image(
@@ -99,7 +104,7 @@ fun NotesScreen(viewModel: NotesViewModel = hiltViewModel(), onAction: (Navigati
                 Spacer(modifier = Modifier.padding(8.dp))
                 FloatingActionButton(
                     backgroundColor = colorResource(id = R.color.colorPrimaryDark),
-                    onClick = { viewModel.event(NotesContract.Event.AddNotes) }) {
+                    onClick = remember {{ viewModel.event(NotesContract.Event.AddNotes) }}) {
                     Image(
                         painter = painterResource(id = R.drawable.add_notes),
                         contentDescription = ""

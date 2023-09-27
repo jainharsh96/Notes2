@@ -1,10 +1,13 @@
 package com.harsh.notes.ui.createnotescreen
 
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import com.harsh.notes.coreUi.UniDirectionalViewModel
 import com.harsh.notes.db.Note
 
 interface CreateNoteContract : UniDirectionalViewModel<CreateNoteContract.State, CreateNoteContract.Event, CreateNoteContract.SideEffect> {
 
+    @Immutable
     data class State(val originalNote : Note? = null, val enteredMsg : String = ""){    // todo create textinputfield for enter value
 
         fun hasNote() = originalNote?.body?.isNotEmpty() ?: false

@@ -34,15 +34,18 @@ import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun CreateNoteScreen(viewModel: CreateNoteViewModel = hiltViewModel(), onAction: (NavigationAction) -> Unit) {
+fun CreateNoteScreen(
+    viewModel: CreateNoteViewModel = hiltViewModel(),
+    onAction: (NavigationAction) -> Unit
+) {
     val state by viewModel.state.collectAsState()
     val effect = viewModel.sideEffect
-    LaunchedEffect(key1 = Unit){
+    LaunchedEffect(key1 = Unit) {
         viewModel.event(CreateNoteContract.Event.FetchNote(viewModel.noteId))   // todo refactor this
     }
-    LaunchedEffect(key1 = Unit){
+    LaunchedEffect(key1 = Unit) {
         effect.collectLatest { sideEffect ->
-            when(sideEffect){
+            when (sideEffect) {
                 CreateNoteContract.SideEffect.ClickBack -> onAction.invoke(NavigationAction.Back)
                 CreateNoteContract.SideEffect.ClickRecordNotes -> onAction.invoke(NavigationAction.ClickRecordNotes)
                 CreateNoteContract.SideEffect.NoteRendered -> Unit // todo fix this
@@ -60,7 +63,7 @@ fun CreateNoteScreen(viewModel: CreateNoteViewModel = hiltViewModel(), onAction:
             hasNote = state.hasNote(),
             event = viewModel::event
         )
-        NoteInfo(state = state, event = viewModel::event)
+        NoteInfo(state = state, event = remember(key1 = viewModel) { viewModel::event })
     }
 }
 

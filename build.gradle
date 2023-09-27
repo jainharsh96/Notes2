@@ -15,7 +15,7 @@ plugins {
     id 'com.google.devtools.ksp' version "1.9.0-1.0.13" apply false
 }
 
-
+// run -> ./gradlew assembleRelease -Pmyapp.enableComposeCompilerReports=true --rerun-tasks
 subprojects {
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         kotlinOptions {

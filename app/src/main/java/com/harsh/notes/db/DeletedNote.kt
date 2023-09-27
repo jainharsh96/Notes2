@@ -1,5 +1,6 @@
 package com.harsh.notes.db
 
+import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -8,6 +9,7 @@ import java.util.*
 /*
 for testing app
  */
+@Immutable
 @Entity(tableName = "deleted_note")
 data class DeletedNote(
     @PrimaryKey(autoGenerate = true)

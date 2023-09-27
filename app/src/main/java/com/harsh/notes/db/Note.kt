@@ -1,12 +1,14 @@
 package com.harsh.notes.db
 
 
+import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import java.util.*
 
+@Immutable
 @Entity(tableName = "Notes")
 data class Note(
     @PrimaryKey(autoGenerate = true)
