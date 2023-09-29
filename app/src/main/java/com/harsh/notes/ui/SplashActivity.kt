@@ -12,11 +12,10 @@ import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
-import com.example.harsh.Notes.NoteUtils.REQUEST_CODE_APP_PERMISSION
+import com.harsh.notes.utils.REQUEST_CODE_APP_PERMISSION
 import com.example.harsh.Notes.NoteUtils.getNotesAllPermissions
 import com.harsh.notes.BuildConfig
 import com.harsh.notes.R
-import com.harsh.notes.ui.notesscreen.NotesActivity
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : AppCompatActivity() {

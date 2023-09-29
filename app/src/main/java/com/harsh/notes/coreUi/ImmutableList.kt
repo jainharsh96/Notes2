@@ -1,4 +1,4 @@
-package com.harsh.notes
+package com.harsh.notes.coreUi
 
 import androidx.compose.runtime.Stable
 

@@ -50,7 +50,7 @@ fun RestoreDataCard(restoreData: () -> Unit, onClickBack: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
-            .clickable { restoreData.invoke() },
+            .clickable(onClick = restoreData),
         shape = RoundedCornerShape(8.dp),
         elevation = 2.dp
     ) {
@@ -65,7 +65,7 @@ fun RestoreDataCard(restoreData: () -> Unit, onClickBack: () -> Unit) {
                 contentDescription = "",
                 modifier = Modifier
                     .padding(end = 16.dp)
-                    .clickable { onClickBack.invoke() },
+                    .clickable(onClick = onClickBack),
                 alpha = 0.4f
             )
             Text(
@@ -99,7 +99,7 @@ fun DraftNoteCard(openDraftNote: () -> Unit, onClickBack: () -> Unit) {
                 contentDescription = "",
                 modifier = Modifier
                     .padding(end = 16.dp)
-                    .clickable { onClickBack },
+                    .clickable(onClick = onClickBack),
                 alpha = 0.4f
             )
             Text(
@@ -125,7 +125,7 @@ fun SettingScreenHeader(onClickBack: () -> Unit) {
             modifier = Modifier
                 .width(24.dp)
                 .height(24.dp)
-                .clickable { onClickBack.invoke() },
+                .clickable(onClick = onClickBack),
             alpha = 0.5f
         )
         Text(

@@ -1,18 +1,13 @@
-package com.harsh.notes.ui.notesscreen
+package com.harsh.notes.ui
 
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.remember
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.harsh.notes.ui.BaseActivity
-import com.harsh.notes.ui.NavigationAction
-import com.harsh.notes.ui.NotesNavigation
-import com.harsh.notes.ui.NotesNavigationGraph
-import com.harsh.notes.ui.createnotescreen.CreateNoteActivity
-import com.harsh.notes.ui.settingscreen.SettingActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -35,8 +30,10 @@ class NotesActivity : BaseActivity() {
             val navController = rememberNavController()
             NotesNavigationGraph(navController = navController,
                 startDestination = NotesNavigation.NotesScreen.path(isDraftScreen = isDraftScreen()),
-                onAction = {
-                    handleNavigationActions(navController, it)
+                onAction = remember {
+                    return@remember {
+                        handleNavigationActions(navController, it)
+                    }
                 })
         }
     }
@@ -58,32 +55,18 @@ class NotesActivity : BaseActivity() {
                     NotesNavigation.NotesSettingScreen.path()
                 )
                 NavigationAction.Back -> navController.popBackStack()
-                NavigationAction.ClickRecordNotes -> clickRecordNote()
-                NavigationAction.None -> Unit
                 NavigationAction.OpenDraftNote -> navController.navigate(
                     NotesNavigation.NotesScreen.path(
                         isDraftScreen = true
                     )
                 )
-                NavigationAction.RestoreData -> Unit // todo
+                NavigationAction.RestoreData -> restoreData()
             }
         }
     }
 
-    private fun clickRecordNote() {
-        startRecognizeVoice()
-    }
-
-    private fun clickSetting() {
-        startActivity(SettingActivity.getIntent(this))
-    }
-
-    private fun clickAddNote() {
-        startActivity(CreateNoteActivity.getIntent(this))
-    }
-
-    private fun openNote(noteId: Int) {
-        startActivity(CreateNoteActivity.getIntent(this, noteId = noteId))
+    private fun restoreData(){
+        // TODO
     }
 
     private fun isDraftScreen() = intent.getBooleanExtra(INTENT_DRAFT_SCREEN, false)

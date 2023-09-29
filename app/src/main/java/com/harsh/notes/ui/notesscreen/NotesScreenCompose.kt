@@ -78,7 +78,7 @@ fun NotesScreen(viewModel: NotesViewModel = hiltViewModel(), onAction: (Navigati
         NotesContent(
             noteState = state,
             isDraftScreen = viewModel.isDraftScreen,
-            event = remember {
+            event = remember(viewModel) {
                 viewModel::event
             }
         )

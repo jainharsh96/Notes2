@@ -1,5 +1,12 @@
 package com.harsh.notes.ui.createnotescreen
 
+import android.app.Activity
+import android.content.ActivityNotFoundException
+import android.content.Intent
+import android.speech.RecognizerIntent
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +25,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -32,7 +40,6 @@ import com.harsh.notes.ui.NavigationAction
 import kotlinx.coroutines.flow.collectLatest
 
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CreateNoteScreen(
     viewModel: CreateNoteViewModel = hiltViewModel(),
@@ -40,17 +47,38 @@ fun CreateNoteScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val effect = viewModel.sideEffect
+    val context = LocalContext.current
+    val startForResult =
+        rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.let { text ->
+                    viewModel.event(CreateNoteContract.Event.AddMessage(text.joinToString("\n")))
+                }
+            }
+        }
     LaunchedEffect(key1 = Unit) {
-        viewModel.event(CreateNoteContract.Event.FetchNote(viewModel.noteId))   // todo refactor this
+        viewModel.event(CreateNoteContract.Event.FetchNote)
     }
     LaunchedEffect(key1 = Unit) {
         effect.collectLatest { sideEffect ->
             when (sideEffect) {
                 CreateNoteContract.SideEffect.ClickBack -> onAction.invoke(NavigationAction.Back)
-                CreateNoteContract.SideEffect.ClickRecordNotes -> onAction.invoke(NavigationAction.ClickRecordNotes)
-                CreateNoteContract.SideEffect.NoteRendered -> Unit // todo fix this
+                CreateNoteContract.SideEffect.StartRecordNotes -> {
+                    val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US")
+                    try {
+                        startForResult.launch(intent)
+                    } catch (a: ActivityNotFoundException) {
+                        Toast.makeText(context, "Download Voice Search App", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
                 CreateNoteContract.SideEffect.SavedNote -> onAction.invoke(NavigationAction.Back)
-                is CreateNoteContract.SideEffect.ShowError -> Unit // todo show toast
+                is CreateNoteContract.SideEffect.ShowError -> Toast.makeText(
+                    context,
+                    sideEffect.msg,
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -61,7 +89,9 @@ fun CreateNoteScreen(
     ) {
         CreateNoteHeader(
             hasNote = state.hasNote(),
-            event = viewModel::event
+            event = remember(viewModel) {
+                viewModel::event
+            }
         )
         NoteInfo(state = state, event = remember(key1 = viewModel) { viewModel::event })
     }

@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.harsh.notes.AppDispatcherProvider
 import com.harsh.notes.db.Note
 import com.harsh.notes.repository.NotesRepository
-import com.harsh.notes.ui.NavigationManager
 import com.harsh.notes.ui.NotesRoutes.ARG_IS_DRAFT_SCREEN
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow

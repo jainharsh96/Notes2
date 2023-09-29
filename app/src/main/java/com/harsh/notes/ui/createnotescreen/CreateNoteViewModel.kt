@@ -27,8 +27,8 @@ class CreateNoteViewModel @Inject constructor(
     private val dispatcher: AppDispatcherProvider
 ) : ViewModel(), CreateNoteContract {
 
-    val noteId : Int? = savedStateHandle[NotesRoutes.ARG_NOTES_ID]
-    val isOpenRecording = savedStateHandle[NotesRoutes.ARG_OPEN_RECORDING] ?: false   // todo add support
+    private val noteId : Int? = savedStateHandle[NotesRoutes.ARG_NOTES_ID]
+    private val isOpenRecording = savedStateHandle[NotesRoutes.ARG_OPEN_RECORDING] ?: false
 
     private val _state = MutableStateFlow(CreateNoteContract.State.initialState())
     override val state = _state.asStateFlow()
@@ -40,9 +40,9 @@ class CreateNoteViewModel @Inject constructor(
         viewModelScope.launch {
             when (event) {
                 CreateNoteContract.Event.ClickBack -> _sideEffect.emit(CreateNoteContract.SideEffect.ClickBack)
-                CreateNoteContract.Event.ClickRecordNotes -> _sideEffect.emit(CreateNoteContract.SideEffect.ClickRecordNotes)
+                CreateNoteContract.Event.ClickRecordNotes -> _sideEffect.emit(CreateNoteContract.SideEffect.StartRecordNotes)
                 CreateNoteContract.Event.ClickUndo -> clickUndo()
-                is CreateNoteContract.Event.FetchNote -> fetchNote(event.noteId)
+                is CreateNoteContract.Event.FetchNote -> fetchNote(noteId = noteId)
                 CreateNoteContract.Event.SaveNote -> insertNote()
                 is CreateNoteContract.Event.OnType -> onType(event.msg)
                 is CreateNoteContract.Event.AddMessage -> addMsg(event.msg)
@@ -104,6 +104,8 @@ class CreateNoteViewModel @Inject constructor(
             }
         }
         delay(50)
-        _sideEffect.emit(CreateNoteContract.SideEffect.NoteRendered)
+        if (isOpenRecording){
+            _sideEffect.emit(CreateNoteContract.SideEffect.StartRecordNotes)
+        }
     }
 }
