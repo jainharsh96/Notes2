@@ -1,4 +1,4 @@
-package com.example.harsh.Notes.NoteUtils
+package com.harsh.notes.utils
 
 import android.Manifest
 import android.content.ContentResolver
@@ -10,7 +10,6 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import com.harsh.notes.db.Note
-import com.harsh.notes.utils.NOTE_DATE_FORMAT
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SQLiteDatabaseHook
 import java.io.File

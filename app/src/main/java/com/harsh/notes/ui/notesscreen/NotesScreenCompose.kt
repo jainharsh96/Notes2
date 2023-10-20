@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.harsh.Notes.NoteUtils.formated
+import com.harsh.notes.utils.formated
 import com.harsh.notes.R
 import com.harsh.notes.db.Note
 import com.harsh.notes.ui.NavigationAction
