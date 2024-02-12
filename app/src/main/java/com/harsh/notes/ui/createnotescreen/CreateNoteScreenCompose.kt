@@ -37,27 +37,31 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.harsh.notes.R
 import com.harsh.notes.ui.NavigationAction
+import com.harsh.notes.ui.notesscreen.NotesContract
+import com.harsh.notes.utils.MultiDevicePreview
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
 fun CreateNoteScreen(
-    viewModel: CreateNoteViewModel = hiltViewModel(),
+    state: CreateNoteContract.State,
+    effect: SharedFlow<CreateNoteContract.SideEffect>,
+    event: (CreateNoteContract.Event) -> Unit,
     onAction: (NavigationAction) -> Unit
 ) {
-    val state by viewModel.state.collectAsState()
-    val effect = viewModel.sideEffect
     val context = LocalContext.current
     val startForResult =
         rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.let { text ->
-                    viewModel.event(CreateNoteContract.Event.AddMessage(text.joinToString("\n")))
+                    event(CreateNoteContract.Event.AddMessage(text.joinToString("\n")))
                 }
             }
         }
     LaunchedEffect(key1 = Unit) {
-        viewModel.event(CreateNoteContract.Event.FetchNote)
+        event(CreateNoteContract.Event.FetchNote)
     }
     LaunchedEffect(key1 = Unit) {
         effect.collectLatest { sideEffect ->
@@ -73,6 +77,7 @@ fun CreateNoteScreen(
                             .show()
                     }
                 }
+
                 CreateNoteContract.SideEffect.SavedNote -> onAction.invoke(NavigationAction.Back)
                 is CreateNoteContract.SideEffect.ShowError -> Toast.makeText(
                     context,
@@ -89,11 +94,9 @@ fun CreateNoteScreen(
     ) {
         CreateNoteHeader(
             hasNote = state.hasNote(),
-            event = remember(viewModel) {
-                viewModel::event
-            }
+            event = event
         )
-        NoteInfo(state = state, event = remember(key1 = viewModel) { viewModel::event })
+        NoteInfo(state = state, event = event)
     }
 }
 
@@ -216,8 +219,13 @@ fun SetHint(hint: String, showHint: Boolean) {
     }
 }
 
-@Preview
+@MultiDevicePreview
 @Composable
 fun TestCompose1() {
-    CreateNoteHeader(hasNote = false, event = {})
+    val mockState = CreateNoteContract.State.initialState()
+    CreateNoteScreen(
+        state = mockState,
+        effect = MutableSharedFlow(),
+        event = {},
+        onAction = {})
 }

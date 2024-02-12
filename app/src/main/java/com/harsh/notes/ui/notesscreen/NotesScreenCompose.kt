@@ -33,15 +33,22 @@ import com.harsh.notes.utils.formated
 import com.harsh.notes.R
 import com.harsh.notes.db.Note
 import com.harsh.notes.ui.NavigationAction
+import com.harsh.notes.ui.createnotescreen.CreateNoteContract
+import com.harsh.notes.utils.MultiDevicePreview
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import java.util.*
 
 @Composable
-fun NotesScreen(viewModel: NotesViewModel = hiltViewModel(), onAction: (NavigationAction) -> Unit) {
-    val state by viewModel.state.collectAsState()
-    val effect = viewModel.sideEffect
+fun NotesScreen(
+    state: NotesContract.State,
+    effect: SharedFlow<NotesContract.SideEffect>,
+    onAction: (NavigationAction) -> Unit,
+    event: (NotesContract.Event) -> Unit
+) {
     LaunchedEffect(key1 = Unit) {
-        viewModel.event(NotesContract.Event.FetchNotes(if (viewModel.isDraftScreen) Note.DRAFTED else Note.SAVED))
+        event(NotesContract.Event.FetchNotes)
     }
     LaunchedEffect(key1 = Unit) {
         effect.collectLatest { sideEffect ->
@@ -77,12 +84,9 @@ fun NotesScreen(viewModel: NotesViewModel = hiltViewModel(), onAction: (Navigati
     ) {
         NotesContent(
             noteState = state,
-            isDraftScreen = viewModel.isDraftScreen,
-            event = remember(viewModel) {
-                viewModel::event
-            }
+            event = event
         )
-        if (viewModel.isDraftScreen.not()) {
+        if (state.isDraftState.not()) {
             Column(
                 modifier = Modifier
                     .padding(20.dp)
@@ -92,7 +96,7 @@ fun NotesScreen(viewModel: NotesViewModel = hiltViewModel(), onAction: (Navigati
                     backgroundColor = colorResource(id = R.color.colorPrimaryDark),
                     onClick = remember {
                         {
-                            viewModel.event(NotesContract.Event.RecordNotes)
+                            event(NotesContract.Event.RecordNotes)
                         }
                     }
                 ) {
@@ -104,7 +108,7 @@ fun NotesScreen(viewModel: NotesViewModel = hiltViewModel(), onAction: (Navigati
                 Spacer(modifier = Modifier.padding(8.dp))
                 FloatingActionButton(
                     backgroundColor = colorResource(id = R.color.colorPrimaryDark),
-                    onClick = remember {{ viewModel.event(NotesContract.Event.AddNotes) }}) {
+                    onClick = remember { { event(NotesContract.Event.AddNotes) } }) {
                     Image(
                         painter = painterResource(id = R.drawable.add_notes),
                         contentDescription = ""
@@ -118,62 +122,59 @@ fun NotesScreen(viewModel: NotesViewModel = hiltViewModel(), onAction: (Navigati
 @Composable
 fun NotesContent(
     noteState: NotesContract.State,
-    isDraftScreen: Boolean,
     event: (NotesContract.Event) -> Unit
 ) {
+    val isDraftScreen = noteState.isDraftState
     Column(modifier = Modifier.fillMaxSize()) {
         NotesHeader(
             if (isDraftScreen) "Drafted Note" else "Notes",
             isDraftScreen,
             event
         )
-        when (noteState) {
-            is NotesContract.State.NoData -> NoDataView()
-            is NotesContract.State.Notes -> {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    NotesList(
-                        isDraftScreen = isDraftScreen,
-                        notes = noteState.notes,
-                        event = event
-                    )
-                    if (noteState.confirmToDeleteNoteId != null) {
-                        AlertDialog(
-                            onDismissRequest = {
-                                event.invoke(NotesContract.Event.DismissConfirmToDeleteNote)
-                            },
-                            title = {
-                                Text(
-                                    text = "Are you sure, you want to delete this note ?",
-                                    style = TextStyle(fontSize = 18.sp)
-                                )
-                            },
-                            buttons = {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(all = 8.dp),
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    Button(
-                                        modifier = Modifier.width(100.dp),
-                                        onClick = {
-                                            event.invoke(
-                                                NotesContract.Event.DeleteNote(
-                                                    noteState.confirmToDeleteNoteId
-                                                )
+        if (noteState.notes.isNullOrEmpty()) {
+            NoDataView()
+        } else {
+            Box(modifier = Modifier.fillMaxSize()) {
+                NotesList(
+                    isDraftScreen = isDraftScreen,
+                    notes = noteState.notes,
+                    event = event
+                )
+                if (noteState.confirmToDeleteNoteId != null) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            event.invoke(NotesContract.Event.DismissConfirmToDeleteNote)
+                        },
+                        title = {
+                            Text(
+                                text = "Are you sure, you want to delete this note ?",
+                                style = TextStyle(fontSize = 18.sp)
+                            )
+                        },
+                        buttons = {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(all = 8.dp),
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Button(
+                                    modifier = Modifier.width(100.dp),
+                                    onClick = {
+                                        event.invoke(
+                                            NotesContract.Event.DeleteNote(
+                                                noteState.confirmToDeleteNoteId
                                             )
-                                        }
-                                    ) {
-                                        Text("Yes", style = TextStyle(fontSize = 20.sp))
+                                        )
                                     }
+                                ) {
+                                    Text("Yes", style = TextStyle(fontSize = 20.sp))
                                 }
                             }
-                        )
-                    }
+                        }
+                    )
                 }
             }
-
-            else -> Unit
         }
     }
 }
@@ -360,7 +361,20 @@ fun NoteHolder(note: Note, event: (NotesContract.Event) -> Unit) {
     }
 }
 
+@MultiDevicePreview
 @Composable
 fun TestCompose() {
-    NoteHolder(Note(body = "harsh notes", updatedDate = Date(System.currentTimeMillis())), {})
+    val fakeNotes = listOf(
+        Note(id = 1, body = "hellow 1", updatedDate = Date()),
+        Note(id = 2, body = "hellow 2", updatedDate = Date()),
+        Note(id = 3, body = "hellow 3", updatedDate = Date()),
+        Note(id = 4, body = "hellow 4", updatedDate = Date()),
+        Note(id = 5, body = "hellow 5", updatedDate = Date())
+    )
+    val mockState = NotesContract.State(isDraftState = false, notes = fakeNotes)
+    NotesScreen(
+        state = mockState,
+        effect = MutableSharedFlow(),
+        event = {},
+        onAction = {})
 }

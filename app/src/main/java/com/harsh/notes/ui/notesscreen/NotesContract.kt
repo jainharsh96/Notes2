@@ -7,10 +7,15 @@ import com.harsh.notes.db.Note
 interface NotesContract :
     UniDirectionalViewModel<NotesContract.State, NotesContract.Event, NotesContract.SideEffect> {
 
-    sealed class State {
-        object NoData : State()
-        @Immutable
-        data class Notes(val notes: List<Note>, val confirmToDeleteNoteId: Int? = null) : State()
+    data class State(
+        val isDraftState: Boolean,
+        val notes: List<Note>?,
+        val confirmToDeleteNoteId: Int? = null
+    ) {
+        companion object {
+            fun initialState(isDraftState: Boolean) =
+                State(isDraftState = isDraftState, notes = null)
+        }
     }
 
     sealed class Event {
@@ -21,7 +26,7 @@ interface NotesContract :
         object DismissConfirmToDeleteNote : Event()
         object IsDraftScreen : Event()
         data class OpenNote(val noteId: Int) : Event()
-        data class FetchNotes(val state: Int) : Event()
+        object FetchNotes : Event()
         data class InsertNote(val note: Note) : Event()
         data class ConfirmDeleteNote(val noteId: Int) : Event()
         data class DeleteNote(val noteId: Int) : Event()

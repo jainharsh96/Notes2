@@ -27,9 +27,9 @@ class NotesViewModel @Inject constructor(
     private val dispatcher: AppDispatcherProvider
 ) : ViewModel(), NotesContract {
 
-    val isDraftScreen = savedStateHandle[ARG_IS_DRAFT_SCREEN] ?: false   // move this in state also
+    private val isDraftScreen = savedStateHandle[ARG_IS_DRAFT_SCREEN] ?: false
 
-    private val _state = MutableStateFlow<NotesContract.State>(NotesContract.State.NoData)
+    private val _state = MutableStateFlow(NotesContract.State.initialState(isDraftScreen))
     override val state: StateFlow<NotesContract.State> = _state.asStateFlow()
 
     private val _sideEffect = MutableSharedFlow<NotesContract.SideEffect>()
@@ -38,7 +38,7 @@ class NotesViewModel @Inject constructor(
     override fun event(event: NotesContract.Event) {
         viewModelScope.launch {
             when (event) {
-                is NotesContract.Event.FetchNotes -> fetchNotes(event.state)
+                is NotesContract.Event.FetchNotes -> fetchNotes(if (isDraftScreen) Note.DRAFTED else Note.SAVED)
                 is NotesContract.Event.ConfirmDeleteNote -> confirmDeleteNote(event.noteId)
                 is NotesContract.Event.DismissConfirmToDeleteNote -> confirmDeleteNote(null)
                 is NotesContract.Event.DeleteNote -> deleteNote(event.noteId)
@@ -60,9 +60,7 @@ class NotesViewModel @Inject constructor(
 
     private fun confirmDeleteNote(noteId: Int?) {
         _state.update {
-            if (it is NotesContract.State.Notes) {
-                it.copy(confirmToDeleteNoteId = noteId)
-            } else it
+            it.copy(confirmToDeleteNoteId = noteId)
         }
     }
 
@@ -86,11 +84,7 @@ class NotesViewModel @Inject constructor(
     private suspend fun fetchNotes(state: Int) = withContext(dispatcher.IO) {
         notesRepository.fetchAllNotes(state).catch { emptyList<Note>() }.collect { notes ->
             _state.update {
-                if (notes.isEmpty()) {
-                    NotesContract.State.NoData
-                } else {
-                    NotesContract.State.Notes(notes)
-                }
+                it.copy(notes = notes)
             }
         }
     }
