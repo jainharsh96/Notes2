@@ -1,0 +1,9 @@
+com.notes.shared-pngs-0 /Users/harsh.jain/Desktop/Notes2/shared/build/generated/res/pngs/release
+com.notes.shared-resValues-1 /Users/harsh.jain/Desktop/Notes2/shared/build/generated/res/resValues/release
+com.notes.shared-mergeReleaseResources-2 /Users/harsh.jain/Desktop/Notes2/shared/build/intermediates/incremental/release/mergeReleaseResources/merged.dir
+com.notes.shared-mergeReleaseResources-3 /Users/harsh.jain/Desktop/Notes2/shared/build/intermediates/incremental/release/mergeReleaseResources/stripped.dir
+com.notes.shared-merged_res-4 /Users/harsh.jain/Desktop/Notes2/shared/build/intermediates/merged_res/release
+com.notes.shared-androidMain-5 /Users/harsh.jain/Desktop/Notes2/shared/src/androidMain/res
+com.notes.shared-androidRelease-6 /Users/harsh.jain/Desktop/Notes2/shared/src/androidRelease/res
+com.notes.shared-main-7 /Users/harsh.jain/Desktop/Notes2/shared/src/main/res
+com.notes.shared-release-8 /Users/harsh.jain/Desktop/Notes2/shared/src/release/res
