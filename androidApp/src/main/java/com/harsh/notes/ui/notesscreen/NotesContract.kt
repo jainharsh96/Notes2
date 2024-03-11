@@ -1,7 +1,7 @@
 package com.harsh.notes.ui.notesscreen
 
 import androidx.compose.runtime.Immutable
-import com.harsh.notes.coreUi.UniDirectionalViewModel
+import com.notes.shared.coreUi.UniDirectionalViewModel
 import com.harsh.notes.db.Note
 
 interface NotesContract :

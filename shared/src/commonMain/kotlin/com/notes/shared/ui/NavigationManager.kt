@@ -1,9 +1,4 @@
-package com.harsh.notes.ui
-
-import com.harsh.notes.ui.settingscreen.SettingContract
-import kotlinx.coroutines.flow.MutableStateFlow
-import javax.inject.Inject
-import javax.inject.Singleton
+package com.notes.shared.ui
 
 //@Singleton
 //class NavigationManager @Inject constructor() {

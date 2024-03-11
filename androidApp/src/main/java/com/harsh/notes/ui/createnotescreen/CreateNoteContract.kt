@@ -1,16 +1,18 @@
 package com.harsh.notes.ui.createnotescreen
 
 import androidx.compose.runtime.Immutable
-import com.harsh.notes.coreUi.UniDirectionalViewModel
+import com.notes.shared.coreUi.UniDirectionalViewModel
 import com.harsh.notes.db.Note
 
-interface CreateNoteContract : UniDirectionalViewModel<CreateNoteContract.State, CreateNoteContract.Event, CreateNoteContract.SideEffect> {
+interface CreateNoteContract :
+    UniDirectionalViewModel<CreateNoteContract.State, CreateNoteContract.Event, CreateNoteContract.SideEffect> {
 
     @Immutable
-    data class State(val originalNote : Note? = null, val enteredMsg : String = ""){
+    data class State(val originalNote: Note? = null, val enteredMsg: String = "") {
 
         fun hasNote() = originalNote?.body?.isNotEmpty() ?: false
-        companion object{
+
+        companion object {
             fun initialState() = State()
         }
     }

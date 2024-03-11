@@ -13,7 +13,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.harsh.notes.utils.REQUEST_CODE_APP_PERMISSION
+import com.notes.shared.utils.REQUEST_CODE_APP_PERMISSION
 import com.harsh.notes.utils.getNotesAllPermissions
 
 

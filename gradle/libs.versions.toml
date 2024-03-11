@@ -1,14 +1,32 @@
 [versions]
 
+activityCompose = "1.7.2"
+androidDatabaseSqlcipher = "4.5.4"
+androidx-junit = "1.1.5"
+androidx-material = "1.5.1"
+biometric = "1.1.0"
+compiler = "1.5.3"
 coreKtx = "1.12.0"
+espressoCore = "3.5.1"
+foundation = "1.5.1"
+fragmentKtx = "1.6.1"
 hiltAndroidGradlePlugin = "2.50"
 gradle = "7.2.0"
+hiltNavigationCompose = "1.0.0"
+junit = "4.13.2"
 kotlin = "1.9.21"
 compose = "1.5.11"
 agp = "8.2.2"
 androidx-appcompat = "1.6.1"
-androidx-activityCompose = "1.8.1"
-compose-uitooling = "1.5.4"
+kotlinxCoroutinesTest = "1.7.1"
+lifecycleViewmodelCompose = "2.7.0"
+material = "1.11.0"
+mockitoCore = "4.8.1"
+navigationCompose = "2.7.2"
+roomRuntime = "2.5.2"
+runtime = "1.5.1"
+sqliteKtx = "2.4.0"
+turbine = "0.12.1"
 voyager = "1.0.0"
 composeImageLoader = "1.7.1"
 napier = "2.7.0"
@@ -27,12 +45,43 @@ ksp = "1.9.21-1.0.16"
 
 [libraries]
 
+android-database-sqlcipher = { module = "net.zetetic:android-database-sqlcipher", version.ref = "androidDatabaseSqlcipher" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
+androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityCompose" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
-androidx-activityCompose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
+androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
+androidx-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compiler" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
-compose-uitooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "compose-uitooling" }
+androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
+androidx-foundation = { module = "androidx.compose.foundation:foundation", version.ref = "foundation" }
+androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+androidx-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-junit" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
+androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelCompose" }
+androidx-material = { module = "androidx.compose.material:material", version.ref = "androidx-material" }
+androidx-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "androidx-material" }
+androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "androidx-material" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+androidx-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "runtime" }
+androidx-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "runtime" }
+androidx-runtime-rxjava2 = { module = "androidx.compose.runtime:runtime-rxjava2", version.ref = "runtime" }
+androidx-sqlite-ktx = { module = "androidx.sqlite:sqlite-ktx", version.ref = "sqliteKtx" }
+androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "runtime" }
+androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "runtime" }
+androidx-ui-tooling-v151 = { module = "androidx.compose.ui:ui-tooling", version.ref = "runtime" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "hiltAndroidGradlePlugin" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidGradlePlugin" }
 hilt-android-gradle-plugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hiltAndroidGradlePlugin" }
-gradle = { module = "com.android.tools.build:gradle", version.ref = "gradle" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltAndroidGradlePlugin" }
+junit = { module = "junit:junit", version.ref = "junit" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
+turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 voyager-navigator = { module = "cafe.adriel.voyager:voyager-navigator", version.ref = "voyager" }
 composeImageLoader = { module = "io.github.qdsfdhvh:image-loader", version.ref = "composeImageLoader" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }

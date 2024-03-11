@@ -15,8 +15,6 @@ import androidx.compose.material.icons.filled.Drafts
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,14 +26,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.harsh.notes.utils.formated
 import com.harsh.notes.R
 import com.harsh.notes.db.Note
-import com.harsh.notes.ui.NavigationAction
-import com.harsh.notes.ui.createnotescreen.CreateNoteContract
+import com.notes.shared.ui.NavigationAction
 import com.harsh.notes.utils.MultiDevicePreview
-import com.notes.shared.Greeting
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -128,7 +123,7 @@ fun NotesContent(
     val isDraftScreen = noteState.isDraftState
     Column(modifier = Modifier.fillMaxSize()) {
         NotesHeader(
-            if (isDraftScreen) "Drafted Note" else "Notes " + Greeting().greet(),
+            if (isDraftScreen) "Drafted Note" else "Notes ",
             isDraftScreen,
             event
         )

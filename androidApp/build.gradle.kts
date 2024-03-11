@@ -76,67 +76,67 @@ android {
 dependencies {
     implementation(projects.shared)
     implementation(libs.androidx.core.ktx)
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0")
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
 
     // testing
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
 
     // hilt
-    implementation("com.google.dagger:hilt-android:2.50")
-    ksp("com.google.dagger:dagger-compiler:2.50")
-    ksp("com.google.dagger:hilt-compiler:2.50")
+    implementation(libs.hilt.android)
+    ksp(libs.dagger.compiler)
+    ksp(libs.hilt.compiler)
 
     // compose
     val compose_version = "1.5.3"
-    implementation("androidx.compose.compiler:compiler:$compose_version")
-    implementation("androidx.compose.runtime:runtime:1.5.1")
-    implementation("androidx.compose.ui:ui:1.5.1")
+    implementation(libs.androidx.compiler)
+    implementation(libs.androidx.runtime)
+    implementation(libs.androidx.ui)
     // Tooling support (Previews, etc.)
-    implementation("androidx.compose.ui:ui-tooling:1.5.1")
+    implementation(libs.androidx.ui.tooling.v151)
     // Foundation (Border, Background, Box, Image, Scroll, shapes, animations, etc.)
-    implementation("androidx.compose.foundation:foundation:1.5.1")
+    implementation(libs.androidx.foundation)
     // Material Design
-    implementation("androidx.compose.material:material:1.5.1")
+    implementation(libs.androidx.material)
     // Material design icons
-    implementation("androidx.compose.material:material-icons-core:1.5.1")
-    implementation("androidx.compose.material:material-icons-extended:1.5.1")
+    implementation(libs.androidx.material.icons.core)
+    implementation(libs.androidx.material.icons.extended)
     // Integration with activities
-    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation(libs.androidx.activity.compose)
     // Integration with ViewModels
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0-alpha02")
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     // Integration with observables
-    implementation("androidx.compose.runtime:runtime-livedata:1.5.1")
-    implementation("androidx.compose.runtime:runtime-rxjava2:1.5.1")
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.runtime.rxjava2)
 
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.fragment:fragment-ktx:1.6.1")
-    implementation("androidx.activity:activity-ktx:1.7.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0-alpha02")
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.fragment.ktx)
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
     // compose navigation
-    implementation("androidx.navigation:navigation-compose:2.7.2")
-    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     // room
     val room_version = "2.5.2"
-    implementation("androidx.room:room-runtime:$room_version")
-    implementation("androidx.room:room-ktx:$room_version")
-    ksp("androidx.room:room-compiler:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+    annotationProcessor(libs.androidx.room.compiler)
 
     //sqlcipher
-    implementation("androidx.sqlite:sqlite-ktx:2.3.1")
-    implementation("net.zetetic:android-database-sqlcipher:4.5.4@aar")
+    implementation(libs.androidx.sqlite.ktx)
+    implementation(libs.android.database.sqlcipher)
 
     //biometric
-    implementation("androidx.biometric:biometric:1.1.0")
+    implementation(libs.androidx.biometric)
 
     // UI Tests
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.5.1")
-    testImplementation("org.mockito:mockito-core:4.8.1")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1")
-    testImplementation("app.cash.turbine:turbine:0.12.1")
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
 }
