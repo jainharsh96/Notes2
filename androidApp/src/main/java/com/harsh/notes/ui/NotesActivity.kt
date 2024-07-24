@@ -62,6 +62,9 @@ class NotesActivity : BaseActivity() {
                     )
                 )
                 NavigationAction.RestoreData -> restoreData()
+                NavigationAction.RecordNotes -> {
+                    // TODO IMPLEMENT THIS
+                }
             }
         }
     }

@@ -7,6 +7,9 @@ import com.harsh.notes.AppDispatcherProvider
 import com.harsh.notes.db.Note
 import com.harsh.notes.repository.NotesRepository
 import com.harsh.notes.ui.NotesRoutes.ARG_IS_DRAFT_SCREEN
+import com.harsh.notes.ui.createnotescreen.toNote
+import com.harsh.notes.ui.createnotescreen.toNoteEntity
+import com.notes.shared.ui.notesscreen.NotesContract
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -44,7 +47,7 @@ class NotesViewModel @Inject constructor(
                 is NotesContract.Event.DeleteNote -> deleteNote(event.noteId)
                 is NotesContract.Event.DraftNote -> draftNote(event.noteId)
                 is NotesContract.Event.RestoreNote -> restoreNote(event.noteId)
-                is NotesContract.Event.InsertNote -> insertNote(event.note)
+                is NotesContract.Event.InsertNote -> insertNote(event.note.toNote())
                 is NotesContract.Event.ClickBack -> _sideEffect.emit(NotesContract.SideEffect.ClickBack)
                 is NotesContract.Event.OpenNote -> if (isDraftScreen.not()) _sideEffect.emit(
                     NotesContract.SideEffect.OpenNote(event.noteId)
@@ -84,7 +87,7 @@ class NotesViewModel @Inject constructor(
     private suspend fun fetchNotes(state: Int) = withContext(dispatcher.IO) {
         notesRepository.fetchAllNotes(state).catch { emptyList<Note>() }.collect { notes ->
             _state.update {
-                it.copy(notes = notes)
+                it.copy(notes = notes.map { it.toNoteEntity() })
             }
         }
     }

@@ -4,9 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.harsh.notes.AppDispatcherProvider
+import com.harsh.notes.db.DateConverter
 import com.harsh.notes.db.Note
 import com.harsh.notes.repository.NotesRepository
 import com.harsh.notes.ui.NotesRoutes
+import com.notes.shared.ui.createnotescreen.CreateNoteContract
+import com.notes.shared.ui.uientity.NoteEntity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -79,11 +82,11 @@ class CreateNoteViewModel @Inject constructor(
     private suspend fun insertNote() = withContext(dispatcher.IO) {
         with(_state.value) {
             if (enteredMsg.isNotEmpty()) {
-                val note = originalNote?.copy(body = enteredMsg, updatedDate = Date()) ?: Note(
-                    body = enteredMsg, createdDate = Date(),
-                    updatedDate = Date()
+                val note = originalNote?.copy(body = enteredMsg, updatedDate = DateConverter.toTimestamp(Date())) ?: NoteEntity(
+                    body = enteredMsg, createdDate = DateConverter.toTimestamp(Date()),
+                    updatedDate = DateConverter.toTimestamp(Date())
                 )
-                val isSaved = notesRepository.updateOrInsertNote(note)
+                val isSaved = notesRepository.updateOrInsertNote(note.toNote())
                 if (isSaved > 0) {
                     _sideEffect.emit(CreateNoteContract.SideEffect.SavedNote)
                 } else {
@@ -96,7 +99,7 @@ class CreateNoteViewModel @Inject constructor(
     private suspend fun fetchNote(noteId: Int?) = withContext(dispatcher.IO) {
         noteId?.let {
             _state.update {
-                val originalNote = notesRepository.fetchNote(noteId = noteId)
+                val originalNote = notesRepository.fetchNote(noteId = noteId)?.toNoteEntity()
                 it.copy(
                     originalNote = originalNote,
                     enteredMsg = originalNote?.body ?: ""
@@ -109,3 +112,11 @@ class CreateNoteViewModel @Inject constructor(
         }
     }
 }
+
+fun Note.toNoteEntity() = NoteEntity(
+    id = this.id, body = this.body, createdDate = DateConverter.toTimestamp(this.createdDate), updatedDate = DateConverter.toTimestamp(this.updatedDate), state = this.state
+)
+
+fun NoteEntity.toNote() = Note(
+    id = this.id, body = this.body, createdDate = DateConverter.toDate(this.createdDate), updatedDate = DateConverter.toDate(this.updatedDate), state = this.state
+)

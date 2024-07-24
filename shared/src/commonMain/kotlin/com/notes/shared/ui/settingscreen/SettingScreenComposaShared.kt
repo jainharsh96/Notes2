@@ -1,32 +1,32 @@
-package com.harsh.notes.ui.settingscreen
+package com.notes.shared.ui.settingscreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.harsh.notes.R
+import com.notes.shared.getColor
+import com.notes.shared.getPainter
 import com.notes.shared.ui.NavigationAction
 
 
 @Composable
-fun SettingScreen(onAction: (NavigationAction) -> Unit) {
+fun SettingScreenShared(onAction: (NavigationAction) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = colorResource(id = R.color.white))
+            .background(color = getColor("white"))
     ) {
         SettingScreenHeader {
             onAction.invoke(NavigationAction.Back)
@@ -52,7 +52,7 @@ fun RestoreDataCard(restoreData: () -> Unit, onClickBack: () -> Unit) {
             .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
             .clickable(onClick = restoreData),
         shape = RoundedCornerShape(8.dp),
-        elevation = 2.dp
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -61,7 +61,7 @@ fun RestoreDataCard(restoreData: () -> Unit, onClickBack: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_restore),
+                painter = getPainter("ic_restore"),
                 contentDescription = "",
                 modifier = Modifier
                     .padding(end = 16.dp)
@@ -70,7 +70,7 @@ fun RestoreDataCard(restoreData: () -> Unit, onClickBack: () -> Unit) {
             )
             Text(
                 text = "Restore Data",
-                color = colorResource(id = R.color.colorUpdate),
+                color = getColor("colorUpdate"),
                 style = TextStyle(fontSize = 16.sp),
                 fontWeight = FontWeight.Bold
             )
@@ -86,7 +86,7 @@ fun DraftNoteCard(openDraftNote: () -> Unit, onClickBack: () -> Unit) {
             .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
             .clickable { openDraftNote.invoke() },
         shape = RoundedCornerShape(8.dp),
-        elevation = 2.dp
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
@@ -95,7 +95,7 @@ fun DraftNoteCard(openDraftNote: () -> Unit, onClickBack: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_restore),
+                painter = getPainter("ic_restore"),
                 contentDescription = "",
                 modifier = Modifier
                     .padding(end = 16.dp)
@@ -104,7 +104,7 @@ fun DraftNoteCard(openDraftNote: () -> Unit, onClickBack: () -> Unit) {
             )
             Text(
                 text = "Drafted Notes",
-                color = colorResource(id = R.color.colorUpdate),
+                color = getColor("colorUpdate"),
                 style = TextStyle(fontSize = 16.sp),
                 fontWeight = FontWeight.Bold
             )
@@ -120,7 +120,7 @@ fun SettingScreenHeader(onClickBack: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = painterResource(id = R.drawable.ic_arrow_back_black_24dp),
+            painter = getPainter("ic_arrow_back_black_24dp"),
             contentDescription = "",
             modifier = Modifier
                 .width(24.dp)
@@ -132,9 +132,7 @@ fun SettingScreenHeader(onClickBack: () -> Unit) {
             text = "Setting",
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
-            color = colorResource(
-                id = R.color.colorPrimaryDark
-            ),
+            color = getColor("colorPrimaryDark"),
             style = TextStyle(fontSize = 24.sp),
             fontWeight = FontWeight.Bold
         )

@@ -1,4 +1,4 @@
-package com.harsh.notes.ui.settingscreen
+package com.notes.shared.ui.settingscreen
 
 interface SettingContract {
     sealed class Effect {

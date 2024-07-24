@@ -9,12 +9,12 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.harsh.notes.ui.createnotescreen.CreateNoteScreen
 import com.harsh.notes.ui.createnotescreen.CreateNoteViewModel
-import com.harsh.notes.ui.notesscreen.NotesScreen
 import com.harsh.notes.ui.notesscreen.NotesViewModel
-import com.harsh.notes.ui.settingscreen.SettingScreen
 import com.notes.shared.ui.NavigationAction
+import com.notes.shared.ui.createnotescreen.CreateNoteScreenShared
+import com.notes.shared.ui.notesscreen.NotesScreenShared
+import com.notes.shared.ui.settingscreen.SettingScreenShared
 
 
 @Composable
@@ -34,7 +34,7 @@ fun NotesNavigationGraph(
             val event = remember(viewModel) {
                 return@remember viewModel::event
             }
-            NotesScreen(
+            NotesScreenShared(
                 state = state,
                 effect = viewModel.sideEffect,
                 onAction = onAction,
@@ -50,7 +50,7 @@ fun NotesNavigationGraph(
             val event = remember(viewModel) {
                 return@remember viewModel::event
             }
-            CreateNoteScreen(
+            CreateNoteScreenShared(
                 state = state,
                 effect = viewModel.sideEffect,
                 onAction = onAction,
@@ -61,7 +61,7 @@ fun NotesNavigationGraph(
             route = NotesNavigation.NotesSettingScreen.destination,
             arguments = NotesNavigation.NotesSettingScreen.arguments
         ) {
-            SettingScreen(onAction = onAction)
+            SettingScreenShared(onAction = onAction)
         }
     }
 }

@@ -1,15 +1,14 @@
-package com.harsh.notes.ui.notesscreen
+package com.notes.shared.ui.notesscreen
 
-import androidx.compose.runtime.Immutable
 import com.notes.shared.coreUi.UniDirectionalViewModel
-import com.harsh.notes.db.Note
+import com.notes.shared.ui.uientity.NoteEntity
 
 interface NotesContract :
     UniDirectionalViewModel<NotesContract.State, NotesContract.Event, NotesContract.SideEffect> {
 
     data class State(
         val isDraftState: Boolean,
-        val notes: List<Note>?,
+        val notes: List<NoteEntity>?,
         val confirmToDeleteNoteId: Int? = null
     ) {
         companion object {
@@ -27,7 +26,7 @@ interface NotesContract :
         object IsDraftScreen : Event()
         data class OpenNote(val noteId: Int) : Event()
         object FetchNotes : Event()
-        data class InsertNote(val note: Note) : Event()
+        data class InsertNote(val note: NoteEntity) : Event()
         data class ConfirmDeleteNote(val noteId: Int) : Event()
         data class DeleteNote(val noteId: Int) : Event()
         data class DraftNote(val noteId: Int) : Event()
