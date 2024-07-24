@@ -3,18 +3,22 @@ package com.harsh.notes.repository
 import com.harsh.notes.db.NotesDao
 import com.harsh.notes.db.DeletedNote
 import com.harsh.notes.db.Note
+import com.harsh.notes.db.toNote
+import com.harsh.notes.db.toNoteEntity
+import com.notes.shared.ui.uientity.NoteEntity
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 interface NotesRepository {
-    fun fetchAllNotes(state: Int): Flow<List<Note>>
-    suspend fun fetchNote(noteId: Int): Note?
-    suspend fun insertNote(note: Note): Long
-    suspend fun insertNotes(notes: List<Note>): List<Long>?
-    suspend fun updateOrInsertNote(note: Note): Int
+    fun fetchAllNotes(state: Int): Flow<List<NoteEntity>>
+    suspend fun fetchNote(noteId: Int): NoteEntity?
+    suspend fun insertNote(note: NoteEntity): Long
+    suspend fun insertNotes(notes: List<NoteEntity>): List<Long>?
+    suspend fun updateOrInsertNote(note: NoteEntity): Int
     suspend fun deleteNote(noteId: Int): Int
-    suspend fun draftNote(note: Note): Int
+    suspend fun draftNote(note: NoteEntity): Int
     suspend fun changeNoteState(noteId: Int, state: Int): Int
 
     // for testing
@@ -25,22 +29,22 @@ interface NotesRepository {
 class NotesRepositoryImpl @Inject constructor(private val notesDao: NotesDao) : NotesRepository {
 
     override
-    fun fetchAllNotes(state: Int) = notesDao.fetchAllNotes(state)
+    fun fetchAllNotes(state: Int) = notesDao.fetchAllNotes(state).map { it.map { it.toNoteEntity() } }
 
     override
-    suspend fun fetchNote(noteId: Int) = notesDao.findNoteById(noteId)
+    suspend fun fetchNote(noteId: Int) = notesDao.findNoteById(noteId)?.toNoteEntity()
 
     override
-    suspend fun insertNote(note: Note) = notesDao.insertNote(note)
+    suspend fun insertNote(note: NoteEntity) = notesDao.insertNote(note.toNote())
 
     override
-    suspend fun insertNotes(notes: List<Note>) = notesDao.insertNotes(notes)
+    suspend fun insertNotes(notes: List<NoteEntity>) = notesDao.insertNotes(notes.map { it.toNote() })
 
     override
-    suspend fun updateOrInsertNote(note: Note): Int {
-        val flag = notesDao.updateNote(note)
+    suspend fun updateOrInsertNote(note: NoteEntity): Int {
+        val flag = notesDao.updateNote(note.toNote())
         if (flag <= 0) {
-            return notesDao.insertNote(note).toInt()
+            return notesDao.insertNote(note.toNote()).toInt()
         } else {
             return flag
         }
@@ -49,14 +53,14 @@ class NotesRepositoryImpl @Inject constructor(private val notesDao: NotesDao) : 
     override
     suspend fun deleteNote(noteId: Int): Int {
         // for testing
-        val deletingNote = fetchNote(noteId = noteId)
+        val deletingNote = fetchNote(noteId = noteId)?.toNote()
         deletingNote?.let {
             notesDao.insertDeletedNote(DeletedNote.cloneNote(it))
         }
         return notesDao.deleteNote(noteId)
     }
 
-    override suspend fun draftNote(note: Note): Int {
+    override suspend fun draftNote(note: NoteEntity): Int {
         return updateOrInsertNote(note)
     }
 

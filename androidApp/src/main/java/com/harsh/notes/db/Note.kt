@@ -6,6 +6,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
+import com.notes.shared.ui.uientity.NoteEntity
 import java.util.*
 
 @Immutable
@@ -50,3 +51,11 @@ data class Note(
         return secondLine
     }
 }
+
+fun Note.toNoteEntity() = NoteEntity(
+    id = this.id, body = this.body, createdDate = DateConverter.toTimestamp(this.createdDate), updatedDate = DateConverter.toTimestamp(this.updatedDate), state = this.state
+)
+
+fun NoteEntity.toNote() = Note(
+    id = this.id, body = this.body, createdDate = DateConverter.toDate(this.createdDate), updatedDate = DateConverter.toDate(this.updatedDate), state = this.state
+)

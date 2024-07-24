@@ -86,7 +86,7 @@ class CreateNoteViewModel @Inject constructor(
                     body = enteredMsg, createdDate = DateConverter.toTimestamp(Date()),
                     updatedDate = DateConverter.toTimestamp(Date())
                 )
-                val isSaved = notesRepository.updateOrInsertNote(note.toNote())
+                val isSaved = notesRepository.updateOrInsertNote(note)
                 if (isSaved > 0) {
                     _sideEffect.emit(CreateNoteContract.SideEffect.SavedNote)
                 } else {
@@ -99,7 +99,7 @@ class CreateNoteViewModel @Inject constructor(
     private suspend fun fetchNote(noteId: Int?) = withContext(dispatcher.IO) {
         noteId?.let {
             _state.update {
-                val originalNote = notesRepository.fetchNote(noteId = noteId)?.toNoteEntity()
+                val originalNote = notesRepository.fetchNote(noteId = noteId)
                 it.copy(
                     originalNote = originalNote,
                     enteredMsg = originalNote?.body ?: ""
@@ -112,11 +112,3 @@ class CreateNoteViewModel @Inject constructor(
         }
     }
 }
-
-fun Note.toNoteEntity() = NoteEntity(
-    id = this.id, body = this.body, createdDate = DateConverter.toTimestamp(this.createdDate), updatedDate = DateConverter.toTimestamp(this.updatedDate), state = this.state
-)
-
-fun NoteEntity.toNote() = Note(
-    id = this.id, body = this.body, createdDate = DateConverter.toDate(this.createdDate), updatedDate = DateConverter.toDate(this.updatedDate), state = this.state
-)
