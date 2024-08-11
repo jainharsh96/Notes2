@@ -1,5 +1,7 @@
 package com.notes.shared
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.room.RoomDatabase
 import com.notes.shared.db.NotesDatabase
 
@@ -9,7 +11,8 @@ interface Platform {
 
 expect fun getPlatform(): Platform
 
-expect fun showToast(msg : String)
+@Composable
+expect fun setSystemBarColorAndIcon(color : Color, isDarkIcon : Boolean)
 
 expect fun getDatabaseBuilder() : RoomDatabase.Builder<NotesDatabase>
 

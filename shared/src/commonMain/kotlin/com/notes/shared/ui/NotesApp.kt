@@ -1,5 +1,6 @@
 package com.notes.shared.ui
 
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -31,7 +32,7 @@ fun NotesApp(
     val navController = rememberNavController()
     val navActionHandler = remember { NotesActionHandler(navController) }
     KoinContext {
-        NavHost(modifier = Modifier.statusBarsPadding(),
+        NavHost(modifier = Modifier.navigationBarsPadding(),
             navController = navController, startDestination = startDestination) {
             composable(
                 route = NotesNavigation.NotesScreen.destination,

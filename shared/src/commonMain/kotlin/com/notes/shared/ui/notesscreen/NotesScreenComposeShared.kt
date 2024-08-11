@@ -97,7 +97,7 @@ fun NotesScreenShared(
     }
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize().statusBarsPadding()
     ) {
         NotesContent(
             noteState = state,

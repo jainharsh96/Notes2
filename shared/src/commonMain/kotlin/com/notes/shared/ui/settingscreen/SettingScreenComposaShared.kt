@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +34,7 @@ fun SettingScreenShared(onAction: (NavigationAction) -> Unit) {
         modifier = Modifier
             .fillMaxSize()
             .background(color = colorResource(Res.string.white))
+            .statusBarsPadding()
     ) {
         SettingScreenHeader {
             onAction.invoke(NavigationAction.Back)
@@ -58,6 +60,7 @@ fun RestoreDataCard(restoreData: () -> Unit, onClickBack: () -> Unit) {
             .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
             .clickable(onClick = restoreData),
         shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = colorResource(Res.string.white)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
@@ -92,6 +95,7 @@ fun DraftNoteCard(openDraftNote: () -> Unit, onClickBack: () -> Unit) {
             .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
             .clickable { openDraftNote.invoke() },
         shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = colorResource(Res.string.white)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(

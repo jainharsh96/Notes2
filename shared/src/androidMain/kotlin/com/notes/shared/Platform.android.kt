@@ -3,6 +3,8 @@ package com.notes.shared
 import android.content.Context
 import android.os.Environment
 import android.widget.Toast
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.notes.shared.db.NotesDatabase
@@ -17,10 +19,6 @@ class AndroidPlatform : Platform {
 }
 
 actual fun getPlatform(): Platform = AndroidPlatform()
-
-actual fun showToast(msg: String) {
-    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-}
 
 fun setApplicationContext(appContext: Context){
     context = appContext
@@ -54,4 +52,12 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<NotesDatabase> {
         context = appContext,
         name = dbFile
     ).openHelperFactory(databaseSupportFactory)
+}
+
+@Composable
+actual fun setSystemBarColorAndIcon(
+    color: Color,
+    isDarkIcon: Boolean
+) {
+    // TODO
 }

@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.compose.setContent
+import androidx.compose.ui.graphics.Color
+import androidx.core.view.WindowCompat
+import com.harsh.notes.R
 import com.notes.shared.ui.NotesApp
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -18,6 +21,8 @@ class NotesActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+      //  WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = resources.getColor(R.color.transparent)
         setContent {
             NotesApp()
         }

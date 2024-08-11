@@ -1,5 +1,7 @@
 package com.notes.shared
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
@@ -19,10 +21,6 @@ class IOSPlatform : Platform {
 
 actual fun getPlatform(): Platform = IOSPlatform()
 
-actual fun showToast(msg: String) {
-    // TODO IMPLEMENT
-}
-
 @OptIn(ExperimentalForeignApi::class)
 actual fun getDatabaseBuilder(): RoomDatabase.Builder<NotesDatabase> {
     val DATABASE_NAME = "NotesDb2.db"
@@ -39,4 +37,12 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<NotesDatabase> {
         name = dbFilePath,
         factory =  { NotesDatabase::class.instantiateImpl() }
     ).setDriver(BundledSQLiteDriver()).addMigrations()
+}
+
+@Composable
+actual fun setSystemBarColorAndIcon(
+    color: Color,
+    isDarkIcon: Boolean
+) {
+    // TODO NOT IMPLEMENTED
 }

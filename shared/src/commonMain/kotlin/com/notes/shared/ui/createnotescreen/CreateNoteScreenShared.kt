@@ -25,7 +25,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notes.shared.painterResource
-import com.notes.shared.showToast
 import com.notes.shared.ui.NavigationAction
 import com.notes.shared.utils.colorResource
 import kotlinx.coroutines.delay
@@ -75,6 +74,7 @@ fun CreateNoteScreenShared(
         modifier = Modifier
             .fillMaxSize()
             .background(color = colorResource(Res.string.white))
+            .statusBarsPadding()
     ) {
         CreateNoteHeader(
             hasNote = state.hasNote(),
