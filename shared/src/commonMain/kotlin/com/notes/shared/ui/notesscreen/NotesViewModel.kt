@@ -1,30 +1,27 @@
-package com.harsh.notes.ui.notesscreen
+package com.notes.shared.ui.notesscreen
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.harsh.notes.AppDispatcherProvider
-import com.harsh.notes.db.Note
-import com.harsh.notes.repository.NotesRepository
-import com.harsh.notes.ui.NotesRoutes.ARG_IS_DRAFT_SCREEN
+import com.notes.shared.db.Note
+import com.notes.shared.repository.NotesRepository
+import com.notes.shared.AppDispatcherProvider
+import com.notes.shared.ui.NotesRoutes.ARG_IS_DRAFT_SCREEN
 import com.notes.shared.ui.notesscreen.NotesContract
 import com.notes.shared.ui.uientity.NoteEntity
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-@HiltViewModel
-class NotesViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+
+class NotesViewModel constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val notesRepository: NotesRepository,
     private val dispatcher: AppDispatcherProvider
 ) : ViewModel(), NotesContract {

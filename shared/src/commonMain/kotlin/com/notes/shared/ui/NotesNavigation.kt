@@ -1,11 +1,11 @@
-package com.harsh.notes.ui
+package com.notes.shared.ui
 
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.harsh.notes.ui.NotesRoutes.ARG_IS_DRAFT_SCREEN
-import com.harsh.notes.ui.NotesRoutes.ARG_NOTES_ID
-import com.harsh.notes.ui.NotesRoutes.ARG_OPEN_RECORDING
+import com.notes.shared.ui.NotesRoutes.ARG_IS_DRAFT_SCREEN
+import com.notes.shared.ui.NotesRoutes.ARG_NOTES_ID
+import com.notes.shared.ui.NotesRoutes.ARG_OPEN_RECORDING
 
 object NotesRoutes {
     const val ARG_NOTES_ID = "notes_id"
@@ -33,11 +33,14 @@ sealed class NotesNavigation(
         arguments = listOf(navArgument(ARG_NOTES_ID) {
             type = NavType.IntType
             defaultValue = -1
-        }, navArgument(ARG_OPEN_RECORDING) { defaultValue = false }),
-        destination = NotesRoutes.CREATE_NOTES_SCREEN_ROUTE + "?$ARG_NOTES_ID={$ARG_NOTES_ID}" + "&$ARG_OPEN_RECORDING={$ARG_OPEN_RECORDING}"
+        }, navArgument(ARG_OPEN_RECORDING) {
+            type = NavType.BoolType
+            defaultValue = false
+        }),
+        destination = NotesRoutes.CREATE_NOTES_SCREEN_ROUTE + "?$ARG_NOTES_ID={$ARG_NOTES_ID}" + "?$ARG_OPEN_RECORDING={$ARG_OPEN_RECORDING}"
     ) {
         fun path(notesId: Int?, openRecording: Boolean = false) =
-            NotesRoutes.CREATE_NOTES_SCREEN_ROUTE + "?$ARG_NOTES_ID=$notesId" + "&$ARG_OPEN_RECORDING=$openRecording"
+            NotesRoutes.CREATE_NOTES_SCREEN_ROUTE + "?$ARG_NOTES_ID=$notesId" + "?$ARG_OPEN_RECORDING=$openRecording"
     }
 
     object NotesSettingScreen : NotesNavigation(

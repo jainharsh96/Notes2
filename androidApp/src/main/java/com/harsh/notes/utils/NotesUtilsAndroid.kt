@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
-import com.harsh.notes.db.Note
 import com.notes.shared.utils.NOTE_DATE_FORMAT
 import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SQLiteDatabaseHook
@@ -68,33 +67,33 @@ private val sSQLiteDatabaseHook: SQLiteDatabaseHook = object : SQLiteDatabaseHoo
     }
 }
 
-private fun restoreData() {
-    val list = mutableListOf<Note>()
-    val FILE_PATH =
-        Environment.getExternalStorageDirectory().absolutePath + "/Notes2/NotesDb.db"
-    try {
-        val db = SQLiteDatabase.openOrCreateDatabase(
-            FILE_PATH,
-            "thisispassword123!@#",
-            null,
-            sSQLiteDatabaseHook
-        )
-        val cursor = db.query("select * from Notes")
-        while (cursor.moveToNext()) {
-            val body = cursor.getString(1)
-            val updated = cursor.getString(2)
-            val status = cursor.getString(3)
-            list.add(
-                Note(
-                    body = body,
-                    createdDate = Date(updated.toLong()),
-                    updatedDate = Date(updated.toLong()),
-                    state = status.toIntOrNull() ?: 1
-                )
-            )
-        }
-        cursor.close()
-    } catch (e: Exception) {
-        Log.e("harshtag", e.toString())
-    }
-}
+//private fun restoreData() {
+//    val list = mutableListOf<Note>()
+//    val FILE_PATH =
+//        Environment.getExternalStorageDirectory().absolutePath + "/Notes2/NotesDb.db"
+//    try {
+//        val db = SQLiteDatabase.openOrCreateDatabase(
+//            FILE_PATH,
+//            "thisispassword123!@#",
+//            null,
+//            sSQLiteDatabaseHook
+//        )
+//        val cursor = db.query("select * from Notes")
+//        while (cursor.moveToNext()) {
+//            val body = cursor.getString(1)
+//            val updated = cursor.getString(2)
+//            val status = cursor.getString(3)
+//            list.add(
+//                Note(
+//                    body = body,
+//                    createdDate = Date(updated.toLong()),
+//                    updatedDate = Date(updated.toLong()),
+//                    state = status.toIntOrNull() ?: 1
+//                )
+//            )
+//        }
+//        cursor.close()
+//    } catch (e: Exception) {
+//        Log.e("harshtag", e.toString())
+//    }
+//}

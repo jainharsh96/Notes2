@@ -1,17 +1,13 @@
-package com.harsh.notes.ui.createnotescreen
+package com.notes.shared.ui.createnotescreen
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.harsh.notes.AppDispatcherProvider
-import com.harsh.notes.db.DateConverter
-import com.harsh.notes.db.Note
-import com.harsh.notes.repository.NotesRepository
-import com.harsh.notes.ui.NotesRoutes
-import com.notes.shared.ui.createnotescreen.CreateNoteContract
+import com.notes.shared.AppDispatcherProvider
+import com.notes.shared.repository.NotesRepository
+import com.notes.shared.ui.NotesRoutes
 import com.notes.shared.ui.uientity.NoteEntity
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import com.notes.shared.utils.DateFormatter
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,18 +16,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
-import javax.inject.Inject
 
-@HiltViewModel
-class CreateNoteViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+class CreateNoteViewModel constructor(
+    private val savedStateHandle: SavedStateHandle,
     private val notesRepository: NotesRepository,
     private val dispatcher: AppDispatcherProvider
 ) : ViewModel(), CreateNoteContract {
 
     private val noteId : Int? = savedStateHandle[NotesRoutes.ARG_NOTES_ID]
-    private val isOpenRecording = savedStateHandle[NotesRoutes.ARG_OPEN_RECORDING] ?: false
+    private val isOpenRecording : Boolean = savedStateHandle[NotesRoutes.ARG_OPEN_RECORDING] ?: false
 
     private val _state = MutableStateFlow(CreateNoteContract.State.initialState())
     override val state = _state.asStateFlow()
@@ -54,7 +47,7 @@ class CreateNoteViewModel @Inject constructor(
     }
 
     private fun scopeIO(content: suspend () -> Unit) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(dispatcher.IO) {
             content.invoke()
         }
     }
@@ -82,9 +75,10 @@ class CreateNoteViewModel @Inject constructor(
     private suspend fun insertNote() = withContext(dispatcher.IO) {
         with(_state.value) {
             if (enteredMsg.isNotEmpty()) {
-                val note = originalNote?.copy(body = enteredMsg, updatedDate = DateConverter.toTimestamp(Date())) ?: NoteEntity(
-                    body = enteredMsg, createdDate = DateConverter.toTimestamp(Date()),
-                    updatedDate = DateConverter.toTimestamp(Date())
+                val currentDateTime = DateFormatter.currentDateTime(DateFormatter.NOTE_DATE_FORMAT)
+                val note = originalNote?.copy(body = enteredMsg, updatedDate = currentDateTime) ?: NoteEntity(
+                    body = enteredMsg, createdDate = currentDateTime,
+                    updatedDate = currentDateTime
                 )
                 val isSaved = notesRepository.updateOrInsertNote(note)
                 if (isSaved > 0) {

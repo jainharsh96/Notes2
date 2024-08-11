@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Notes</string>
+    <string name="action_settings">Reset</string>
+    <string name="write_here_hint">Write here ...</string>
+    <string name="edit_note_title">Edit Note</string>
+    <string name="note_deleted_msg">Note deleted</string>
+    <string name="App_Title">Notes</string>
+    <string name="title_activity_note_setting">NoteSettingActivity</string>
+
+    <string name="purple_200">#FFBB86FC</string>
+    <string name="purple_500">#FF6200EE</string>
+    <string name="purple_700">#FF3700B3</string>
+    <string name="teal_200">#FF03DAC5</string>
+    <string name="teal_700">#FF018786</string>
+    <string name="black">#FF000000</string>
+    <string name="white">#FFFFFFFF</string>
+    <string name="colorPrimary">#FFFFFF</string>
+    <string name="colorPrimaryDark">#424242</string>
+    <string name="colorAccent">#212121</string>
+    <string name="colorUpdate">#66BB6A</string>
+    <string name="floatingbar">#303F9F</string>
+    <string name="disable">#9E9E9E</string>
+    <string name="background">#FFFFFF</string>
+    <string name="light_red">#1EDD2C00</string>
+    <string name="red">#D50000</string>
+</resources>

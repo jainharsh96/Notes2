@@ -2,6 +2,7 @@
 buildscript {
     dependencies {
         classpath(libs.hilt.android.gradle.plugin)
+        classpath(libs.compose.gradle.plugin)
     }
 }
 plugins {
@@ -9,11 +10,9 @@ plugins {
     alias(libs.plugins.android.application).apply(false)
     alias(libs.plugins.androidLibrary).apply(false)
     alias(libs.plugins.kotlin.android).apply(false)
-    alias(libs.plugins.kotlinKsp)
-
-    alias(libs.plugins.buildConfig).apply(false)
-    alias(libs.plugins.kotlinx.serialization).apply(false)
-    alias(libs.plugins.sqlDelight).apply(false)
+    alias(libs.plugins.kotlinKsp).apply(false)
+    alias(libs.plugins.composeCompiler).apply(false)
+    alias(libs.plugins.androidxRoom).apply(false)
 }
 
 // run -> ./gradlew assembleRelease -Pmyapp.enableComposeCompilerReports=true --rerun-tasks

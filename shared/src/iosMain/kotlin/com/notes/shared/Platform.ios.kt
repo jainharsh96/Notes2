@@ -1,9 +1,15 @@
 package com.notes.shared
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import org.jetbrains.compose.resources.painterResource
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import androidx.sqlite.driver.bundled.BundledSQLiteDriver
+import com.notes.shared.db.NotesDatabase
+import com.notes.shared.db.instantiateImpl
+import kotlinx.cinterop.ExperimentalForeignApi
+import platform.Foundation.NSDocumentDirectory
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSHomeDirectory
+import platform.Foundation.NSUserDomainMask
 import platform.UIKit.UIDevice
 
 class IOSPlatform : Platform {
@@ -17,19 +23,20 @@ actual fun showToast(msg: String) {
     // TODO IMPLEMENT
 }
 
-actual fun getDrawable(byName: String): Any?{
-    TODO("Not yet implemented")
-}
+@OptIn(ExperimentalForeignApi::class)
+actual fun getDatabaseBuilder(): RoomDatabase.Builder<NotesDatabase> {
+    val DATABASE_NAME = "NotesDb2.db"
 
-actual fun getDrawableId(byName: String): Any? {
-    TODO("Not yet implemented")
-}
-
-actual fun getColor(name: String): Color {
-    TODO("Not yet implemented")
-}
-
-@Composable
-actual fun getPainter(resource: String): Painter {
-    TODO("Not yet implemented")
+    val documentsDirectory = NSFileManager.defaultManager.URLForDirectory(
+        directory = NSDocumentDirectory,
+        inDomain = NSUserDomainMask,
+        appropriateForURL = null,
+        create = true,
+        error = null,
+    )?.path ?: NSHomeDirectory()
+    val dbFilePath = "$documentsDirectory/${DATABASE_NAME}"
+    return Room.databaseBuilder<NotesDatabase>(
+        name = dbFilePath,
+        factory =  { NotesDatabase::class.instantiateImpl() }
+    ).setDriver(BundledSQLiteDriver()).addMigrations()
 }

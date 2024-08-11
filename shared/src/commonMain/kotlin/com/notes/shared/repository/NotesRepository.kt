@@ -1,15 +1,13 @@
-package com.harsh.notes.repository
+package com.notes.shared.repository
 
-import com.harsh.notes.db.NotesDao
-import com.harsh.notes.db.DeletedNote
-import com.harsh.notes.db.Note
-import com.harsh.notes.db.toNote
-import com.harsh.notes.db.toNoteEntity
+import com.notes.shared.db.NotesDao
+import com.notes.shared.db.DeletedNote
+import com.notes.shared.db.Note
+import com.notes.shared.db.toNote
+import com.notes.shared.db.toNoteEntity
 import com.notes.shared.ui.uientity.NoteEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Singleton
 
 interface NotesRepository {
     fun fetchAllNotes(state: Int): Flow<List<NoteEntity>>
@@ -25,8 +23,7 @@ interface NotesRepository {
     suspend fun restoreDeletedNote(noteId: Int)
 }
 
-@Singleton
-class NotesRepositoryImpl @Inject constructor(private val notesDao: NotesDao) : NotesRepository {
+class NotesRepositoryImpl constructor(private val notesDao: NotesDao) : NotesRepository {
 
     override
     fun fetchAllNotes(state: Int) = notesDao.fetchAllNotes(state).map { it.map { it.toNoteEntity() } }

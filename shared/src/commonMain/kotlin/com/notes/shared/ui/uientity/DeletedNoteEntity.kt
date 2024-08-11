@@ -1,6 +1,7 @@
 package com.notes.shared.ui.uientity
 
 import androidx.compose.runtime.Immutable
+import com.notes.shared.utils.DateFormatter
 
 /*
 for testing app
@@ -21,8 +22,8 @@ data class DeletedNote(
             DeletedNote(
                 id = note.id,
                 body = note.body,
-                createdDate = note.createdDate,
-                date = note.updatedDate,
+                createdDate = DateFormatter.formatInLong(note.createdDate.orEmpty(), format = DateFormatter.NOTE_DATE_FORMAT),
+                date = DateFormatter.formatInLong(note.updatedDate.orEmpty(), format = DateFormatter.NOTE_DATE_FORMAT),
                 state = note.state
             )
     }

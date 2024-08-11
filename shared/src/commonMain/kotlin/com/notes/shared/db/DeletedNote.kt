@@ -1,10 +1,9 @@
-package com.harsh.notes.db
+package com.notes.shared.db
 
 import androidx.compose.runtime.Immutable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import java.util.*
 
 /*
 for testing app
@@ -16,9 +15,9 @@ data class DeletedNote(
     var id: Int = 0,
     var body: String? = null,
     @ColumnInfo(name = "created_date")
-    var createdDate: Date? = null,
+    var createdDate: Long? = null,
     @ColumnInfo(name = "updated_date")
-    var date: Date? = null,
+    var date: Long? = null,
     var state: Int = SAVED,
 ) {
     companion object {

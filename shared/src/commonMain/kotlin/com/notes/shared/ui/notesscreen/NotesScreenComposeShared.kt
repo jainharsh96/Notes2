@@ -8,22 +8,24 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Drafts
 import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissValue
+import androidx.compose.material.DismissDirection
+import androidx.compose.material.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material.SwipeToDismiss
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -35,14 +37,25 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.notes.shared.getColor
-import com.notes.shared.getPainter
+import com.notes.shared.painterResource
+import com.notes.shared.stringResource
 import com.notes.shared.ui.NavigationAction
 import com.notes.shared.ui.uientity.NoteEntity
 import com.notes.shared.utils.DateFormatter
 import com.notes.shared.utils.NOTE_DATE_FORMAT
+import com.notes.shared.utils.colorResource
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import notes2.shared.generated.resources.Res
+import notes2.shared.generated.resources.add_notes
+import notes2.shared.generated.resources.colorPrimaryDark
+import notes2.shared.generated.resources.disable
+import notes2.shared.generated.resources.ic_arrow_back_black_24dp
+import notes2.shared.generated.resources.ic_setting
+import notes2.shared.generated.resources.light_red
+import notes2.shared.generated.resources.red
+import notes2.shared.generated.resources.voice_note
+import notes2.shared.generated.resources.white
 
 @Composable
 fun NotesScreenShared(
@@ -97,7 +110,7 @@ fun NotesScreenShared(
                     .align(Alignment.BottomEnd)
             ) {
                 FloatingActionButton(
-                    containerColor = getColor("colorPrimaryDark"),
+                    containerColor = colorResource(Res.string.colorPrimaryDark),
                     onClick = remember {
                         {
                             event(NotesContract.Event.RecordNotes)
@@ -105,16 +118,16 @@ fun NotesScreenShared(
                     }
                 ) {
                     Image(
-                        painter = getPainter("voice_note"),
+                        painter = painterResource(Res.drawable.voice_note),
                         contentDescription = ""
                     )
                 }
                 Spacer(modifier = Modifier.padding(8.dp))
                 FloatingActionButton(
-                    containerColor = getColor("colorPrimaryDark"),
+                    containerColor = colorResource(Res.string.colorPrimaryDark),
                     onClick = remember { { event(NotesContract.Event.AddNotes) } }) {
                     Image(
-                        painter = getPainter("add_notes"),
+                        painter = painterResource(Res.drawable.add_notes),
                         contentDescription = ""
                     )
                 }
@@ -194,7 +207,7 @@ fun NoDataView() {
     ) {
         Text(
             text = "Add Notes...",
-            color = getColor("disable"),
+            color =  colorResource(Res.string.disable),
             style = TextStyle(fontSize = 24.sp),
         )
     }
@@ -209,7 +222,7 @@ fun NotesHeader(heading: String, isDraftScreen: Boolean, event: (NotesContract.E
     ) {
         if (isDraftScreen) {
             Image(
-                painter = getPainter("ic_arrow_back_black_24dp"),
+                painter = painterResource(Res.drawable.ic_arrow_back_black_24dp),
                 contentDescription = "",
                 modifier = Modifier
                     .width(24.dp)
@@ -222,13 +235,13 @@ fun NotesHeader(heading: String, isDraftScreen: Boolean, event: (NotesContract.E
             text = heading,
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
-            color = getColor("colorPrimaryDark"),
+            color = colorResource(Res.string.colorPrimaryDark),
             style = TextStyle(fontSize = 24.sp),
             fontWeight = FontWeight.Bold
         )
         if (isDraftScreen.not()) {
             Image(
-                painter = getPainter("ic_setting"),
+                painter = painterResource(Res.drawable.ic_setting),
                 contentDescription = "",
                 modifier = Modifier
                     .width(24.dp)
@@ -239,7 +252,7 @@ fun NotesHeader(heading: String, isDraftScreen: Boolean, event: (NotesContract.E
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun NotesList(isDraftScreen: Boolean, notes: List<NoteEntity>, event: (NotesContract.Event) -> Unit) {
     val listState = rememberLazyListState()
@@ -260,7 +273,7 @@ fun NotesList(isDraftScreen: Boolean, notes: List<NoteEntity>, event: (NotesCont
         }
         items(items = notes, key = { it.id }) { note ->
             val dismissState = rememberDismissState(
-                confirmValueChange = {
+                confirmStateChange = {
                     when (it) {
                         DismissValue.DismissedToEnd -> if (isDraftScreen) event.invoke(
                             NotesContract.Event.RestoreNote(
@@ -300,14 +313,14 @@ fun NotesList(isDraftScreen: Boolean, notes: List<NoteEntity>, event: (NotesCont
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color = getColor("light_red")),
+                        .background(color = colorResource(Res.string.light_red)),
                     contentAlignment = alignment
                 ) {
                     Icon(
                         icon,
                         contentDescription = "",
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        tint = getColor("red")
+                        tint = colorResource(Res.string.red)
                     )
                 }
             }, dismissContent = {
@@ -325,6 +338,7 @@ fun NoteHolder(note: NoteEntity, event: (NotesContract.Event) -> Unit) {
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clickable { event.invoke(NotesContract.Event.OpenNote(note.id)) },
         shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = colorResource(Res.string.white)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(8.dp)) {
@@ -335,21 +349,21 @@ fun NoteHolder(note: NoteEntity, event: (NotesContract.Event) -> Unit) {
                 Text(
                     text = note.firstLineData(),
                     modifier = Modifier.weight(1f),
-                    color = getColor("colorPrimaryDark"),
+                    color = colorResource(Res.string.colorPrimaryDark),
                     style = TextStyle(fontSize = 18.sp),
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
                 )
                 Text(
-                    text = DateFormatter.format(note.updatedDate ?: 0, NOTE_DATE_FORMAT),
-                    color = getColor("disable"),
+                    text = note.updatedDate.orEmpty(),
+                    color = colorResource(Res.string.disable),
                     style = TextStyle(fontSize = 12.sp)
                 )
             }
             Spacer(modifier = Modifier.padding(4.dp))
             Text(
                 text = note.secondLineData(),
-                color = getColor("disable"),
+                color = colorResource(Res.string.disable),
                 style = TextStyle(fontSize = 14.sp),
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1

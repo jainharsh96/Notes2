@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,12 +24,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.notes.shared.getColor
-import com.notes.shared.getPainter
+import com.notes.shared.painterResource
 import com.notes.shared.showToast
 import com.notes.shared.ui.NavigationAction
+import com.notes.shared.utils.colorResource
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
+import notes2.shared.generated.resources.Res
+import notes2.shared.generated.resources.colorPrimaryDark
+import notes2.shared.generated.resources.colorUpdate
+import notes2.shared.generated.resources.disable
+import notes2.shared.generated.resources.ic_arrow_back_black_24dp
+import notes2.shared.generated.resources.ic_check_black_24dp
+import notes2.shared.generated.resources.ic_undo
+import notes2.shared.generated.resources.voice_note
+import notes2.shared.generated.resources.white
 import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 
@@ -39,6 +50,7 @@ fun CreateNoteScreenShared(
     event: (CreateNoteContract.Event) -> Unit,
     onAction: (NavigationAction) -> Unit
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
     LaunchedEffect(key1 = Unit) {
         event(CreateNoteContract.Event.FetchNote)
     }
@@ -51,14 +63,18 @@ fun CreateNoteScreenShared(
                 }
 
                 CreateNoteContract.SideEffect.SavedNote -> onAction.invoke(NavigationAction.Back)
-                is CreateNoteContract.SideEffect.ShowError -> showToast(sideEffect.msg)
+                is CreateNoteContract.SideEffect.ShowError -> {
+                    snackbarHostState.showSnackbar(
+                        message = sideEffect.msg,
+                    )
+                }
             }
         }
     }
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = getColor("white"))
+            .background(color = colorResource(Res.string.white))
     ) {
         CreateNoteHeader(
             hasNote = state.hasNote(),
@@ -77,7 +93,7 @@ fun CreateNoteHeader(hasNote: Boolean, event: (CreateNoteContract.Event) -> Unit
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = getPainter("ic_arrow_back_black_24dp"),
+            painter = painterResource(Res.drawable.ic_arrow_back_black_24dp),
             contentDescription = "",
             modifier = Modifier
                 .width(24.dp)
@@ -89,25 +105,25 @@ fun CreateNoteHeader(hasNote: Boolean, event: (CreateNoteContract.Event) -> Unit
             text = if (hasNote) "Edit note" else "Add note",
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
-            color = getColor("colorPrimaryDark"),
+            color = colorResource(Res.string.colorPrimaryDark),
             style = TextStyle(fontSize = 24.sp),
             fontWeight = FontWeight.Bold
         )
         Image(
-            painter = getPainter("voice_note"),
+            painter = painterResource(Res.drawable.voice_note),
             contentDescription = "",
             modifier = Modifier
                 .width(24.dp)
                 .height(24.dp)
                 .clickable { event(CreateNoteContract.Event.ClickRecordNotes) },
             colorFilter = ColorFilter.tint(
-                getColor("colorPrimaryDark")
+                colorResource(Res.string.colorPrimaryDark)
             )
         )
         if (hasNote) {
             Spacer(modifier = Modifier.padding(8.dp))
             Image(
-                painter = getPainter("ic_undo"),
+                painter = painterResource(Res.drawable.ic_undo),
                 contentDescription = "",
                 modifier = Modifier
                     .width(24.dp)
@@ -154,15 +170,15 @@ fun NoteInfo(state: CreateNoteContract.State, event: (CreateNoteContract.Event) 
                 .fillMaxWidth(),
             enabled = state.enteredMsg.isNotEmpty(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = getColor(if (state.enteredMsg.isEmpty()) "disable" else "colorUpdate")
+                containerColor = colorResource(if(state.enteredMsg.isEmpty()) Res.string.disable else Res.string.colorUpdate)
             ),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 12.dp),
             shape = RoundedCornerShape(12.dp)
         ) {
             Image(
-                painter = getPainter("ic_check_black_24dp"),
+                painter = painterResource(Res.drawable.ic_check_black_24dp),
                 contentDescription = "", colorFilter = ColorFilter.tint(
-                    getColor("white")
+                    colorResource(Res.string.white)
                 )
             )
         }
@@ -179,7 +195,7 @@ fun SetHint(hint: String, showHint: Boolean) {
                 modifier = Modifier
                     .background(Color.Transparent),
                 text = hint,
-                color = getColor("disable"),
+                color = colorResource(Res.string.disable),
                 fontSize = 20.sp
             )
         }

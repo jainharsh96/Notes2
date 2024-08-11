@@ -1,19 +1,63 @@
 package com.notes.shared.utils
 
 import kotlinx.datetime.*
+import kotlinx.datetime.format
 import kotlinx.datetime.TimeZone
+import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.format.MonthNames
+import kotlinx.datetime.format.char
 import kotlinx.datetime.toLocalDateTime
 
 object DateFormatter {
 
-    fun format(dateInMillis: Long, pattern: String): String {
-        val instant = Instant.fromEpochMilliseconds(dateInMillis)
-        val dateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-        return dateTime.toString(pattern)
+    val timeZone = TimeZone.currentSystemDefault()
+    val months = listOf(
+        "JANUARY",
+        "FEBRUARY",
+        "MARCH",
+        "APRIL",
+        "MAY",
+        "JUNE",
+        "JULY",
+        "AUGUST",
+        "SEPTEMBER",
+        "OCTOBER",
+        "NOVEMBER",
+        "DECEMBER"
+    ).map {
+        it.substring(0, 3).lowercase()
+            .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
     }
 
-    // Extension function to format LocalDateTime using a pattern
-    fun LocalDateTime.toString(pattern: String): String {
-        return "${this.dayOfMonth} ${this.month} ${this.year} ${this.hour}-${this.minute}"   // TODO IMPLEMENT PATTERN
+    //  "dd MMM yyyy hh:mm a"
+    val NOTE_DATE_FORMAT
+        get() = LocalDateTime.Format {
+            dayOfMonth()
+            char(' ')
+            monthName(MonthNames(months))
+            char(' ')
+            year()
+            char(' ')
+            amPmHour()
+            char(':')
+            minute()
+            char(' ')
+            amPmMarker(am = "am", pm = "pm")
+        }
+
+    fun format(dateInMillis: Long, format: DateTimeFormat<LocalDateTime>): String {
+        val instant = Instant.fromEpochMilliseconds(dateInMillis)
+        val dateTime = instant.toLocalDateTime(timeZone)
+        return dateTime.format(format)
+    }
+
+    fun formatInLong(date: String, format: DateTimeFormat<LocalDateTime>): Long {
+        return LocalDateTime.parse(date, format).toInstant(timeZone).toEpochMilliseconds()
+    }
+
+    fun currentDateTimeLong() = Clock.System.now().toEpochMilliseconds()
+
+    fun currentDateTime(format: DateTimeFormat<LocalDateTime>): String {
+        return format(dateInMillis = Clock.System.now().toEpochMilliseconds(), format = format)
     }
 }

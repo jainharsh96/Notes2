@@ -3,7 +3,8 @@ plugins {
     id("dagger.hilt.android.plugin")
 
     alias(libs.plugins.multiplatform)
-    alias(libs.plugins.compose)
+    id(libs.plugins.jetBrainCompose.get().pluginId)
+    id(libs.plugins.composeCompiler.get().pluginId)
     alias(libs.plugins.android.application)
     alias(libs.plugins.buildConfig)
     alias(libs.plugins.kotlinx.serialization)
@@ -56,7 +57,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
+        kotlinCompilerExtensionVersion = "2.0.0"
     }
 
     buildFeatures {

@@ -1,4 +1,4 @@
-package com.harsh.notes.db
+package com.notes.shared.db
 
 
 import androidx.compose.runtime.Immutable
@@ -7,7 +7,7 @@ import androidx.room.Entity
 import androidx.room.Ignore
 import androidx.room.PrimaryKey
 import com.notes.shared.ui.uientity.NoteEntity
-import java.util.*
+import com.notes.shared.utils.DateFormatter
 
 @Immutable
 @Entity(tableName = "Notes")
@@ -16,9 +16,9 @@ data class Note(
     var id: Int = 0,
     var body: String? = null,
     @ColumnInfo(name = "created_date")
-    var createdDate: Date? = null,
+    var createdDate: Long? = null,
     @ColumnInfo(name = "updated_date")
-    var updatedDate: Date? = null,
+    var updatedDate: Long? = null,
     var state: Int = SAVED,
 ) {
     companion object {
@@ -53,9 +53,13 @@ data class Note(
 }
 
 fun Note.toNoteEntity() = NoteEntity(
-    id = this.id, body = this.body, createdDate = DateConverter.toTimestamp(this.createdDate), updatedDate = DateConverter.toTimestamp(this.updatedDate), state = this.state
+    id = this.id, body = this.body,
+    createdDate = DateFormatter.format(this.createdDate ?: 0, format = DateFormatter.NOTE_DATE_FORMAT),
+    updatedDate = DateFormatter.format(this.updatedDate ?: 0, format = DateFormatter.NOTE_DATE_FORMAT), state = this.state
 )
 
 fun NoteEntity.toNote() = Note(
-    id = this.id, body = this.body, createdDate = DateConverter.toDate(this.createdDate), updatedDate = DateConverter.toDate(this.updatedDate), state = this.state
+    id = this.id, body = this.body,
+    createdDate = DateFormatter.formatInLong(this.createdDate.orEmpty(), format = DateFormatter.NOTE_DATE_FORMAT),
+    updatedDate = DateFormatter.formatInLong(this.updatedDate.orEmpty(), format = DateFormatter.NOTE_DATE_FORMAT), state = this.state
 )

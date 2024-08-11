@@ -6,8 +6,8 @@ import androidx.compose.runtime.Immutable
 data class NoteEntity(
     var id: Int = 0,
     var body: String? = null,
-    var createdDate: Long? = null,
-    var updatedDate: Long? = null,
+    var createdDate: String?,
+    var updatedDate: String?,
     var state: Int = SAVED,
 ) {
     companion object {

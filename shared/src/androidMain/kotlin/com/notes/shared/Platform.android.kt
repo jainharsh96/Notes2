@@ -1,13 +1,14 @@
 package com.notes.shared
 
 import android.content.Context
-import android.graphics.drawable.Drawable
+import android.os.Environment
 import android.widget.Toast
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
-import androidx.core.content.ContextCompat
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import com.notes.shared.db.NotesDatabase
+import net.sqlcipher.database.SQLiteDatabase
+import net.sqlcipher.database.SQLiteDatabaseHook
+import net.sqlcipher.database.SupportFactory
 
 private lateinit var context: Context
 
@@ -25,22 +26,32 @@ fun setApplicationContext(appContext: Context){
     context = appContext
 }
 
-actual fun getDrawable(byName: String): Any? {
-    val drawableResId = context.resources.getIdentifier(byName, "drawable", context.packageName)
-    return ContextCompat.getDrawable(context, drawableResId)
-}
+actual fun getDatabaseBuilder(): RoomDatabase.Builder<NotesDatabase> {
+    val DATABASE_NAME = "NotesDb2.db"
+    val DATABASE_PATH = "/Notes2/$DATABASE_NAME"
+    val DATABASE_PASSWORD = "thisispassword123!@#"
 
-actual fun getDrawableId(byName: String): Any? {
-    return context.resources.getIdentifier(byName, "drawable", context.packageName)
-}
+    val appContext = context
+    val dbFile = Environment.getExternalStorageDirectory().absolutePath + DATABASE_PATH
 
-actual fun getColor(name: String): Color {
-    val colorResId = context.resources.getIdentifier(name, "color", context.packageName)
-    val colorInt = ContextCompat.getColor(context, colorResId)
-    return Color(colorInt)
-}
+    val sSQLiteDatabaseHook: SQLiteDatabaseHook = object : SQLiteDatabaseHook {
+        override fun preKey(database: SQLiteDatabase) {}
+        override fun postKey(database: SQLiteDatabase) {
+            // can remove this
+            database.rawExecSQL("PRAGMA journal_mode=DELETE")
+//            database.rawExecSQL("PRAGMA cipher_compatibility = 3;")
+//            database.rawExecSQL("PRAGMA cipher_page_size = 1024;")
+//            database.rawExecSQL("PRAGMA kdf_iter = 64000;")
+//            database.rawExecSQL("PRAGMA cipher_hmac_algorithm = HMAC_SHA1;")
+//            database.rawExecSQL("PRAGMA cipher_kdf_algorithm = PBKDF2_HMAC_SHA1;")
+        }
+    }
 
-@Composable
-actual fun getPainter(resource: String): Painter {
-    return painterResource(getDrawableId(resource) as Int)   // TODO painterResource supported in shared module
+    val passPhrases = SQLiteDatabase.getBytes(DATABASE_PASSWORD.toCharArray())
+    val databaseSupportFactory = SupportFactory(passPhrases, sSQLiteDatabaseHook, true)
+
+    return Room.databaseBuilder<NotesDatabase>(
+        context = appContext,
+        name = dbFile
+    ).openHelperFactory(databaseSupportFactory)
 }

@@ -16,9 +16,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.notes.shared.getColor
-import com.notes.shared.getPainter
+import com.notes.shared.painterResource
 import com.notes.shared.ui.NavigationAction
+import com.notes.shared.utils.colorResource
+import notes2.shared.generated.resources.Res
+import notes2.shared.generated.resources.colorPrimaryDark
+import notes2.shared.generated.resources.colorUpdate
+import notes2.shared.generated.resources.ic_arrow_back_black_24dp
+import notes2.shared.generated.resources.ic_restore
+import notes2.shared.generated.resources.white
 
 
 @Composable
@@ -26,7 +32,7 @@ fun SettingScreenShared(onAction: (NavigationAction) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = getColor("white"))
+            .background(color = colorResource(Res.string.white))
     ) {
         SettingScreenHeader {
             onAction.invoke(NavigationAction.Back)
@@ -61,7 +67,7 @@ fun RestoreDataCard(restoreData: () -> Unit, onClickBack: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = getPainter("ic_restore"),
+                painter = painterResource(Res.drawable.ic_restore),
                 contentDescription = "",
                 modifier = Modifier
                     .padding(end = 16.dp)
@@ -70,7 +76,7 @@ fun RestoreDataCard(restoreData: () -> Unit, onClickBack: () -> Unit) {
             )
             Text(
                 text = "Restore Data",
-                color = getColor("colorUpdate"),
+                color = colorResource(Res.string.colorUpdate),
                 style = TextStyle(fontSize = 16.sp),
                 fontWeight = FontWeight.Bold
             )
@@ -95,7 +101,7 @@ fun DraftNoteCard(openDraftNote: () -> Unit, onClickBack: () -> Unit) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = getPainter("ic_restore"),
+                painter = painterResource(Res.drawable.ic_restore),
                 contentDescription = "",
                 modifier = Modifier
                     .padding(end = 16.dp)
@@ -104,7 +110,7 @@ fun DraftNoteCard(openDraftNote: () -> Unit, onClickBack: () -> Unit) {
             )
             Text(
                 text = "Drafted Notes",
-                color = getColor("colorUpdate"),
+                color = colorResource(Res.string.colorUpdate),
                 style = TextStyle(fontSize = 16.sp),
                 fontWeight = FontWeight.Bold
             )
@@ -120,7 +126,7 @@ fun SettingScreenHeader(onClickBack: () -> Unit) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
-            painter = getPainter("ic_arrow_back_black_24dp"),
+            painter = painterResource(Res.drawable.ic_arrow_back_black_24dp),
             contentDescription = "",
             modifier = Modifier
                 .width(24.dp)
@@ -132,7 +138,7 @@ fun SettingScreenHeader(onClickBack: () -> Unit) {
             text = "Setting",
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
-            color = getColor("colorPrimaryDark"),
+            color = colorResource(Res.string.colorPrimaryDark),
             style = TextStyle(fontSize = 24.sp),
             fontWeight = FontWeight.Bold
         )
