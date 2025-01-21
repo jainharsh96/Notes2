@@ -60,6 +60,14 @@ open class BaseActivity : AppCompatActivity() {
         }
     }
 
+    fun isEmulator(): Boolean {
+        return (Build.FINGERPRINT.startsWith("generic") || Build.FINGERPRINT.contains("vbox") || Build.FINGERPRINT.contains("sdk_gphone") ||
+                Build.MODEL.contains("Emulator") || Build.MODEL.contains("Android SDK built for x86") ||
+                Build.MANUFACTURER.contains("Genymotion") ||
+                (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
+                "google_sdk" == Build.PRODUCT)
+    }
+
 
     override fun onResume() {
         super.onResume()

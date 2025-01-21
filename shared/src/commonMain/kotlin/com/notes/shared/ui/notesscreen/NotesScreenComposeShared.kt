@@ -20,6 +20,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissValue
+import androidx.compose.material.FixedThreshold
+import androidx.compose.material.FractionalThreshold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -225,10 +227,9 @@ fun NotesHeader(heading: String, isDraftScreen: Boolean, event: (NotesContract.E
                 painter = painterResource(Res.drawable.ic_arrow_back_black_24dp),
                 contentDescription = "",
                 modifier = Modifier
-                    .width(24.dp)
-                    .height(24.dp)
+                    .width(30.dp)
+                    .height(30.dp)
                     .clickable { event.invoke(NotesContract.Event.ClickBack) },
-                alpha = 0.5f
             )
         }
         Text(
@@ -256,10 +257,6 @@ fun NotesHeader(heading: String, isDraftScreen: Boolean, event: (NotesContract.E
 @Composable
 fun NotesList(isDraftScreen: Boolean, notes: List<NoteEntity>, event: (NotesContract.Event) -> Unit) {
     val listState = rememberLazyListState()
-    LaunchedEffect(key1 = notes) {
-        if (notes.isNotEmpty())
-            listState.scrollToItem(0)
-    }
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         state = listState
@@ -301,7 +298,9 @@ fun NotesList(isDraftScreen: Boolean, notes: List<NoteEntity>, event: (NotesCont
                 DismissDirection.EndToStart
             ) else setOf(
                 DismissDirection.StartToEnd
-            ), background = {
+            ), dismissThresholds = {
+                FractionalThreshold(0.8f)
+            }, background = {
                 val alignment = when (dismissState.dismissDirection ?: return@SwipeToDismiss) {
                     DismissDirection.StartToEnd -> Alignment.CenterStart
                     DismissDirection.EndToStart -> Alignment.CenterEnd

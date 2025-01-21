@@ -48,6 +48,7 @@ ksp = "2.0.0-1.0.22"
 room = "2.7.0-alpha05"
 sqlite = "2.5.0-alpha05"
 sqlcipher = "4.5.4"
+googleAccompanist = "0.30.1"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -87,7 +88,6 @@ material = { module = "com.google.android.material:material", version.ref = "mat
 mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 composeImageLoader = { module = "io.github.qdsfdhvh:image-loader", version.ref = "composeImageLoader" }
-
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
@@ -109,9 +109,9 @@ androidx-room-runtime = { group = "androidx.room", name = "room-runtime", versio
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "sqlite" }
 android-database-sqlcipher = { module = "net.zetetic:android-database-sqlcipher", version.ref = "sqlcipher" }
+google-accompanist = {module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "googleAccompanist"}
 
 [plugins]
-
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 jetBrainCompose = { id = "org.jetbrains.compose", version.ref = "compose" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

@@ -126,17 +126,16 @@ fun DraftNoteCard(openDraftNote: () -> Unit, onClickBack: () -> Unit) {
 fun SettingScreenHeader(onClickBack: () -> Unit) {
     Row(
         modifier = Modifier
-            .padding(12.dp),
+            .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             painter = painterResource(Res.drawable.ic_arrow_back_black_24dp),
             contentDescription = "",
             modifier = Modifier
-                .width(24.dp)
-                .height(24.dp)
+                .width(30.dp)
+                .height(30.dp)
                 .clickable(onClick = onClickBack),
-            alpha = 0.5f
         )
         Text(
             text = "Setting",

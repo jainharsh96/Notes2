@@ -52,12 +52,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
             //  signingConfig = signingConfigs.debug()
         }
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "2.0.0"
     }
 
     buildFeatures {
@@ -79,6 +76,7 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
+    implementation(libs.google.accompanist)
 
     // testing
     testImplementation(libs.junit)

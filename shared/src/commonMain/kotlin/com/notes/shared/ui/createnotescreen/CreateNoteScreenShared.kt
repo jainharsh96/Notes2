@@ -15,6 +15,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -75,6 +76,7 @@ fun CreateNoteScreenShared(
             .fillMaxSize()
             .background(color = colorResource(Res.string.white))
             .statusBarsPadding()
+            .imePadding()
     ) {
         CreateNoteHeader(
             hasNote = state.hasNote(),
@@ -96,10 +98,9 @@ fun CreateNoteHeader(hasNote: Boolean, event: (CreateNoteContract.Event) -> Unit
             painter = painterResource(Res.drawable.ic_arrow_back_black_24dp),
             contentDescription = "",
             modifier = Modifier
-                .width(24.dp)
-                .height(24.dp)
-                .clickable { event(CreateNoteContract.Event.ClickBack) },
-            alpha = 0.5f
+                .width(30.dp)
+                .height(30.dp)
+                .clickable { event(CreateNoteContract.Event.ClickBack) }
         )
         Text(
             text = if (hasNote) "Edit note" else "Add note",
@@ -107,7 +108,7 @@ fun CreateNoteHeader(hasNote: Boolean, event: (CreateNoteContract.Event) -> Unit
             textAlign = TextAlign.Center,
             color = colorResource(Res.string.colorPrimaryDark),
             style = TextStyle(fontSize = 24.sp),
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
         )
         Image(
             painter = painterResource(Res.drawable.voice_note),

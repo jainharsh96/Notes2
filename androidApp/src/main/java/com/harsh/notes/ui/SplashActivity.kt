@@ -8,6 +8,7 @@ import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
 import com.harsh.notes.R
+import net.sqlcipher.BuildConfig
 
 @SuppressLint("CustomSplashScreen")
 class SplashActivity : BaseActivity() {
@@ -19,7 +20,11 @@ class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_layout)
-        validateBiometric()
+        if (BuildConfig.DEBUG){
+            openNotesActivity()
+        } else {
+            validateBiometric()
+        }
     }
 
     private fun openNotesActivity() {

@@ -32,7 +32,7 @@ fun NotesApp(
     val navController = rememberNavController()
     val navActionHandler = remember { NotesActionHandler(navController) }
     KoinContext {
-        NavHost(modifier = Modifier.navigationBarsPadding(),
+        NavHost(modifier = Modifier,
             navController = navController, startDestination = startDestination) {
             composable(
                 route = NotesNavigation.NotesScreen.destination,

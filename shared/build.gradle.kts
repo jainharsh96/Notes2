@@ -104,13 +104,15 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
-    }
-
     buildFeatures{
         compose = true
     }
+}
+
+composeCompiler {
+    enableStrongSkippingMode = true
+    reportsDestination = layout.buildDirectory.dir("compose_compiler")
+  //  stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
 }
 
 //dependencies {
