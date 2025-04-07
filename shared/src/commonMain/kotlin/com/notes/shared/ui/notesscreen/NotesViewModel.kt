@@ -8,6 +8,7 @@ import com.notes.shared.NotesDependencies
 import com.notes.shared.db.Note
 import com.notes.shared.domain.NotesDbUseCase
 import com.notes.shared.repository.NotesRepository
+import com.notes.shared.ui.BaseViewModel
 import com.notes.shared.ui.NotesRoutes.ARG_IS_DRAFT_SCREEN
 import com.notes.shared.ui.uientity.NoteEntity
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -26,7 +27,7 @@ class NotesViewModel constructor(
     private val notesRepository: NotesRepository,
     private val notesDbUseCase: NotesDbUseCase,
     private val dispatcher: AppDispatcherProvider
-) : ViewModel(), NotesContract {
+) : BaseViewModel<NotesContract.State, NotesContract.Event, NotesContract.SideEffect>() {
 
     private val isDraftScreen = savedStateHandle[ARG_IS_DRAFT_SCREEN] ?: false
 
@@ -37,19 +38,21 @@ class NotesViewModel constructor(
     override val sideEffect: SharedFlow<NotesContract.SideEffect> = _sideEffect
 
     init {
-        viewModelScope.launch {
-            if (isPasswordSet()){
-                fetchNotes(if (isDraftScreen) Note.DRAFTED else Note.SAVED)
-            } else {
-                _state.update {
-                    it.copy(alertDialogState = NotesContract.AlertDialogState())
+        launchCoroutine {
+            withContext(dispatcher.IO){
+                if (isPasswordSet()){
+                    fetchNotes(if (isDraftScreen) Note.DRAFTED else Note.SAVED)
+                } else {
+                    _state.update {
+                        it.copy(alertDialogState = NotesContract.AlertDialogState())
+                    }
                 }
             }
         }
     }
 
     override fun event(event: NotesContract.Event) {
-        viewModelScope.launch {
+        launchCoroutine {
             when (event) {
                 is NotesContract.Event.FetchNotes -> fetchNotes(if (isDraftScreen) Note.DRAFTED else Note.SAVED)
                 is NotesContract.Event.ConfirmDeleteNote -> confirmDeleteNote(event.noteId)
@@ -129,7 +132,9 @@ class NotesViewModel constructor(
         }
     }
 
-    fun restoreDeletedNote(noteId: Int) = viewModelScope.launch(dispatcher.IO) {
-        notesRepository.restoreDeletedNote(noteId)
+    fun restoreDeletedNote(noteId: Int) = launchCoroutine {
+        withContext(dispatcher.IO){
+            notesRepository.restoreDeletedNote(noteId)
+        }
     }
 }

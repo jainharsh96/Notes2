@@ -4,8 +4,7 @@ import androidx.compose.runtime.Immutable
 import com.notes.shared.coreUi.UniDirectionalViewModel
 import com.notes.shared.ui.uientity.NoteEntity
 
-interface CreateNoteContract :
-    UniDirectionalViewModel<CreateNoteContract.State, CreateNoteContract.Event, CreateNoteContract.SideEffect> {
+interface CreateNoteContract {
 
     @Immutable
     data class State(val originalNote: NoteEntity? = null, val enteredMsg: String = "") {

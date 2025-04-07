@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.notes.shared.AppDispatcherProvider
 import com.notes.shared.repository.NotesRepository
+import com.notes.shared.ui.BaseViewModel
 import com.notes.shared.ui.NotesRoutes
+import com.notes.shared.ui.notesscreen.NotesContract
 import com.notes.shared.ui.uientity.NoteEntity
 import com.notes.shared.utils.DateFormatter
 import kotlinx.coroutines.delay
@@ -21,7 +23,7 @@ class CreateNoteViewModel constructor(
     private val savedStateHandle: SavedStateHandle,
     private val notesRepository: NotesRepository,
     private val dispatcher: AppDispatcherProvider
-) : ViewModel(), CreateNoteContract {
+) : BaseViewModel<CreateNoteContract.State, CreateNoteContract.Event, CreateNoteContract.SideEffect>() {
 
     private val noteId : Int? = savedStateHandle[NotesRoutes.ARG_NOTES_ID]
     private val isOpenRecording : Boolean = savedStateHandle[NotesRoutes.ARG_OPEN_RECORDING] ?: false
@@ -33,7 +35,7 @@ class CreateNoteViewModel constructor(
     override val sideEffect = _sideEffect.asSharedFlow()
 
     override fun event(event: CreateNoteContract.Event) {
-        viewModelScope.launch {
+        launchCoroutine {
             when (event) {
                 CreateNoteContract.Event.ClickBack -> _sideEffect.emit(CreateNoteContract.SideEffect.ClickBack)
                 CreateNoteContract.Event.ClickRecordNotes -> _sideEffect.emit(CreateNoteContract.SideEffect.StartRecordNotes)
@@ -43,12 +45,6 @@ class CreateNoteViewModel constructor(
                 is CreateNoteContract.Event.OnType -> onType(event.msg)
                 is CreateNoteContract.Event.AddMessage -> addMsg(event.msg)
             }
-        }
-    }
-
-    private fun scopeIO(content: suspend () -> Unit) {
-        viewModelScope.launch(dispatcher.IO) {
-            content.invoke()
         }
     }
 

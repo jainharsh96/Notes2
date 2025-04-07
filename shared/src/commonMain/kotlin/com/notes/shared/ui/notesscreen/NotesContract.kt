@@ -3,8 +3,7 @@ package com.notes.shared.ui.notesscreen
 import com.notes.shared.coreUi.UniDirectionalViewModel
 import com.notes.shared.ui.uientity.NoteEntity
 
-interface NotesContract :
-    UniDirectionalViewModel<NotesContract.State, NotesContract.Event, NotesContract.SideEffect> {
+interface NotesContract {
 
     data class State(
         val isDraftState: Boolean,
