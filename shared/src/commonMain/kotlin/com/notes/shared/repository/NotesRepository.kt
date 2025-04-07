@@ -3,6 +3,7 @@ package com.notes.shared.repository
 import com.notes.shared.db.NotesDao
 import com.notes.shared.db.DeletedNote
 import com.notes.shared.db.Note
+import com.notes.shared.db.NotesDatabase
 import com.notes.shared.db.toNote
 import com.notes.shared.db.toNoteEntity
 import com.notes.shared.ui.uientity.NoteEntity
@@ -23,7 +24,10 @@ interface NotesRepository {
     suspend fun restoreDeletedNote(noteId: Int)
 }
 
-class NotesRepositoryImpl constructor(private val notesDao: NotesDao) : NotesRepository {
+class NotesRepositoryImpl constructor() : NotesRepository {
+
+    private val notesDao: NotesDao
+        get() = NotesDatabase.databaseObj!!.notesDao()
 
     override
     fun fetchAllNotes(state: Int) = notesDao.fetchAllNotes(state).map { it.map { it.toNoteEntity() } }

@@ -11,8 +11,5 @@ interface Platform {
 
 expect fun getPlatform(): Platform
 
-@Composable
-expect fun setSystemBarColorAndIcon(color : Color, isDarkIcon : Boolean)
-
-expect fun getDatabaseBuilder() : RoomDatabase.Builder<NotesDatabase>
+expect fun getDatabaseBuilder(databaseName : String, password : String) : RoomDatabase.Builder<NotesDatabase>
 

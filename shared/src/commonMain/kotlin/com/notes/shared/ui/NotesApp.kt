@@ -13,11 +13,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.notes.shared.NotesDependencies
 import com.notes.shared.ui.createnotescreen.CreateNoteScreenShared
 import com.notes.shared.ui.createnotescreen.CreateNoteViewModel
 import com.notes.shared.ui.notesscreen.NotesScreenShared
 import com.notes.shared.ui.notesscreen.NotesViewModel
 import com.notes.shared.ui.settingscreen.SettingScreenShared
+import com.notes.shared.ui.settingscreen.SettingViewModel
 import org.koin.compose.KoinContext
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.annotation.KoinExperimentalAPI
@@ -72,7 +74,9 @@ fun NotesApp(
                 route = NotesNavigation.NotesSettingScreen.destination,
                 arguments = NotesNavigation.NotesSettingScreen.arguments
             ) {
-                SettingScreenShared(onAction = navActionHandler::handleNavigationActions)
+                val savedStateHandle = it.getSavedStateHandleWithArguments()
+                val viewModel = koinViewModel<SettingViewModel>{ parametersOf(savedStateHandle) }
+                SettingScreenShared(onAction = navActionHandler::handleNavigationActions, viewModel.getNotesSyncManager())
             }
         }
     }

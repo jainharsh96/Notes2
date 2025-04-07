@@ -66,6 +66,12 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    packagingOptions {
+        resources {
+            excludes += "META-INF/DEPENDENCIES"
+        }
+    }
+
 //    kotlinOptions {
 //        jvmTarget = "1.8"
 //    }
@@ -138,4 +144,9 @@ dependencies {
     testImplementation(libs.mockito.core)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
+
+    implementation("com.google.android.gms:play-services-auth:21.3.0") // Google Sign-In
+    implementation("com.google.apis:google-api-services-drive:v3-rev20230822-2.0.0") // Drive API
+    implementation("com.google.http-client:google-http-client-android:1.43.3")
+    implementation("com.google.api-client:google-api-client-android:2.2.0")
 }

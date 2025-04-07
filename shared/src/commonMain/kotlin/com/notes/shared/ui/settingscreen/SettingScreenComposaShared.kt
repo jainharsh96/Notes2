@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.notes.shared.NotesSyncManager
 import com.notes.shared.painterResource
 import com.notes.shared.ui.NavigationAction
 import com.notes.shared.utils.colorResource
@@ -29,7 +29,7 @@ import notes2.shared.generated.resources.white
 
 
 @Composable
-fun SettingScreenShared(onAction: (NavigationAction) -> Unit) {
+fun SettingScreenShared(onAction: (NavigationAction) -> Unit, notesSyncManager: NotesSyncManager?) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -39,21 +39,28 @@ fun SettingScreenShared(onAction: (NavigationAction) -> Unit) {
         SettingScreenHeader {
             onAction.invoke(NavigationAction.Back)
         }
-        RestoreDataCard(restoreData = {
-            onAction.invoke(NavigationAction.RestoreData)
-        }, onClickBack = {
-            onAction.invoke(NavigationAction.Back)
-        })
-        DraftNoteCard(openDraftNote = {
-            onAction.invoke(NavigationAction.OpenDraftNote)
-        }, onClickBack = {
-            onAction.invoke(NavigationAction.Back)
-        })
+        DraftNoteCard(
+            openDraftNote = {
+                onAction.invoke(NavigationAction.OpenDraftNote)
+            }
+        )
+        if (notesSyncManager?.hasSupportSync() == true) {
+            RestoreDataCard(
+                restoreData = {
+                    notesSyncManager.restoreDataFromCloud()
+                }
+            )
+            SyncDataCard(
+                syncData = {
+                    notesSyncManager.syncDataToCloud()
+                }
+            )
+        }
     }
 }
 
 @Composable
-fun RestoreDataCard(restoreData: () -> Unit, onClickBack: () -> Unit) {
+fun RestoreDataCard(restoreData: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -73,12 +80,10 @@ fun RestoreDataCard(restoreData: () -> Unit, onClickBack: () -> Unit) {
                 painter = painterResource(Res.drawable.ic_restore),
                 contentDescription = "",
                 modifier = Modifier
-                    .padding(end = 16.dp)
-                    .clickable(onClick = onClickBack),
-                alpha = 0.4f
+                    .padding(end = 16.dp),
             )
             Text(
-                text = "Restore Data",
+                text = "Restore Data from Cloud",
                 color = colorResource(Res.string.colorUpdate),
                 style = TextStyle(fontSize = 16.sp),
                 fontWeight = FontWeight.Bold
@@ -88,7 +93,40 @@ fun RestoreDataCard(restoreData: () -> Unit, onClickBack: () -> Unit) {
 }
 
 @Composable
-fun DraftNoteCard(openDraftNote: () -> Unit, onClickBack: () -> Unit) {
+fun SyncDataCard(syncData: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
+            .clickable(onClick = syncData),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = colorResource(Res.string.white)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(Res.drawable.ic_restore),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(end = 16.dp),
+            )
+            Text(
+                text = "Sync Data to Cloud",
+                color = colorResource(Res.string.colorUpdate),
+                style = TextStyle(fontSize = 16.sp),
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+fun DraftNoteCard(openDraftNote: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -108,9 +146,7 @@ fun DraftNoteCard(openDraftNote: () -> Unit, onClickBack: () -> Unit) {
                 painter = painterResource(Res.drawable.ic_restore),
                 contentDescription = "",
                 modifier = Modifier
-                    .padding(end = 16.dp)
-                    .clickable(onClick = onClickBack),
-                alpha = 0.4f
+                    .padding(end = 16.dp),
             )
             Text(
                 text = "Drafted Notes",

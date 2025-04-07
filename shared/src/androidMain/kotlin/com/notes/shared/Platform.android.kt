@@ -2,9 +2,6 @@ package com.notes.shared
 
 import android.content.Context
 import android.os.Environment
-import android.widget.Toast
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.notes.shared.db.NotesDatabase
@@ -13,6 +10,9 @@ import net.sqlcipher.database.SQLiteDatabaseHook
 import net.sqlcipher.database.SupportFactory
 
 private lateinit var context: Context
+
+//const val DATABASE_PASSWORD = "thisispassword123!@#"
+
 
 class AndroidPlatform : Platform {
     override val name: String = "Android ${android.os.Build.VERSION.SDK_INT}"
@@ -24,13 +24,11 @@ fun setApplicationContext(appContext: Context){
     context = appContext
 }
 
-actual fun getDatabaseBuilder(): RoomDatabase.Builder<NotesDatabase> {
-    val DATABASE_NAME = "NotesDb2.db"
-    val DATABASE_PATH = "/Notes2/$DATABASE_NAME"
-    val DATABASE_PASSWORD = "thisispassword123!@#"
+fun getDatabasePath() = Environment.getExternalStorageDirectory().absolutePath + "/Notes2/${NotesDatabase.DATABASE_FILE_NAME_V2}"
 
+actual fun getDatabaseBuilder(databaseName : String, password : String): RoomDatabase.Builder<NotesDatabase> {
     val appContext = context
-    val dbFile = Environment.getExternalStorageDirectory().absolutePath + DATABASE_PATH
+    val dbFile = getDatabasePath()
 
     val sSQLiteDatabaseHook: SQLiteDatabaseHook = object : SQLiteDatabaseHook {
         override fun preKey(database: SQLiteDatabase) {}
@@ -45,19 +43,11 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<NotesDatabase> {
         }
     }
 
-    val passPhrases = SQLiteDatabase.getBytes(DATABASE_PASSWORD.toCharArray())
+    val passPhrases = SQLiteDatabase.getBytes(password.toCharArray())
     val databaseSupportFactory = SupportFactory(passPhrases, sSQLiteDatabaseHook, true)
 
     return Room.databaseBuilder<NotesDatabase>(
         context = appContext,
         name = dbFile
     ).openHelperFactory(databaseSupportFactory)
-}
-
-@Composable
-actual fun setSystemBarColorAndIcon(
-    color: Color,
-    isDarkIcon: Boolean
-) {
-    // TODO
 }

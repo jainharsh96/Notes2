@@ -3,11 +3,12 @@ package com.notes.shared.ui.notesscreen
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.notes.shared.db.Note
-import com.notes.shared.repository.NotesRepository
 import com.notes.shared.AppDispatcherProvider
+import com.notes.shared.NotesDependencies
+import com.notes.shared.db.Note
+import com.notes.shared.domain.NotesDbUseCase
+import com.notes.shared.repository.NotesRepository
 import com.notes.shared.ui.NotesRoutes.ARG_IS_DRAFT_SCREEN
-import com.notes.shared.ui.notesscreen.NotesContract
 import com.notes.shared.ui.uientity.NoteEntity
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +24,7 @@ import kotlinx.coroutines.withContext
 class NotesViewModel constructor(
     private val savedStateHandle: SavedStateHandle,
     private val notesRepository: NotesRepository,
+    private val notesDbUseCase: NotesDbUseCase,
     private val dispatcher: AppDispatcherProvider
 ) : ViewModel(), NotesContract {
 
@@ -33,6 +35,18 @@ class NotesViewModel constructor(
 
     private val _sideEffect = MutableSharedFlow<NotesContract.SideEffect>()
     override val sideEffect: SharedFlow<NotesContract.SideEffect> = _sideEffect
+
+    init {
+        viewModelScope.launch {
+            if (isPasswordSet()){
+                fetchNotes(if (isDraftScreen) Note.DRAFTED else Note.SAVED)
+            } else {
+                _state.update {
+                    it.copy(alertDialogState = NotesContract.AlertDialogState())
+                }
+            }
+        }
+    }
 
     override fun event(event: NotesContract.Event) {
         viewModelScope.launch {
@@ -53,8 +67,33 @@ class NotesViewModel constructor(
                 is NotesContract.Event.RecordNotes -> _sideEffect.emit(NotesContract.SideEffect.RecordNotes)
                 is NotesContract.Event.OpenSettings -> _sideEffect.emit(NotesContract.SideEffect.OpenSettings)
                 is NotesContract.Event.IsDraftScreen -> Unit
+                is NotesContract.Event.EnteredPassword -> {
+                    event.password?.let {
+                        onEnterPassword(it)
+                    }
+                }
             }
         }
+    }
+
+    private suspend fun onEnterPassword(password : String) = withContext(dispatcher.IO){
+        if (password.isNotEmpty()){
+            NotesDependencies.databasePasswordProvider?.setPassword(password)
+            if (notesDbUseCase.tryInitDb()){
+                _state.update {
+                    it.copy(alertDialogState = null)
+                }
+                fetchNotes(if (isDraftScreen) Note.DRAFTED else Note.SAVED)
+            } else {
+                _state.update {
+                    it.copy(alertDialogState = NotesContract.AlertDialogState(errorMsg = "wrong password"))
+                }
+            }
+        }
+    }
+
+    private suspend fun isPasswordSet() = withContext(dispatcher.IO){
+        return@withContext notesDbUseCase.tryInitDb()
     }
 
     private fun confirmDeleteNote(noteId: Int?) {
@@ -81,9 +120,11 @@ class NotesViewModel constructor(
     }
 
     private suspend fun fetchNotes(state: Int) = withContext(dispatcher.IO) {
-        notesRepository.fetchAllNotes(state).catch { emptyList<Note>() }.collect { notes ->
-            _state.update {
-                it.copy(notes = notes)
+        if (notesDbUseCase.isDBInitialized()){
+            notesRepository.fetchAllNotes(state).catch { emptyList<Note>() }.collect { notes ->
+                _state.update {
+                    it.copy(notes = notes)
+                }
             }
         }
     }

@@ -22,9 +22,7 @@ class IOSPlatform : Platform {
 actual fun getPlatform(): Platform = IOSPlatform()
 
 @OptIn(ExperimentalForeignApi::class)
-actual fun getDatabaseBuilder(): RoomDatabase.Builder<NotesDatabase> {
-    val DATABASE_NAME = "NotesDb2.db"
-
+actual fun getDatabaseBuilder(databaseName : String, password : String): RoomDatabase.Builder<NotesDatabase> {
     val documentsDirectory = NSFileManager.defaultManager.URLForDirectory(
         directory = NSDocumentDirectory,
         inDomain = NSUserDomainMask,
@@ -32,17 +30,9 @@ actual fun getDatabaseBuilder(): RoomDatabase.Builder<NotesDatabase> {
         create = true,
         error = null,
     )?.path ?: NSHomeDirectory()
-    val dbFilePath = "$documentsDirectory/${DATABASE_NAME}"
+    val dbFilePath = "$documentsDirectory/${databaseName}"
     return Room.databaseBuilder<NotesDatabase>(
         name = dbFilePath,
         factory =  { NotesDatabase::class.instantiateImpl() }
     ).setDriver(BundledSQLiteDriver()).addMigrations()
-}
-
-@Composable
-actual fun setSystemBarColorAndIcon(
-    color: Color,
-    isDarkIcon: Boolean
-) {
-    // TODO NOT IMPLEMENTED
 }
