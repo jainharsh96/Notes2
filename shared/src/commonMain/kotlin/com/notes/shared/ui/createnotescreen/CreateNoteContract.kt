@@ -7,7 +7,7 @@ import com.notes.shared.ui.uientity.NoteEntity
 interface CreateNoteContract {
 
     @Immutable
-    data class State(val originalNote: NoteEntity? = null, val enteredMsg: String = "") {
+    data class State(val isLoading : Boolean = true, val originalNote: NoteEntity? = null, val enteredMsg: String = "") {
 
         fun hasNote() = originalNote?.body?.isNotEmpty() ?: false
 

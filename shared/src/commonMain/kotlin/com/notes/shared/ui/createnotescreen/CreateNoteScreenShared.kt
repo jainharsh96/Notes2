@@ -158,8 +158,8 @@ fun NoteInfo(state: CreateNoteContract.State, event: (CreateNoteContract.Event) 
                 innerTextField()
             }
         )
-        if (state.hasNote().not()) {
-            LaunchedEffect(Unit) {
+        LaunchedEffect(state) {
+            if (state.isLoading.not() && state.hasNote().not()){
                 focusRequester.requestFocus()
             }
         }

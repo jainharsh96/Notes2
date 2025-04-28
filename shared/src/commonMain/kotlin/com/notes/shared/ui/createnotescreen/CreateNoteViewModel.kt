@@ -87,14 +87,13 @@ class CreateNoteViewModel constructor(
     }
 
     private suspend fun fetchNote(noteId: Int?) = withContext(dispatcher.IO) {
-        noteId?.let {
-            _state.update {
-                val originalNote = notesRepository.fetchNote(noteId = noteId)
-                it.copy(
-                    originalNote = originalNote,
-                    enteredMsg = originalNote?.body ?: ""
-                )
-            }
+        val originalNote = noteId?.let { notesRepository.fetchNote(noteId = noteId) }
+        _state.update {
+            it.copy(
+                isLoading = false,
+                originalNote = originalNote,
+                enteredMsg = originalNote?.body ?: ""
+            )
         }
         delay(50)
         if (isOpenRecording){
