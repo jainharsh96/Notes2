@@ -13,7 +13,7 @@ import kotlinx.coroutines.IO
     entities = [Note::class, DeletedNote::class],
     exportSchema = true,
     version = 2,
-    autoMigrations = arrayOf(AutoMigration(from = 1, to = 2))
+  //  autoMigrations = arrayOf(AutoMigration(from = 1, to = 2))
 )
 abstract class NotesDatabase : RoomDatabase() {
     abstract fun notesDao(): NotesDao

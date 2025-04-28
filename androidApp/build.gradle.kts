@@ -6,7 +6,6 @@ plugins {
     id(libs.plugins.jetBrainCompose.get().pluginId)
     id(libs.plugins.composeCompiler.get().pluginId)
     alias(libs.plugins.android.application)
-    alias(libs.plugins.buildConfig)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.sqlDelight)
 }
