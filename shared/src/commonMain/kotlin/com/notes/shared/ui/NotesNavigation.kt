@@ -14,12 +14,17 @@ object NotesRoutes {
     const val NOTES_SCREEN_ROUTE = "notes_screen"
     const val CREATE_NOTES_SCREEN_ROUTE = "create_notes_screen"
     const val NOTES_SETTING_SCREEN_ROUTE = "notes_setting_screen"
+    const val NOTES_SECURE_LOCK_SCREEN = "notes_secure_lock"
 }
 
 sealed class NotesNavigation(
     val arguments: List<NamedNavArgument>,
     val destination: String
 ) {
+    object SecureLockScreen : NotesNavigation(arguments = emptyList(), destination = NotesRoutes.NOTES_SECURE_LOCK_SCREEN) {
+        fun path() = NotesRoutes.NOTES_SECURE_LOCK_SCREEN
+    }
+
     object NotesScreen :
         NotesNavigation(
             arguments = listOf(navArgument(ARG_IS_DRAFT_SCREEN) { defaultValue = false }),

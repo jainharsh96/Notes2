@@ -1,6 +1,5 @@
 package com.notes.shared.ui.notesscreen
 
-import com.notes.shared.coreUi.UniDirectionalViewModel
 import com.notes.shared.ui.uientity.NoteEntity
 
 interface NotesContract {
@@ -9,11 +8,12 @@ interface NotesContract {
         val isDraftState: Boolean,
         val alertDialogState : AlertDialogState? = null,
         val notes: List<NoteEntity>?,
-        val confirmToDeleteNoteId: Int? = null
+        val confirmToDeleteNoteId: Int? = null,
+        val unLockAppFirst : Boolean
     ) {
         companion object {
             fun initialState(isDraftState: Boolean) =
-                State(isDraftState = isDraftState, notes = null)
+                State(isDraftState = isDraftState, notes = null, unLockAppFirst = false)
         }
     }
 
@@ -42,6 +42,7 @@ interface NotesContract {
         object AddNotes : SideEffect()
         object RecordNotes : SideEffect()
         object OpenSettings : SideEffect()
+        object GotoLockScreen : SideEffect()
         data class OpenNote(val noteId: Int) : SideEffect()
     }
 }

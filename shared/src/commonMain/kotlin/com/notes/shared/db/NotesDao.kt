@@ -27,6 +27,9 @@ interface NotesDao {
     @Query("SELECT * FROM notes WHERE id = :id")
     suspend fun findNoteById(id: Int): Note?
 
+    @Query("SELECT * FROM notes WHERE id = 1")
+    suspend fun isDbAccessible(): Note?
+
     @Query("update Notes set state = :state where id = :id")
     suspend fun changeNoteState(id: Int, state: Int): Int
 

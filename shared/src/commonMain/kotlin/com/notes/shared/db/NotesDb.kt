@@ -37,7 +37,7 @@ abstract class NotesDatabase : RoomDatabase() {
             if (isDBInitialized()) return true
             val db = runCatching {
                 val db = getDatabase()
-                db.notesDao().findNoteById(1) // to check whether DB is accessible or not with given password
+                db.notesDao().isDbAccessible() // to check whether DB is accessible or not with given password
                 databaseObj = db
                 databaseObj
             }.getOrNull()

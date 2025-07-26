@@ -159,6 +159,39 @@ fun DraftNoteCard(openDraftNote: () -> Unit) {
 }
 
 @Composable
+fun AskScreenUnLockPassword(openDraftNote: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
+            .clickable { openDraftNote.invoke() },
+        shape = RoundedCornerShape(8.dp),
+        colors = CardDefaults.cardColors(containerColor = colorResource(Res.string.white)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(Res.drawable.ic_restore),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(end = 16.dp),
+            )
+            Text(
+                text = "Drafted Notes",
+                color = colorResource(Res.string.colorUpdate),
+                style = TextStyle(fontSize = 16.sp),
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
 fun SettingScreenHeader(onClickBack: () -> Unit) {
     Row(
         modifier = Modifier

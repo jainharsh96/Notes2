@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notes.shared.painterResource
 import com.notes.shared.ui.NavigationAction
+import com.notes.shared.ui.NavigationAction.NavigateToCreateNoteScreen
 import com.notes.shared.ui.uientity.NoteEntity
 import com.notes.shared.utils.colorResource
 import kotlinx.coroutines.flow.SharedFlow
@@ -72,10 +73,10 @@ fun NotesScreenShared(
         event(NotesContract.Event.FetchNotes)
     }
     LaunchedEffect(key1 = Unit) {
-        effect.collectLatest { sideEffect ->
+        effect.collect { sideEffect ->
             when (sideEffect) {
                 NotesContract.SideEffect.AddNotes -> onAction.invoke(
-                    NavigationAction.NavigateToCreateNoteScreen(
+                    NavigateToCreateNoteScreen(
                         noteId = null,
                         openRecording = false
                     )
@@ -83,7 +84,7 @@ fun NotesScreenShared(
 
                 NotesContract.SideEffect.ClickBack -> onAction.invoke(NavigationAction.Back)
                 is NotesContract.SideEffect.OpenNote -> onAction.invoke(
-                    NavigationAction.NavigateToCreateNoteScreen(
+                    NavigateToCreateNoteScreen(
                         noteId = sideEffect.noteId,
                         openRecording = false
                     )
@@ -91,12 +92,19 @@ fun NotesScreenShared(
 
                 NotesContract.SideEffect.OpenSettings -> onAction.invoke(NavigationAction.NavigateToSettingScreen)
                 NotesContract.SideEffect.RecordNotes -> onAction.invoke(
-                    NavigationAction.NavigateToCreateNoteScreen(
+                    NavigateToCreateNoteScreen(
                         noteId = null,
                         openRecording = true
                     )
                 )
+
+                NotesContract.SideEffect.GotoLockScreen -> onAction.invoke(NavigationAction.GotoLockScreen)
             }
+        }
+    }
+    LaunchedEffect(state) {
+        if (state.unLockAppFirst){
+            onAction.invoke(NavigationAction.GotoLockScreen)
         }
     }
     Box(

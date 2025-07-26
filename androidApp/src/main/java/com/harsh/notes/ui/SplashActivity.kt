@@ -20,7 +20,7 @@ class SplashActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_layout)
-        if (BuildConfig.DEBUG){
+        if (true){   // todo handle it later
             openNotesActivity()
         } else {
             validateBiometric()

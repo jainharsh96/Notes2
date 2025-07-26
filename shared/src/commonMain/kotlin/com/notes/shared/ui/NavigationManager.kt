@@ -20,4 +20,5 @@ sealed class NavigationAction {
     object RestoreData : NavigationAction()
     object OpenDraftNote : NavigationAction()
     object RecordNotes : NavigationAction()
+    object GotoLockScreen : NavigationAction()
 }

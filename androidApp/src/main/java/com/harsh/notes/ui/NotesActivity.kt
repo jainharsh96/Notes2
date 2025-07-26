@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.harsh.notes.NotesSyncManagerAndroidImpl
+import com.notes.shared.DataStoreAndroidImpl
 import com.notes.shared.DatabasePasswordProviderAndroidImpl
 import com.notes.shared.NotesDependencies
 import com.notes.shared.ui.NotesApp
@@ -30,7 +31,8 @@ class NotesActivity : BaseActivity() {
         enableEdgeToEdge()
         NotesDependencies.init(
             notesSyncManager = NotesSyncManagerAndroidImpl(this),
-            databasePasswordProvider = DatabasePasswordProviderAndroidImpl(this.applicationContext)
+            databasePasswordProvider = DatabasePasswordProviderAndroidImpl(this.applicationContext),
+            dataStore = DataStoreAndroidImpl(this.applicationContext)
         )
         setContent {
             val systemUiController = rememberSystemUiController()

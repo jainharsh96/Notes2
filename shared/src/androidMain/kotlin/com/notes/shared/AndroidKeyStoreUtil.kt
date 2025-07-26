@@ -10,7 +10,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 import android.util.Base64
 
-object KeystoreUtil {
+object AndroidKeystoreUtil {
     private const val KEYSTORE_PROVIDER = "AndroidKeyStore"
     private const val KEY_ALIAS = "Notes-app-pass-alias"
     private const val TRANSFORMATION = "AES/CBC/PKCS7Padding"
@@ -38,7 +38,7 @@ object KeystoreUtil {
     }
 
     // Encrypt a password and return the encrypted data with IV
-    private fun encryptPassword(password: String): Pair<String, String>? {
+    private fun encryptData(password: String): Pair<String, String>? {
         return try {
             val cipher = Cipher.getInstance(TRANSFORMATION)
             cipher.init(Cipher.ENCRYPT_MODE, getOrCreateSecretKey())
@@ -55,7 +55,7 @@ object KeystoreUtil {
     }
 
     // Decrypt a password using the encrypted data and IV
-    private fun decryptPassword(encryptedPassword: String, iv: String): String? {
+    private fun decryptData(encryptedPassword: String, iv: String): String? {
         return try {
             val cipher = Cipher.getInstance(TRANSFORMATION)
             val ivSpec = IvParameterSpec(Base64.decode(iv, Base64.DEFAULT))
@@ -70,7 +70,7 @@ object KeystoreUtil {
 
     // Save encrypted password to SharedPreferences
     fun savePassword(context: Context, password: String) {
-        val (encryptedPassword, iv) = encryptPassword(password) ?: return
+        val (encryptedPassword, iv) = encryptData(password) ?: return
         context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE).edit()
             .putString("encrypted_password", encryptedPassword)
             .putString("iv", iv)
@@ -83,7 +83,24 @@ object KeystoreUtil {
         val encryptedPassword = prefs.getString("encrypted_password", null)
         val iv = prefs.getString("iv", null)
         return if (encryptedPassword != null && iv != null) {
-            decryptPassword(encryptedPassword, iv)
+            decryptData(encryptedPassword, iv)
+        } else {
+            null
+        }
+    }
+
+    fun setData(context: Context, key : String, value: String) {
+        context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE).edit()
+            .putString(key, value)
+            .apply()
+    }
+
+    fun getData(context: Context, key : String): String? {
+        val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
+        val encryptedPassword = prefs.getString(key, null)
+        val iv = prefs.getString("iv", null)
+        return if (encryptedPassword != null && iv != null) {
+            return encryptedPassword
         } else {
             null
         }

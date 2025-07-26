@@ -7,9 +7,9 @@ class NotesDbUseCase {
 
     fun isDBInitialized() = NotesDatabase.isDBInitialized()
 
-    suspend fun tryInitDb() = NotesDatabase.tryInitDb()
+    suspend fun initDb() = NotesDatabase.tryInitDb()
 
     suspend fun isPasswordSetAndCorrect() : Boolean {
-        return NotesDependencies.databasePasswordProvider?.getPassword()?.isNotEmpty() == true && tryInitDb()
+        return NotesDependencies.databasePasswordProvider?.getPassword()?.isNotEmpty() == true && initDb()
     }
 }

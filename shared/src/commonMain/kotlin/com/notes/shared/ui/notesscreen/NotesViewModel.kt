@@ -1,10 +1,9 @@
 package com.notes.shared.ui.notesscreen
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.notes.shared.AppDispatcherProvider
 import com.notes.shared.NotesDependencies
+import com.notes.shared.ScreenLockUtil
 import com.notes.shared.db.Note
 import com.notes.shared.domain.NotesDbUseCase
 import com.notes.shared.repository.NotesRepository
@@ -15,10 +14,10 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 
@@ -35,16 +34,22 @@ class NotesViewModel constructor(
     override val state: StateFlow<NotesContract.State> = _state.asStateFlow()
 
     private val _sideEffect = MutableSharedFlow<NotesContract.SideEffect>()
-    override val sideEffect: SharedFlow<NotesContract.SideEffect> = _sideEffect
+    override val sideEffect: SharedFlow<NotesContract.SideEffect> = _sideEffect.asSharedFlow()
 
     init {
         launchCoroutine {
             withContext(dispatcher.IO){
-                if (isPasswordSet()){
-                    fetchNotes(if (isDraftScreen) Note.DRAFTED else Note.SAVED)
+                if (ScreenLockUtil.isScreenUnLocked){
+                    if (isDbPasswordSet()){
+                        fetchNotes(if (isDraftScreen) Note.DRAFTED else Note.SAVED)
+                    } else {
+                        _state.update {
+                            it.copy(alertDialogState = NotesContract.AlertDialogState())
+                        }
+                    }
                 } else {
                     _state.update {
-                        it.copy(alertDialogState = NotesContract.AlertDialogState())
+                        it.copy(unLockAppFirst = true)
                     }
                 }
             }
@@ -82,7 +87,7 @@ class NotesViewModel constructor(
     private suspend fun onEnterPassword(password : String) = withContext(dispatcher.IO){
         if (password.isNotEmpty()){
             NotesDependencies.databasePasswordProvider?.setPassword(password)
-            if (notesDbUseCase.tryInitDb()){
+            if (notesDbUseCase.initDb()){
                 _state.update {
                     it.copy(alertDialogState = null)
                 }
@@ -95,8 +100,8 @@ class NotesViewModel constructor(
         }
     }
 
-    private suspend fun isPasswordSet() = withContext(dispatcher.IO){
-        return@withContext notesDbUseCase.tryInitDb()
+    private suspend fun isDbPasswordSet() = withContext(dispatcher.IO){
+        return@withContext notesDbUseCase.initDb()
     }
 
     private fun confirmDeleteNote(noteId: Int?) {
@@ -122,11 +127,13 @@ class NotesViewModel constructor(
         notesRepository.changeNoteState(noteId = noteId, state = Note.SAVED)
     }
 
-    private suspend fun fetchNotes(state: Int) = withContext(dispatcher.IO) {
-        if (notesDbUseCase.isDBInitialized()){
-            notesRepository.fetchAllNotes(state).catch { emptyList<Note>() }.collect { notes ->
-                _state.update {
-                    it.copy(notes = notes)
+    private fun fetchNotes(state: Int) = launchCoroutine {
+        withContext(dispatcher.IO) {
+            if (notesDbUseCase.isDBInitialized()){
+                notesRepository.fetchAllNotes(state).catch { emptyList<Note>() }.collect { notes ->
+                    _state.update {
+                        it.copy(notes = notes)
+                    }
                 }
             }
         }

@@ -18,6 +18,8 @@ import com.notes.shared.ui.createnotescreen.CreateNoteScreenShared
 import com.notes.shared.ui.createnotescreen.CreateNoteViewModel
 import com.notes.shared.ui.notesscreen.NotesScreenShared
 import com.notes.shared.ui.notesscreen.NotesViewModel
+import com.notes.shared.ui.securelockScreen.SecureLockScreen
+import com.notes.shared.ui.securelockScreen.SecureLockScreenViewmodel
 import com.notes.shared.ui.settingscreen.SettingScreenShared
 import com.notes.shared.ui.settingscreen.SettingViewModel
 import org.koin.compose.KoinContext
@@ -36,6 +38,25 @@ fun NotesApp(
     KoinContext {
         NavHost(modifier = Modifier,
             navController = navController, startDestination = startDestination) {
+
+            composable(route = NotesNavigation.SecureLockScreen.destination) {
+                val viewModel = koinViewModel<SecureLockScreenViewmodel>()
+                val state by viewModel.state.collectAsState()
+                val event = remember(viewModel) {
+                    return@remember viewModel::event
+                }
+                SecureLockScreen(
+                    state = state,
+                    event = event,
+                    effect = viewModel.sideEffect,
+                    onGoBack = {
+                        navActionHandler.closeApp()
+                    },
+                    onGoForward = {
+                        navActionHandler.goToNotesApp()
+                    }
+                )
+            }
             composable(
                 route = NotesNavigation.NotesScreen.destination,
                 arguments = NotesNavigation.NotesScreen.arguments
@@ -88,6 +109,24 @@ fun restoreData() {
 
 class NotesActionHandler(val navController: NavHostController){
 
+    fun goToNotesApp() = navController.navigate(NotesNavigation.NotesScreen.path()){
+        popUpTo(NotesNavigation.SecureLockScreen.path()){
+            inclusive = true
+        }
+    }
+
+    fun closeApp() {
+        navController.popBackStack(route = NotesNavigation.NotesScreen.path(), inclusive = true)
+    }
+
+    fun navigateToLockScreen(){
+        navController.navigate(NotesNavigation.SecureLockScreen.path()){
+            popUpTo(route = NotesNavigation.NotesScreen.path()){
+                inclusive = true
+            }
+        }
+    }
+
     fun handleNavigationActions(
         action: NavigationAction
     ) {
@@ -112,6 +151,8 @@ class NotesActionHandler(val navController: NavHostController){
             NavigationAction.RecordNotes -> {
                 // TODO IMPLEMENT THIS
             }
+
+            NavigationAction.GotoLockScreen -> navigateToLockScreen()
         }
     }
 }

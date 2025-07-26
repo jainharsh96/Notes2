@@ -20,7 +20,7 @@ annotation class MultiDevicePreview
 @Composable
 @MultiDevicePreview
 fun NotesScreenPreview(){
-    val mockNoteState = NotesContract.State(isDraftState = false, notes = listOf(NoteEntity(id = 1, body = "test", createdDate = "", updatedDate = "")))
+    val mockNoteState = NotesContract.State(isDraftState = false, unLockAppFirst = false, notes = listOf(NoteEntity(id = 1, body = "test", createdDate = "", updatedDate = "")))
     NotesScreenShared(state = mockNoteState, effect = MutableSharedFlow(), onAction = {}) {
         
     }
