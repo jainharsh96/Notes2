@@ -46,10 +46,12 @@ class SecureLockScreenViewmodel() :
                     is SecureLockScreenContract.Event.OnClickAction -> {
                         if (event.password.isEmpty()) return@withContext
 
-                        if (_state.value.passwordState == SecureLockScreenContract.PasswordState.SET_PASS){
-                            matchingPassword = event.password
-                            _state.update {
-                                it.copy(passwordState = SecureLockScreenContract.PasswordState.RE_ENTER_PASS, enteredPassword = "", representedPassword = "")
+                        if (_state.value.passwordState == SecureLockScreenContract.PasswordState.SET_PASS) {
+                            if (event.password.length >= 4 && event.password.length <= 8) {
+                                matchingPassword = event.password
+                                _state.update {
+                                    it.copy(passwordState = SecureLockScreenContract.PasswordState.RE_ENTER_PASS, enteredPassword = "", representedPassword = "")
+                                }
                             }
                         } else if (_state.value.passwordState == SecureLockScreenContract.PasswordState.RE_ENTER_PASS){
                             if (event.password == matchingPassword){
@@ -66,8 +68,10 @@ class SecureLockScreenViewmodel() :
                     }
 
                     is SecureLockScreenContract.Event.OnEnterPassword -> {
-                        _state.update {
-                            it.copy(enteredPassword = event.password, representedPassword = "*".repeat(event.password.length))
+                        if (event.password.length <= 8){
+                            _state.update {
+                                it.copy(enteredPassword = event.password, representedPassword = "*".repeat(event.password.length))
+                            }
                         }
                     }
                 }

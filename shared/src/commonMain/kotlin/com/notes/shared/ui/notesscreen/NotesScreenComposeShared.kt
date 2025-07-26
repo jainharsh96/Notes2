@@ -50,7 +50,6 @@ import com.notes.shared.ui.NavigationAction.NavigateToCreateNoteScreen
 import com.notes.shared.ui.uientity.NoteEntity
 import com.notes.shared.utils.colorResource
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import notes2.shared.generated.resources.Res
 import notes2.shared.generated.resources.add_notes
 import notes2.shared.generated.resources.colorPrimaryDark
@@ -147,7 +146,7 @@ fun NotesScreenShared(
         }
     }
     if(state.alertDialogState != null){
-        PasswordAlertDialog(
+        DbPasswordAlertDialog(
             errorMsg = state.alertDialogState.errorMsg,
             onConfirm = {
                 event(NotesContract.Event.EnteredPassword(it))
@@ -157,7 +156,7 @@ fun NotesScreenShared(
 }
 
 @Composable
-fun PasswordAlertDialog(
+fun DbPasswordAlertDialog(
     errorMsg : String?,
     onConfirm: (String) -> Unit
 ) {
@@ -165,7 +164,7 @@ fun PasswordAlertDialog(
 
     AlertDialog(
         onDismissRequest = {  },
-        title = { Text("Enter Password") },
+        title = { Text("Enter Database Password") },
         text = {
             TextField(
                 value = password,

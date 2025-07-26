@@ -92,17 +92,12 @@ object AndroidKeystoreUtil {
     fun setData(context: Context, key : String, value: String) {
         context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE).edit()
             .putString(key, value)
+           // .putString("iv", iv)
             .apply()
     }
 
     fun getData(context: Context, key : String): String? {
         val prefs = context.getSharedPreferences("secure_prefs", Context.MODE_PRIVATE)
-        val encryptedPassword = prefs.getString(key, null)
-        val iv = prefs.getString("iv", null)
-        return if (encryptedPassword != null && iv != null) {
-            return encryptedPassword
-        } else {
-            null
-        }
+        return prefs.getString(key, null)
     }
 }

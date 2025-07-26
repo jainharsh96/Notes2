@@ -87,7 +87,7 @@ class NotesViewModel constructor(
     private suspend fun onEnterPassword(password : String) = withContext(dispatcher.IO){
         if (password.isNotEmpty()){
             NotesDependencies.databasePasswordProvider?.setPassword(password)
-            if (notesDbUseCase.initDb()){
+            if (notesDbUseCase.tryInitDb()){
                 _state.update {
                     it.copy(alertDialogState = null)
                 }
@@ -101,7 +101,7 @@ class NotesViewModel constructor(
     }
 
     private suspend fun isDbPasswordSet() = withContext(dispatcher.IO){
-        return@withContext notesDbUseCase.initDb()
+        return@withContext notesDbUseCase.tryInitDb()
     }
 
     private fun confirmDeleteNote(noteId: Int?) {

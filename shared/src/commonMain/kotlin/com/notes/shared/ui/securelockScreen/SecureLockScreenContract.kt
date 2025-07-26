@@ -8,9 +8,9 @@ interface SecureLockScreenContract {
         }
 
         fun getPasswordHeader() = when(passwordState){
-            PasswordState.ENTER_PASS -> "Enter Password"
-            PasswordState.SET_PASS -> "Set Password"
-            PasswordState.RE_ENTER_PASS -> "Re Enter Password"
+            PasswordState.ENTER_PASS -> "Enter Unlock app Password"
+            PasswordState.SET_PASS -> "Set Unlock app Password First(min 4 and max 8 digits)"
+            PasswordState.RE_ENTER_PASS -> "Re Enter Unlock app Password"
         }
     }
 

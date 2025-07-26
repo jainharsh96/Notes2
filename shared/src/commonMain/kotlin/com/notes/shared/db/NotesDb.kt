@@ -1,7 +1,6 @@
 package com.notes.shared.db
 
 
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.notes.shared.NotesDependencies
@@ -21,9 +20,9 @@ abstract class NotesDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_FILE_NAME_V2 = "NotesDb2.db"
 
-        private fun getDBPasscode() = NotesDependencies.databasePasswordProvider?.getPassword().orEmpty()
+        private fun getDBPasscode() = NotesDependencies.databasePasswordProvider?.getPassword()
 
-        private fun getDatabase() = getDatabaseBuilder(databaseName = DATABASE_FILE_NAME_V2, password = getDBPasscode())
+        private fun getNotesDatabase(dbPassword : String) = getDatabaseBuilder(databaseName = DATABASE_FILE_NAME_V2, password = dbPassword)
             .setJournalMode(JournalMode.TRUNCATE)
             .setQueryCoroutineContext(Dispatchers.IO)
             .build()
@@ -34,9 +33,11 @@ abstract class NotesDatabase : RoomDatabase() {
         try to init DB with stored password and validate password is correct or not
          */
         suspend fun tryInitDb() : Boolean {
-            if (isDBInitialized()) return true
+            if (isDBAlreadyInitialized()) return true
             val db = runCatching {
-                val db = getDatabase()
+                val dbPassword = getDBPasscode()
+                if (dbPassword.isNullOrEmpty()) return@runCatching null  // if password is not set, return null
+                val db = getNotesDatabase(dbPassword = dbPassword)
                 db.notesDao().isDbAccessible() // to check whether DB is accessible or not with given password
                 databaseObj = db
                 databaseObj
@@ -44,10 +45,10 @@ abstract class NotesDatabase : RoomDatabase() {
             return db != null
         }
 
-        fun isDBInitialized() = databaseObj != null
+        fun isDBAlreadyInitialized() = databaseObj != null
 
         suspend fun reInitDatabase() {
-            if (isDBInitialized()){
+            if (isDBAlreadyInitialized()){
                 databaseObj?.close()
                 databaseObj = null
             }

@@ -5,11 +5,11 @@ import com.notes.shared.db.NotesDatabase
 
 class NotesDbUseCase {
 
-    fun isDBInitialized() = NotesDatabase.isDBInitialized()
+    fun isDBInitialized() = NotesDatabase.isDBAlreadyInitialized()
 
-    suspend fun initDb() = NotesDatabase.tryInitDb()
+    suspend fun tryInitDb() = NotesDatabase.tryInitDb()
 
     suspend fun isPasswordSetAndCorrect() : Boolean {
-        return NotesDependencies.databasePasswordProvider?.getPassword()?.isNotEmpty() == true && initDb()
+        return NotesDependencies.databasePasswordProvider?.getPassword()?.isNotEmpty() == true && tryInitDb()
     }
 }
