@@ -49,6 +49,7 @@ room = "2.7.0-alpha05"
 sqlite = "2.5.0-alpha05"
 sqlcipher = "4.5.4"
 googleAccompanist = "0.30.1"
+datastore = "1.1.7"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
@@ -110,6 +111,8 @@ androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = 
 androidx-sqlite-bundled = { group = "androidx.sqlite", name = "sqlite-bundled", version.ref = "sqlite" }
 android-database-sqlcipher = { module = "net.zetetic:android-database-sqlcipher", version.ref = "sqlcipher" }
 google-accompanist = {module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "googleAccompanist"}
+androidx-datastore = { group = "androidx.datastore", name = "datastore", version.ref = "datastore" }
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
 
 [plugins]
 multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

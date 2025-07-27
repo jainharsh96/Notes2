@@ -13,7 +13,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
-class SecureLockScreenViewmodel() :
+class SecureLockScreenViewmodel(
+    private val screenLockUtil: ScreenLockUtil,
+) :
     BaseViewModel<SecureLockScreenContract.State, SecureLockScreenContract.Event, SecureLockScreenContract.SideEffect>() {
 
     private val _state = MutableStateFlow(SecureLockScreenContract.State.initialState())
@@ -27,10 +29,14 @@ class SecureLockScreenViewmodel() :
     private var matchingPassword : String? = null
 
     init {
-        matchingPassword = ScreenLockUtil.getUnlockPassword()
-        if (matchingPassword.isNullOrEmpty()){
-            _state.update {
-                it.copy(passwordState = SecureLockScreenContract.PasswordState.SET_PASS)
+        launchCoroutine {
+            withContext(Dispatchers.IO) {
+                matchingPassword = screenLockUtil.getUnlockPassword()
+                if (matchingPassword.isNullOrEmpty()){
+                    _state.update {
+                        it.copy(passwordState = SecureLockScreenContract.PasswordState.SET_PASS)
+                    }
+                }
             }
         }
     }
@@ -55,13 +61,13 @@ class SecureLockScreenViewmodel() :
                             }
                         } else if (_state.value.passwordState == SecureLockScreenContract.PasswordState.RE_ENTER_PASS){
                             if (event.password == matchingPassword){
-                                ScreenLockUtil.setUnlockPassword(event.password)
-                                ScreenLockUtil.setScreenUnlocked()
+                                screenLockUtil.setUnlockPassword(event.password)
+                                screenLockUtil.setScreenUnlocked()
                                 _sideEffect.emit(SecureLockScreenContract.SideEffect.GoForward)
                             }
                         } else {
                             if (event.password == matchingPassword){
-                                ScreenLockUtil.setScreenUnlocked()
+                                screenLockUtil.setScreenUnlocked()
                                 _sideEffect.emit(SecureLockScreenContract.SideEffect.GoForward)
                             }
                         }

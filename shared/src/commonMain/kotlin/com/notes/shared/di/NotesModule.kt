@@ -2,6 +2,8 @@ package com.notes.shared.di
 
 import com.notes.shared.AppDispatcherImpl
 import com.notes.shared.AppDispatcherProvider
+import com.notes.shared.NotesDependencies
+import com.notes.shared.ScreenLockUtil
 import com.notes.shared.domain.NotesDbUseCase
 import com.notes.shared.repository.NotesRepository
 import com.notes.shared.repository.NotesRepositoryImpl
@@ -32,6 +34,7 @@ val viewModels = module {
 
 val useCaseModule = module {
     factory { NotesDbUseCase() }
+    single { ScreenLockUtil(dataStore = NotesDependencies.dataStore) }
 }
 
 val notesModule = listOf(

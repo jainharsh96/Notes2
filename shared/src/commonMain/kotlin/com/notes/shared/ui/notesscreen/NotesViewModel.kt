@@ -25,7 +25,8 @@ class NotesViewModel constructor(
     private val savedStateHandle: SavedStateHandle,
     private val notesRepository: NotesRepository,
     private val notesDbUseCase: NotesDbUseCase,
-    private val dispatcher: AppDispatcherProvider
+    private val dispatcher: AppDispatcherProvider,
+    private val screenLockUtil: ScreenLockUtil
 ) : BaseViewModel<NotesContract.State, NotesContract.Event, NotesContract.SideEffect>() {
 
     private val isDraftScreen = savedStateHandle[ARG_IS_DRAFT_SCREEN] ?: false
@@ -39,7 +40,7 @@ class NotesViewModel constructor(
     init {
         launchCoroutine {
             withContext(dispatcher.IO){
-                if (ScreenLockUtil.isScreenUnLocked){
+                if (screenLockUtil.isScreenUnLocked){
                     if (isDbPasswordSet()){
                         fetchNotes(if (isDraftScreen) Note.DRAFTED else Note.SAVED)
                     } else {
@@ -86,7 +87,7 @@ class NotesViewModel constructor(
 
     private suspend fun onEnterPassword(password : String) = withContext(dispatcher.IO){
         if (password.isNotEmpty()){
-            NotesDependencies.databasePasswordProvider?.setPassword(password)
+            notesDbUseCase.setPassword(password)
             if (notesDbUseCase.tryInitDb()){
                 _state.update {
                     it.copy(alertDialogState = null)

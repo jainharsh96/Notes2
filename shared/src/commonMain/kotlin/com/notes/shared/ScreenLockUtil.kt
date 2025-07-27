@@ -1,16 +1,16 @@
 package com.notes.shared
 
-object ScreenLockUtil {
-    const val KEY_SCREEN_LOCK = "screen_lock"
+class ScreenLockUtil(private val dataStore: DataStore?) {
+    companion object {
+        private const val KEY_SCREEN_LOCK = "screen_lock"
+    }
 
     var isScreenUnLocked : Boolean = false
         private set
 
-    private val dataStore = NotesDependencies.dataStore
+    suspend fun getUnlockPassword() = dataStore?.getData(KEY_SCREEN_LOCK)
 
-    fun getUnlockPassword() = dataStore?.getData(KEY_SCREEN_LOCK)
-
-    fun setUnlockPassword(password : String) = dataStore?.setData(KEY_SCREEN_LOCK, password)
+    suspend fun setUnlockPassword(password : String) = dataStore?.setData(KEY_SCREEN_LOCK, password)
 
     fun setScreenUnlocked() {
         isScreenUnLocked = true

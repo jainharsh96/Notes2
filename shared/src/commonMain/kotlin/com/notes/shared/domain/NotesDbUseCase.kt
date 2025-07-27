@@ -12,4 +12,8 @@ class NotesDbUseCase {
     suspend fun isPasswordSetAndCorrect() : Boolean {
         return NotesDependencies.databasePasswordProvider?.getPassword()?.isNotEmpty() == true && tryInitDb()
     }
+
+    suspend fun setPassword(newPassword: String) {
+        NotesDependencies.databasePasswordProvider?.setPassword(newPassword)
+    }
 }

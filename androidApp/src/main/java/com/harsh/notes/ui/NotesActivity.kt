@@ -10,9 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.harsh.notes.NotesSyncManagerAndroidImpl
-import com.notes.shared.DataStoreAndroidImpl
-import com.notes.shared.DatabasePasswordProviderAndroidImpl
-import com.notes.shared.NotesDependencies
+import com.notes.shared.NotesAndroidDependenciesInitializer
 import com.notes.shared.ui.NotesApp
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,10 +27,9 @@ class NotesActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()
-        NotesDependencies.init(
+        NotesAndroidDependenciesInitializer.init(
+            context = this.applicationContext,
             notesSyncManager = NotesSyncManagerAndroidImpl(this),
-            databasePasswordProvider = DatabasePasswordProviderAndroidImpl(this.applicationContext),
-            dataStore = DataStoreAndroidImpl(this.applicationContext)
         )
         setContent {
             val systemUiController = rememberSystemUiController()
@@ -47,7 +44,7 @@ class NotesActivity : BaseActivity() {
     }
 
     override fun onDestroy() {
-        NotesDependencies.clearData()
+        NotesAndroidDependenciesInitializer.clearData()
         super.onDestroy()
     }
 }

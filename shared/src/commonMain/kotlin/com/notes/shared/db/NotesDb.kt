@@ -20,7 +20,7 @@ abstract class NotesDatabase : RoomDatabase() {
     companion object {
         const val DATABASE_FILE_NAME_V2 = "NotesDb2.db"
 
-        private fun getDBPasscode() = NotesDependencies.databasePasswordProvider?.getPassword()
+        private suspend fun getDBPasscode() = NotesDependencies.databasePasswordProvider?.getPassword()
 
         private fun getNotesDatabase(dbPassword : String) = getDatabaseBuilder(databaseName = DATABASE_FILE_NAME_V2, password = dbPassword)
             .setJournalMode(JournalMode.TRUNCATE)

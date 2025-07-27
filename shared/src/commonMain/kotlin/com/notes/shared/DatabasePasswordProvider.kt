@@ -1,7 +1,7 @@
 package com.notes.shared
 
 interface DatabasePasswordProvider {
-    fun getPassword(): String?
+    suspend fun getPassword(): String?
 
-    fun setPassword(newPassword: String)
+    suspend fun setPassword(newPassword: String)
 }
