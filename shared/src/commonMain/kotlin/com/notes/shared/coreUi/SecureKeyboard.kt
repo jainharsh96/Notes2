@@ -1,10 +1,7 @@
 package com.notes.shared.coreUi
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -14,11 +11,11 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -76,48 +73,45 @@ private fun KeyboardButton(
     onClickButton: (KeyBoardButton) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Card(
+    Button(
         modifier = modifier
             .aspectRatio(2f)
             .padding(4.dp),
         shape = RoundedCornerShape(8.dp),
-        elevation = 0.dp
+        colors = ButtonDefaults.buttonColors()
+            .copy(containerColor = Color.Black.copy(alpha = 0.1f)),
+        onClick = {
+            onClickButton(button)
+        }
     ) {
-        Box(
-            modifier = Modifier
-                .background(color = Color.Black.copy(alpha = 0.1f))
-                .clickable { onClickButton(button) },
-            contentAlignment = Alignment.Center
-        ) {
-            when (button) {
-                is KeyBoardButton.Action -> {
-                    Text(
-                        text = button.txt,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.Blue.copy(0.8f),
-                        textAlign = TextAlign.Center
-                    )
-                }
+        when (button) {
+            is KeyBoardButton.Action -> {
+                Text(
+                    text = button.txt,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.Blue.copy(0.8f),
+                    textAlign = TextAlign.Center
+                )
+            }
 
-                is KeyBoardButton.Back -> {
-                    Image(
-                        painter = painterResource(Res.drawable.ic_arrow_back_black_24dp),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .size(24.dp),
-                    )
-                }
+            is KeyBoardButton.Back -> {
+                Image(
+                    painter = painterResource(Res.drawable.ic_arrow_back_black_24dp),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .size(24.dp),
+                )
+            }
 
-                is KeyBoardButton.Number -> {
-                    Text(
-                        text = button.digit.toString(),
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.Black.copy(0.8f),
-                        textAlign = TextAlign.Center
-                    )
-                }
+            is KeyBoardButton.Number -> {
+                Text(
+                    text = button.digit.toString(),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black.copy(0.8f),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }

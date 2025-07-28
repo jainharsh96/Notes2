@@ -76,6 +76,7 @@ fun CreateNoteScreenShared(
             .fillMaxSize()
             .background(color = colorResource(Res.string.white))
             .statusBarsPadding()
+            .navigationBarsPadding()
             .imePadding()
     ) {
         CreateNoteHeader(
