@@ -1,11 +1,10 @@
 package com.notes.shared.ui.secureKeyboard
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,8 +17,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -87,14 +89,23 @@ fun SecureAlphaNumericTypeKeyboard(
         { keyboard: KeyBoardButton ->
             onClickButton(keyboard)
             if (allCapButtonState == 1) {
-                row2Buttons =
-                    allAlphaNumerics[0].map { it.copy(char = it.char.lowercaseChar()) }
-                row3Buttons =
-                    allAlphaNumerics[1].map { it.copy(char = it.char.lowercaseChar()) }
-                row4Buttons =
-                    allAlphaNumerics[2].map { it.copy(char = it.char.lowercaseChar()) }
                 allCapButtonState = 0
             }
+        }
+    }
+
+    LaunchedEffect(key1 = allCapButtonState, key2 = showSpecialChar) {
+        if (showSpecialChar) {
+            row2Buttons = allSpecialChars[0]
+            row3Buttons = allSpecialChars[1]
+            row4Buttons = allSpecialChars[2]
+        } else {
+            row2Buttons =
+                allAlphaNumerics[0].map { it.copy(char = if (allCapButtonState == 0) it.char.lowercaseChar() else it.char.uppercaseChar()) }
+            row3Buttons =
+                allAlphaNumerics[1].map { it.copy(char = if (allCapButtonState == 0) it.char.lowercaseChar() else it.char.uppercaseChar()) }
+            row4Buttons =
+                allAlphaNumerics[2].map { it.copy(char = if (allCapButtonState == 0) it.char.lowercaseChar() else it.char.uppercaseChar()) }
         }
     }
 
@@ -134,34 +145,14 @@ fun SecureAlphaNumericTypeKeyboard(
             if (showSpecialChar.not()) {
                 IconButton(
                     iconDrawable = getAllCapButtonRes(allCapButtonState),
+                    onClick = {
+                        allCapButtonState =
+                            if (allCapButtonState >= 2) 0 else allCapButtonState + 1
+                    },
                     modifier = Modifier
                         .padding(4.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .clickable {
-                            allCapButtonState =
-                                if (allCapButtonState >= 2) 0 else allCapButtonState + 1
-                            if (allCapButtonState == 0) {
-                                row2Buttons =
-                                    allAlphaNumerics[0].map { it.copy(char = it.char.lowercaseChar()) }
-                                row3Buttons =
-                                    allAlphaNumerics[1].map { it.copy(char = it.char.lowercaseChar()) }
-                                row4Buttons =
-                                    allAlphaNumerics[2].map { it.copy(char = it.char.lowercaseChar()) }
-                            } else {
-                                row2Buttons =
-                                    allAlphaNumerics[0].map { it.copy(char = it.char.uppercaseChar()) }
-                                row3Buttons =
-                                    allAlphaNumerics[1].map { it.copy(char = it.char.uppercaseChar()) }
-                                row4Buttons =
-                                    allAlphaNumerics[2].map { it.copy(char = it.char.uppercaseChar()) }
-                            }
-                        }
-                        .background(
-                            color = Color.Black.copy(alpha = 0.1f),
-                            shape = RoundedCornerShape(4.dp)
-                        )
-                        .width(40.dp)
-                        .padding(vertical = 12.dp)
+                        .width(40.dp),
+                    contentPadding = PaddingValues(vertical = 12.dp, horizontal = 4.dp)
                 )
             } else {
                 Spacer(modifier = Modifier.width(20.dp))
@@ -173,18 +164,12 @@ fun SecureAlphaNumericTypeKeyboard(
                 onClickButtonInternal(it)
             }
 
-            AlphaNumericButton(
-                button = backButton,
+            IconButton(
+                iconDrawable = backButton.icon,
+                onClick = { onClickButtonInternal(backButton) },
+                contentPadding = PaddingValues(vertical = 12.dp),
                 modifier = Modifier
                     .padding(4.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .clickable { onClickButtonInternal(backButton) }
-                    .background(
-                        color = Color.Black.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .width(40.dp)
-                    .padding(vertical = 12.dp)
             )
         }
 
@@ -196,95 +181,39 @@ fun SecureAlphaNumericTypeKeyboard(
                 button = if (showSpecialChar) KeyBoardButton.Action("ABC") else KeyBoardButton.Action(
                     "!#1"
                 ),
+                onClickButton = { showSpecialChar = showSpecialChar.not() },
                 modifier = Modifier
                     .padding(4.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .clickable {
-                        showSpecialChar = showSpecialChar.not()
-                        if (showSpecialChar) {
-                            row2Buttons = allSpecialChars[0]
-                            row3Buttons = allSpecialChars[1]
-                            row4Buttons = allSpecialChars[2]
-                        } else {
-                            if (allCapButtonState == 0) {
-                                row2Buttons =
-                                    allAlphaNumerics[0].map { it.copy(char = it.char.lowercaseChar()) }
-                                row3Buttons =
-                                    allAlphaNumerics[1].map { it.copy(char = it.char.lowercaseChar()) }
-                                row4Buttons =
-                                    allAlphaNumerics[2].map { it.copy(char = it.char.lowercaseChar()) }
-                            } else {
-                                row2Buttons =
-                                    allAlphaNumerics[0].map { it.copy(char = it.char.uppercaseChar()) }
-                                row3Buttons =
-                                    allAlphaNumerics[1].map { it.copy(char = it.char.uppercaseChar()) }
-                                row4Buttons =
-                                    allAlphaNumerics[2].map { it.copy(char = it.char.uppercaseChar()) }
-                            }
-                        }
-                    }
-                    .background(
-                        color = Color.Black.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(4.dp)
-                    )
                     .width(60.dp)
-                    .padding(vertical = 12.dp)
             )
             AlphaNumericButton(
                 button = KeyBoardButton.AlphaNumeric(','),
+                onClickButton = { onClickButtonInternal(KeyBoardButton.AlphaNumeric(',')) },
                 modifier = Modifier
                     .padding(4.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .clickable {
-                        onClickButtonInternal(KeyBoardButton.AlphaNumeric(','))
-                    }
-                    .background(
-                        color = Color.Black.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(4.dp)
-                    )
                     .width(30.dp)
-                    .padding(vertical = 12.dp)
             )
             AlphaNumericButton(
                 button = KeyBoardButton.Space,
+                onClickButton = { onClickButtonInternal(KeyBoardButton.Space) },
                 modifier = Modifier
                     .padding(4.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .clickable { onClickButtonInternal(KeyBoardButton.Space) }
-                    .background(
-                        color = Color.Black.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(4.dp)
-                    )
                     .weight(1f)
-                    .padding(vertical = 12.dp)
             )
             AlphaNumericButton(
                 button = KeyBoardButton.AlphaNumeric('.'),
+                onClickButton = { onClickButtonInternal(KeyBoardButton.AlphaNumeric('.')) },
                 modifier = Modifier
                     .padding(4.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .clickable {
-                        onClickButtonInternal(KeyBoardButton.AlphaNumeric('.'))
-                    }
-                    .background(
-                        color = Color.Black.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(4.dp)
-                    )
                     .width(30.dp)
-                    .padding(vertical = 12.dp)
             )
             IconButton(
                 iconDrawable = Res.drawable.keyboard_newline,
+                onClick = { onClickButtonInternal(newLineCharButton) },
                 modifier = Modifier
                     .padding(4.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .clickable { onClickButtonInternal(newLineCharButton) }
-                    .background(
-                        color = Color.Black.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(4.dp)
-                    )
-                    .width(60.dp)
-                    .padding(vertical = 12.dp)
+                    .width(60.dp),
+                contentPadding = PaddingValues(vertical = 12.dp)
             )
         }
 
@@ -292,12 +221,15 @@ fun SecureAlphaNumericTypeKeyboard(
             modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            AlphaNumericButton(
-                button = KeyBoardButton.HideKeyboard,
-                modifier = Modifier.padding(end = 24.dp, top = 24.dp, bottom = 12.dp)
+            Image(
+                painter = painterResource(Res.drawable.keyboard_arrow_down),
+                contentDescription = "",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.padding(end = 24.dp, top = 16.dp, bottom = 12.dp)
                     .clip(CircleShape)
                     .clickable { onClickButtonInternal(KeyBoardButton.HideKeyboard) }
                     .padding(8.dp)
+                    .size(24.dp),
             )
         }
     }
@@ -316,17 +248,11 @@ private fun AlphaNumericButtonsRow(
         buttons.forEach { button ->
             AlphaNumericButton(
                 button = button,
+                onClickButton = { onClickButton(button) },
                 modifier = Modifier
                     .padding(4.dp)
-                    .clip(RoundedCornerShape(4.dp))
-                    .clickable { onClickButton(button) }
-                    .background(
-                        color = Color.Black.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(4.dp)
-                    )
                     .widthIn(max = 40.dp)
                     .width(buttonWidth)
-                    .padding(vertical = 12.dp)
             )
         }
     }
@@ -341,12 +267,19 @@ private fun getAllCapButtonRes(allCapState: Int) = when (allCapState) {
 
 @Composable
 private fun AlphaNumericButton(
+    modifier: Modifier = Modifier,
     button: KeyBoardButton,
-    modifier: Modifier = Modifier
+    onClickButton: (KeyBoardButton) -> Unit
 ) {
-    Box(
+    Button(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        shape = RoundedCornerShape(4.dp),
+        colors = ButtonDefaults.buttonColors()
+            .copy(containerColor = Color.White),
+        onClick = {
+            onClickButton(button)
+        },
+        contentPadding = PaddingValues(vertical = 12.dp)
     ) {
         when (button) {
             is KeyBoardButton.Action -> {
@@ -363,7 +296,7 @@ private fun AlphaNumericButton(
                 Image(
                     painter = painterResource(button.icon),
                     contentDescription = "",
-                    modifier = Modifier
+                    modifier = Modifier.padding(horizontal = 8.dp)
                         .size(24.dp),
                 )
             }
@@ -398,14 +331,7 @@ private fun AlphaNumericButton(
                 )
             }
 
-            KeyBoardButton.HideKeyboard -> {
-                Image(
-                    painter = painterResource(Res.drawable.keyboard_arrow_down),
-                    contentDescription = "",
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier.size(24.dp),
-                )
-            }
+            KeyBoardButton.HideKeyboard -> Unit
         }
     }
 }
@@ -413,11 +339,19 @@ private fun AlphaNumericButton(
 @Composable
 private fun IconButton(
     iconDrawable: DrawableResource,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    contentPadding : PaddingValues,
+    onClick: () -> Unit
 ) {
-    Box(
+    Button(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        shape = RoundedCornerShape(4.dp),
+        colors = ButtonDefaults.buttonColors()
+            .copy(containerColor = Color.Black.copy(alpha = 0.1f)),
+        onClick = {
+            onClick()
+        },
+        contentPadding = contentPadding
     ) {
         Image(
             painter = painterResource(iconDrawable),

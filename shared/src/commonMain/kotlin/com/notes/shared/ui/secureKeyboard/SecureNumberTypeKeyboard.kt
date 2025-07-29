@@ -48,7 +48,7 @@ fun SecureNumberTypeKeyboard(
             contentPadding = PaddingValues(8.dp)
         ) {
             items(items = keyBoardButtons) {
-                KeyboardButton(
+                NumberKeyboardButton(
                     button = it,
                     onClickButton = {
                         when (it) {
@@ -69,7 +69,7 @@ fun SecureNumberTypeKeyboard(
 }
 
 @Composable
-fun KeyboardButton(
+private fun NumberKeyboardButton(
     button: KeyBoardButton,
     onClickButton: (KeyBoardButton) -> Unit,
     modifier: Modifier = Modifier
