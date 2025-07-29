@@ -7,7 +7,7 @@ import com.notes.shared.ui.uientity.NoteEntity
 interface CreateNoteContract {
 
     @Immutable
-    data class State(val isLoading : Boolean = true, val originalNote: NoteEntity? = null, val enteredMsg: String = "") {
+    data class State(val isLoading : Boolean = true, val originalNote: NoteEntity? = null, val enteredMsg: String = "", val showSystemKeyboard : Boolean = true) {
 
         fun hasNote() = originalNote?.body?.isNotEmpty() ?: false
 
@@ -19,6 +19,9 @@ interface CreateNoteContract {
     sealed class Event{
         object ClickBack : Event()
         object ClickRecordNotes : Event()
+        object ClickChangeKeyboard : Event()
+
+        object HideKeyboard : Event()
         object ClickUndo : Event()
         object SaveNote : Event()
         object FetchNote : Event()

@@ -44,6 +44,8 @@ class CreateNoteViewModel constructor(
                 CreateNoteContract.Event.SaveNote -> insertNote()
                 is CreateNoteContract.Event.OnType -> onType(event.msg)
                 is CreateNoteContract.Event.AddMessage -> addMsg(event.msg)
+                CreateNoteContract.Event.ClickChangeKeyboard -> switchKeyboard()
+                CreateNoteContract.Event.HideKeyboard -> switchKeyboard()
             }
         }
     }
@@ -64,6 +66,14 @@ class CreateNoteViewModel constructor(
         _state.update {
             it.copy(
                 enteredMsg = it.originalNote?.body ?: ""
+            )
+        }
+    }
+
+    private fun switchKeyboard() {
+        _state.update {
+            it.copy(
+                showSystemKeyboard = it.showSystemKeyboard.not()
             )
         }
     }

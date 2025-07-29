@@ -41,6 +41,7 @@ import notes2.shared.generated.resources.disable
 import notes2.shared.generated.resources.ic_arrow_back_black_24dp
 import notes2.shared.generated.resources.ic_check_black_24dp
 import notes2.shared.generated.resources.ic_undo
+import notes2.shared.generated.resources.keyboard
 import notes2.shared.generated.resources.voice_note
 import notes2.shared.generated.resources.white
 import org.jetbrains.compose.resources.ExperimentalResourceApi
@@ -136,20 +137,31 @@ fun CreateNoteHeader(hasNote: Boolean, event: (CreateNoteContract.Event) -> Unit
                     .clickable { event(CreateNoteContract.Event.ClickUndo) }
             )
         }
+        Image(
+            painter = painterResource(Res.drawable.keyboard),
+            contentDescription = "",
+            modifier = Modifier.padding(8.dp)
+                .width(24.dp)
+                .height(24.dp)
+                .clickable { event(CreateNoteContract.Event.ClickChangeKeyboard) },
+            colorFilter = ColorFilter.tint(
+                colorResource(Res.string.colorPrimaryDark)
+            )
+        )
     }
 }
 
 @Composable
 fun NoteInfo(state: CreateNoteContract.State, event: (CreateNoteContract.Event) -> Unit) {
     var enteredChar by remember(key1 = state.enteredMsg) { mutableStateOf(state.enteredMsg) }
-    var showKeyboard by remember { mutableStateOf(false) }
+    val showSystemKeyboard = state.showSystemKeyboard
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
         val focusRequester = remember { FocusRequester() }
         BasicTextField(
-            enabled = showKeyboard.not(),
+            enabled = showSystemKeyboard,
             value = state.enteredMsg,
             onValueChange = { newVal ->
                 event.invoke(CreateNoteContract.Event.OnType(newVal))
@@ -190,7 +202,7 @@ fun NoteInfo(state: CreateNoteContract.State, event: (CreateNoteContract.Event) 
                 )
             )
         }
-        if (showKeyboard){
+        if (showSystemKeyboard.not()){
             SecureAlphaNumericTypeKeyboard(modifier = Modifier.background(color = Color.Black.copy(alpha = 0.1f))) {
                 when(it){
                     is KeyBoardButton.Action -> Unit
@@ -198,7 +210,7 @@ fun NoteInfo(state: CreateNoteContract.State, event: (CreateNoteContract.Event) 
                     is KeyBoardButton.Back -> enteredChar = runCatching { enteredChar.substring(0, enteredChar.length - 1) }.getOrElse { enteredChar }
                     is KeyBoardButton.Number -> enteredChar = enteredChar + it.digit
                     KeyBoardButton.Space -> enteredChar = "$enteredChar "
-                    KeyBoardButton.HideKeyboard -> showKeyboard = false
+                    KeyBoardButton.HideKeyboard -> event.invoke(CreateNoteContract.Event.HideKeyboard)
                     is KeyBoardButton.ClipboardPaste -> enteredChar = enteredChar + it.msg
                 }
                 event.invoke(CreateNoteContract.Event.OnType(enteredChar))
