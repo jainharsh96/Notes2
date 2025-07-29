@@ -1,4 +1,4 @@
-package com.notes.shared.coreUi
+package com.notes.shared.ui.secureKeyboard
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -25,16 +25,17 @@ import androidx.compose.ui.unit.sp
 import com.notes.shared.painterResource
 import notes2.shared.generated.resources.Res
 import notes2.shared.generated.resources.ic_arrow_back_black_24dp
+import org.jetbrains.compose.resources.DrawableResource
 
 @Composable
 fun SecureNumberTypeKeyboard(
     modifier: Modifier,
-    enteredNumber : String,
+    enteredNumber: String,
     onEnterNumber: (String) -> Unit,
     onClickAction: (String) -> Unit
 ) {
     val keyBoardButtons = remember {
-        KeyBoardButton.getButtonsSequenced()
+        KeyBoardButton.numberTypeKeyboardAllButton()
     }
 
     Column(
@@ -55,10 +56,10 @@ fun SecureNumberTypeKeyboard(
                             is KeyBoardButton.Back -> {
                                 onEnterNumber(enteredNumber.dropLast(1))
                             }
-
                             is KeyBoardButton.Number -> {
                                 onEnterNumber(enteredNumber + it.digit)
                             }
+                            else -> Unit
                         }
                     }
                 )
@@ -68,7 +69,7 @@ fun SecureNumberTypeKeyboard(
 }
 
 @Composable
-private fun KeyboardButton(
+fun KeyboardButton(
     button: KeyBoardButton,
     onClickButton: (KeyBoardButton) -> Unit,
     modifier: Modifier = Modifier
@@ -113,17 +114,22 @@ private fun KeyboardButton(
                     textAlign = TextAlign.Center
                 )
             }
+
+            else -> Unit
         }
     }
 }
 
 sealed class KeyBoardButton {
     data class Number(val digit: Int) : KeyBoardButton()
+    data class AlphaNumeric(val char: Char) : KeyBoardButton()
     data class Action(val txt: String) : KeyBoardButton()
-    data class Back(val icon: Int = -1) : KeyBoardButton()
+    data class Back(val icon: DrawableResource = Res.drawable.ic_arrow_back_black_24dp) : KeyBoardButton()
+    object Space : KeyBoardButton()
+    object HideKeyboard : KeyBoardButton()
 
     companion object {
-        fun getButtonsSequenced() = listOf(
+        fun numberTypeKeyboardAllButton() = listOf(
             Number(1),
             Number(2),
             Number(3),
@@ -136,6 +142,94 @@ sealed class KeyBoardButton {
             Back(),
             Number(0),
             Action("Go")
+        )
+
+        fun getAllNumbers() = listOf(
+            Number(1),
+            Number(2),
+            Number(3),
+            Number(4),
+            Number(5),
+            Number(6),
+            Number(7),
+            Number(8),
+            Number(9),
+            Number(0),
+        )
+
+        fun getAllAlphabetized() = listOf(
+            listOf(
+                AlphaNumeric('q'),
+                AlphaNumeric('w'),
+                AlphaNumeric('e'),
+                AlphaNumeric('r'),
+                AlphaNumeric('t'),
+                AlphaNumeric('y'),
+                AlphaNumeric('u'),
+                AlphaNumeric('i'),
+                AlphaNumeric('o'),
+                AlphaNumeric('p'),
+            ),
+
+            listOf(
+                AlphaNumeric('a'),
+                AlphaNumeric('s'),
+                AlphaNumeric('d'),
+                AlphaNumeric('f'),
+                AlphaNumeric('g'),
+                AlphaNumeric('h'),
+                AlphaNumeric('j'),
+                AlphaNumeric('k'),
+                AlphaNumeric('l'),
+            ),
+
+            listOf(
+                AlphaNumeric('z'),
+                AlphaNumeric('x'),
+                AlphaNumeric('c'),
+                AlphaNumeric('v'),
+                AlphaNumeric('b'),
+                AlphaNumeric('n'),
+                AlphaNumeric('m'),
+            )
+        )
+
+        fun getAllSpecialChars() = listOf(
+            listOf(
+                AlphaNumeric('+'),
+                AlphaNumeric('×'),
+                AlphaNumeric('÷'),
+                AlphaNumeric('='),
+                AlphaNumeric('/'),
+                AlphaNumeric('_'),
+                AlphaNumeric('<'),
+                AlphaNumeric('>'),
+                AlphaNumeric('['),
+                AlphaNumeric(']'),
+            ),
+
+            listOf(
+                AlphaNumeric('!'),
+                AlphaNumeric('@'),
+                AlphaNumeric('#'),
+                AlphaNumeric('$'),
+                AlphaNumeric('%'),
+                AlphaNumeric('^'),
+                AlphaNumeric('&'),
+                AlphaNumeric('*'),
+                AlphaNumeric('('),
+                AlphaNumeric(')'),
+            ),
+
+            listOf(
+                AlphaNumeric('-'),
+                AlphaNumeric('\''),
+                AlphaNumeric('"'),
+                AlphaNumeric(':'),
+                AlphaNumeric(';'),
+                AlphaNumeric(','),
+                AlphaNumeric('?'),
+            )
         )
     }
 }

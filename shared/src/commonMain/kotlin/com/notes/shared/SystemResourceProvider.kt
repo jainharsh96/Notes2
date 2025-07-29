@@ -26,3 +26,6 @@ fun stringResource(resource: StringResource): String {
         org.jetbrains.compose.resources.stringResource(resource)
     }
 }
+
+@Composable
+expect fun getScreenWidth(): Int

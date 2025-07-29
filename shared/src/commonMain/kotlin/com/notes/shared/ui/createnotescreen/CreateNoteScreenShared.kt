@@ -12,7 +12,10 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -27,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notes.shared.painterResource
 import com.notes.shared.ui.NavigationAction
+import com.notes.shared.ui.secureKeyboard.KeyBoardButton
+import com.notes.shared.ui.secureKeyboard.SecureAlphaNumericTypeKeyboard
 import com.notes.shared.utils.colorResource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
@@ -138,12 +143,15 @@ fun CreateNoteHeader(hasNote: Boolean, event: (CreateNoteContract.Event) -> Unit
 
 @Composable
 fun NoteInfo(state: CreateNoteContract.State, event: (CreateNoteContract.Event) -> Unit) {
+    var enteredChar by remember(key1 = state.enteredMsg) { mutableStateOf(state.enteredMsg) }
+    var showKeyboard by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
         val focusRequester = remember { FocusRequester() }
         BasicTextField(
+            enabled = showKeyboard.not(),
             value = state.enteredMsg,
             onValueChange = { newVal ->
                 event.invoke(CreateNoteContract.Event.OnType(newVal))
@@ -183,6 +191,19 @@ fun NoteInfo(state: CreateNoteContract.State, event: (CreateNoteContract.Event) 
                     colorResource(Res.string.white)
                 )
             )
+        }
+        if (showKeyboard){
+            SecureAlphaNumericTypeKeyboard(modifier = Modifier.background(color = Color.Black.copy(alpha = 0.1f))) {
+                when(it){
+                    is KeyBoardButton.Action -> Unit
+                    is KeyBoardButton.AlphaNumeric -> enteredChar = enteredChar + it.char
+                    is KeyBoardButton.Back -> enteredChar = runCatching { enteredChar.substring(0, enteredChar.length - 1) }.getOrElse { enteredChar }
+                    is KeyBoardButton.Number -> enteredChar = enteredChar + it.digit
+                    KeyBoardButton.Space -> enteredChar = "$enteredChar "
+                    KeyBoardButton.HideKeyboard -> showKeyboard = false
+                }
+                event.invoke(CreateNoteContract.Event.OnType(enteredChar))
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.notes.shared
 
+import android.app.Application
 import android.content.Context
 import android.os.Environment
 import androidx.room.Room
@@ -9,7 +10,9 @@ import net.sqlcipher.database.SQLiteDatabase
 import net.sqlcipher.database.SQLiteDatabaseHook
 import net.sqlcipher.database.SupportFactory
 
-private lateinit var context: Context
+object AndroidApplication {
+    lateinit var context: Application
+}
 
 //const val DATABASE_PASSWORD = "thisispassword123!@#"
 
@@ -21,13 +24,13 @@ class AndroidPlatform : Platform {
 actual fun getPlatform(): Platform = AndroidPlatform()
 
 fun setApplicationContext(appContext: Context){
-    context = appContext
+    AndroidApplication.context = appContext.applicationContext as Application
 }
 
 fun getDatabasePath() = Environment.getExternalStorageDirectory().absolutePath + "/Notes2/${NotesDatabase.DATABASE_FILE_NAME_V2}"
 
 actual fun getDatabaseBuilder(databaseName : String, password : String): RoomDatabase.Builder<NotesDatabase> {
-    val appContext = context
+    val appContext = AndroidApplication.context
     val dbFile = getDatabasePath()
 
     val sSQLiteDatabaseHook: SQLiteDatabaseHook = object : SQLiteDatabaseHook {
