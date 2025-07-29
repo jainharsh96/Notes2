@@ -1,6 +1,7 @@
 package com.notes.shared.ui.secureKeyboard
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,10 +34,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import com.notes.shared.NotesDependencies
 import com.notes.shared.getScreenWidth
 import notes2.shared.generated.resources.Res
 import notes2.shared.generated.resources.backspace_icon
@@ -116,6 +122,12 @@ fun SecureAlphaNumericTypeKeyboard(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
+        ShowClipboardData(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp).fillMaxWidth(),
+            onSelectData = { onClickButtonInternal(KeyBoardButton.ClipboardPaste(it)) }
+        )
+
         AlphaNumericButtonsRow(
             modifier = Modifier,
             buttons = numericButtons
@@ -225,11 +237,52 @@ fun SecureAlphaNumericTypeKeyboard(
                 painter = painterResource(Res.drawable.keyboard_arrow_down),
                 contentDescription = "",
                 contentScale = ContentScale.FillBounds,
-                modifier = Modifier.padding(end = 24.dp, top = 16.dp, bottom = 12.dp)
+                modifier = Modifier.padding(end = 20.dp, top = 4.dp, bottom = 4.dp)
                     .clip(CircleShape)
                     .clickable { onClickButtonInternal(KeyBoardButton.HideKeyboard) }
                     .padding(8.dp)
                     .size(24.dp),
+            )
+        }
+    }
+}
+
+@Composable
+private fun ShowClipboardData(modifier: Modifier, onSelectData: (String) -> Unit) {
+    var data by remember { mutableStateOf("") }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val clipboardManager = remember { NotesDependencies.clipboardManager }
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME || event == Lifecycle.Event.ON_START) {
+                val clipboardText = clipboardManager?.getClipboardText().orEmpty()
+                if (clipboardText.isNotEmpty() && clipboardText != data) {
+                    data = clipboardManager?.getClipboardText().orEmpty()
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+    if (data.isNotEmpty()) {
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(color = Color.Black.copy(alpha = 0.1f))
+                    .clickable { onSelectData(data) }
+                    .padding(vertical = 8.dp, horizontal = 16.dp),
+                text = data,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black.copy(0.8f),
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -332,6 +385,7 @@ private fun AlphaNumericButton(
             }
 
             KeyBoardButton.HideKeyboard -> Unit
+            is KeyBoardButton.ClipboardPaste -> Unit
         }
     }
 }
@@ -340,7 +394,7 @@ private fun AlphaNumericButton(
 private fun IconButton(
     iconDrawable: DrawableResource,
     modifier: Modifier = Modifier,
-    contentPadding : PaddingValues,
+    contentPadding: PaddingValues,
     onClick: () -> Unit
 ) {
     Button(

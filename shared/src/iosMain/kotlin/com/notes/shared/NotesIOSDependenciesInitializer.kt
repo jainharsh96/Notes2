@@ -1,5 +1,6 @@
 package com.notes.shared
 
+import com.notes.shared.coreUi.ClipboardManagerIOSImpl
 import com.notes.shared.di.NotesKoin
 
 /*
@@ -10,7 +11,8 @@ object NotesIOSDependenciesInitializer {
         NotesKoin.init()
         NotesDependencies.init(
             dataStore = DataStoreIOSImpl(dataStore = DataStoreProvider.dataStore),
-            databasePasswordProvider = DatabasePasswordProviderIOSImpl()
+            databasePasswordProvider = DatabasePasswordProviderIOSImpl(),
+            clipboardManager = ClipboardManagerIOSImpl()
         )
     }
 }

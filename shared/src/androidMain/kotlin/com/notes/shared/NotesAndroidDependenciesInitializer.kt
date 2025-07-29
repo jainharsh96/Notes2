@@ -1,6 +1,7 @@
 package com.notes.shared
 
 import android.content.Context
+import com.notes.shared.coreUi.ClipboardManagerAndroidImpl
 
 object NotesAndroidDependenciesInitializer {
 
@@ -8,7 +9,8 @@ object NotesAndroidDependenciesInitializer {
         NotesDependencies.init(
             notesSyncManager = notesSyncManager,
             dataStore = DataStoreAndroidImpl(dataStore = DataStoreProvider.get(context)),
-            databasePasswordProvider = DatabasePasswordProviderAndroidImpl(dataStore = DataStoreProvider.get(context))
+            databasePasswordProvider = DatabasePasswordProviderAndroidImpl(dataStore = DataStoreProvider.get(context)),
+            clipboardManager = ClipboardManagerAndroidImpl(context)
         )
     }
 

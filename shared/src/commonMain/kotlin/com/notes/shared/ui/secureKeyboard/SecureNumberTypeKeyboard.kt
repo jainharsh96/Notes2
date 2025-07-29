@@ -127,6 +127,7 @@ sealed class KeyBoardButton {
     data class Back(val icon: DrawableResource = Res.drawable.ic_arrow_back_black_24dp) : KeyBoardButton()
     object Space : KeyBoardButton()
     object HideKeyboard : KeyBoardButton()
+    data class ClipboardPaste(val msg: String) : KeyBoardButton()
 
     companion object {
         fun numberTypeKeyboardAllButton() = listOf(

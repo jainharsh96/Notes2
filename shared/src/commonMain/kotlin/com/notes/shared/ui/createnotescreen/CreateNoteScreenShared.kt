@@ -18,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -33,7 +32,6 @@ import com.notes.shared.ui.NavigationAction
 import com.notes.shared.ui.secureKeyboard.KeyBoardButton
 import com.notes.shared.ui.secureKeyboard.SecureAlphaNumericTypeKeyboard
 import com.notes.shared.utils.colorResource
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import notes2.shared.generated.resources.Res
@@ -201,6 +199,7 @@ fun NoteInfo(state: CreateNoteContract.State, event: (CreateNoteContract.Event) 
                     is KeyBoardButton.Number -> enteredChar = enteredChar + it.digit
                     KeyBoardButton.Space -> enteredChar = "$enteredChar "
                     KeyBoardButton.HideKeyboard -> showKeyboard = false
+                    is KeyBoardButton.ClipboardPaste -> enteredChar = enteredChar + it.msg
                 }
                 event.invoke(CreateNoteContract.Event.OnType(enteredChar))
             }
