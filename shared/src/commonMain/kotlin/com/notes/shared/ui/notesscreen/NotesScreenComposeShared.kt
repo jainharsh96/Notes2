@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -47,6 +48,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -58,6 +60,8 @@ import androidx.compose.ui.unit.sp
 import com.notes.shared.painterResource
 import com.notes.shared.ui.NavigationAction
 import com.notes.shared.ui.NavigationAction.NavigateToCreateNoteScreen
+import com.notes.shared.ui.secureKeyboard.KeyBoardButton
+import com.notes.shared.ui.secureKeyboard.SecureAlphaNumericTypeKeyboard
 import com.notes.shared.ui.uientity.NoteEntity
 import com.notes.shared.utils.colorResource
 import kotlinx.coroutines.flow.SharedFlow
@@ -113,7 +117,7 @@ fun NotesScreenShared(
         }
     }
     LaunchedEffect(state) {
-        if (state.unLockAppFirst){
+        if (state.unLockAppFirst) {
             onAction.invoke(NavigationAction.GotoLockScreen)
         }
     }
@@ -157,50 +161,68 @@ fun NotesScreenShared(
                 }
             }
         }
-    }
-    if(state.alertDialogState != null){
-        DbPasswordAlertDialog(
-            errorMsg = state.alertDialogState.errorMsg,
-            onConfirm = {
-                event(NotesContract.Event.EnteredPassword(it))
-            }
-        )
+        if (state.alertDialogState != null) {
+            DbPasswordAlertDialog(
+                errorMsg = state.alertDialogState.errorMsg,
+                onConfirm = {
+                    event(NotesContract.Event.EnteredPassword(it))
+                }
+            )
+        }
     }
 }
 
 @Composable
 fun DbPasswordAlertDialog(
-    errorMsg : String?,
+    errorMsg: String?,
     onConfirm: (String) -> Unit
 ) {
     var password by remember { mutableStateOf("") }
-
-    AlertDialog(
-        onDismissRequest = {  },
-        title = { Text("Enter Database Password") },
-        text = {
+    Box(modifier = Modifier.fillMaxSize().background(color = Color.White)) {
+        Column(Modifier.padding(top = 100.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = "Enter Database Password", fontSize = 24.sp)
             TextField(
+                modifier = Modifier.padding(vertical = 24.dp),
                 value = password,
                 onValueChange = { password = it },
                 label = { Text("Password") },
                 visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 singleLine = true,
                 isError = errorMsg?.isNotEmpty() == true
             )
-        },
-        confirmButton = {
             Button(
+                modifier = Modifier.padding(top = 24.dp),
                 onClick = {
                     if (password.isNotEmpty()) {
                         onConfirm(password)
                     }
-                }
+                },
+                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
             ) {
                 Text("OK")
             }
         }
-    )
+        SecureAlphaNumericTypeKeyboard(
+            modifier = Modifier.align(Alignment.BottomCenter)
+                .background(color = Color.Black.copy(alpha = 0.1f))
+        ) {
+            when (it) {
+                is KeyBoardButton.Action -> Unit
+                is KeyBoardButton.AlphaNumeric -> password = password + it.char
+                is KeyBoardButton.Back -> password = runCatching {
+                    password.substring(
+                        0,
+                        password.length - 1
+                    )
+                }.getOrElse { "" }
+
+                is KeyBoardButton.Number -> password = password + it.digit
+                KeyBoardButton.Space -> password = "$password "
+                KeyBoardButton.HideKeyboard -> Unit
+                is KeyBoardButton.ClipboardPaste -> Unit
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -274,7 +296,7 @@ fun NoDataView() {
     ) {
         Text(
             text = "Add Notes...",
-            color =  colorResource(Res.string.disable),
+            color = colorResource(Res.string.disable),
             style = TextStyle(fontSize = 24.sp),
         )
     }
@@ -320,7 +342,11 @@ fun NotesHeader(heading: String, isDraftScreen: Boolean, event: (NotesContract.E
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun NotesList(isDraftScreen: Boolean, notes: List<NoteEntity>, event: (NotesContract.Event) -> Unit) {
+fun NotesList(
+    isDraftScreen: Boolean,
+    notes: List<NoteEntity>,
+    event: (NotesContract.Event) -> Unit
+) {
     val listState = rememberLazyListState()
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -358,7 +384,8 @@ fun NotesList(isDraftScreen: Boolean, notes: List<NoteEntity>, event: (NotesCont
                     true
                 }
             )
-            SwipeToDismiss(state = dismissState, directions = if (isDraftScreen) setOf(
+            SwipeToDismiss(
+                state = dismissState, directions = if (isDraftScreen) setOf(
                 DismissDirection.StartToEnd,
                 DismissDirection.EndToStart
             ) else setOf(

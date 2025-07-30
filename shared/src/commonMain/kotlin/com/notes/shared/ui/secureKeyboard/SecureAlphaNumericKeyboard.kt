@@ -119,12 +119,13 @@ fun SecureAlphaNumericTypeKeyboard(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
+            .padding(top = 12.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         ShowClipboardData(
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp).fillMaxWidth(),
+            modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth(),
             onSelectData = { onClickButtonInternal(KeyBoardButton.ClipboardPaste(it)) }
         )
 
