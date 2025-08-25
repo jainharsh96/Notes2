@@ -35,7 +35,7 @@ class NotesSyncManagerAndroidImpl(
 ) : NotesSyncManager {
 
     companion object {
-        const val SERVER_CLIENT_ID = "251167491395-58gvoqtqpu8ft090mkkt9tppokruduji.apps.googleusercontent.com"
+        const val SERVER_CLIENT_ID = "251167491395-sp2poe8gn4vuknqe50ldbh5pnl2ikoq7.apps.googleusercontent.com"
     }
 
     var onLoginSuccess: (Account) -> Unit = {}
@@ -79,12 +79,12 @@ class NotesSyncManagerAndroidImpl(
                     uploadToDrive(account = account).onSuccess {
                         showToast("successfully uploaded file")
                     }.onFailure {
-                        showToast("Something went wrong while uploading data")
+                        showToast("Something went wrong while uploading data $it")
                     }
                 }
             },
             onFailure = {
-                showToast("Something went wrong while uploading data")
+                showToast("Something went wrong while uploading data $it")
             }
         )
     }

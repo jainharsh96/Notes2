@@ -144,8 +144,20 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
 
-    implementation("com.google.android.gms:play-services-auth:21.3.0") // Google Sign-In
+    // Google sign-in
+    implementation("com.google.android.gms:play-services-auth:21.4.0") // Google Sign-In
     implementation("com.google.apis:google-api-services-drive:v3-rev20230822-2.0.0") // Drive API
-    implementation("com.google.http-client:google-http-client-android:1.43.3")
-    implementation("com.google.api-client:google-api-client-android:2.2.0")
+    implementation("com.google.http-client:google-http-client-android:2.0.0")
+    implementation("com.google.api-client:google-api-client-android:2.8.1")
+
+    // Car App
+    implementation("androidx.car.app:app:1.7.0")
+    implementation("androidx.car.app:app-projected:1.7.0")
+
+    // CameraX
+    val cameraxVersion = "1.4.2"
+    implementation("androidx.camera:camera-core:$cameraxVersion")
+    implementation("androidx.camera:camera-camera2:$cameraxVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
+    implementation("androidx.camera:camera-view:$cameraxVersion") // Preview + CameraView
 }
