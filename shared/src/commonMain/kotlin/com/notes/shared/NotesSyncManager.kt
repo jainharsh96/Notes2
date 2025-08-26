@@ -4,7 +4,7 @@ interface NotesSyncManager {
 
     fun hasSupportSync() : Boolean
 
-    suspend fun syncDataToCloud(bgSync : Boolean) : Result<String>
+    suspend fun syncDataToCloud(isBgSync : Boolean) : Result<String>
 
     suspend fun restoreDataFromCloud() : Result<String>
 }

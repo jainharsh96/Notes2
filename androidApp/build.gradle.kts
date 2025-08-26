@@ -22,12 +22,12 @@ kotlin {
 
 android {
     namespace = "com.harsh.notes"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.harsh.notes"
         minSdk = 23
-        targetSdk = 34
+        targetSdk = 36
         versionCode = 2
         versionName = "2.0"
 
@@ -144,20 +144,22 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
 
+    // workmanager
+    implementation(libs.androidx.work.runtime.ktx)
+
     // Google sign-in
-    implementation("com.google.android.gms:play-services-auth:21.4.0") // Google Sign-In
-    implementation("com.google.apis:google-api-services-drive:v3-rev20230822-2.0.0") // Drive API
-    implementation("com.google.http-client:google-http-client-android:2.0.0")
-    implementation("com.google.api-client:google-api-client-android:2.8.1")
+    implementation(libs.play.services.auth) // Google Sign-In
+    implementation(libs.google.api.services.drive) // Drive API
+    implementation(libs.google.http.client.android)
+    implementation(libs.google.api.client.android)
 
     // Car App
-    implementation("androidx.car.app:app:1.7.0")
-    implementation("androidx.car.app:app-projected:1.7.0")
+    implementation(libs.androidx.carapp)
+    implementation(libs.androidx.carapp.projected)
 
     // CameraX
-    val cameraxVersion = "1.4.2"
-    implementation("androidx.camera:camera-core:$cameraxVersion")
-    implementation("androidx.camera:camera-camera2:$cameraxVersion")
-    implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
-    implementation("androidx.camera:camera-view:$cameraxVersion") // Preview + CameraView
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view) // Preview + CameraView
 }

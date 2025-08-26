@@ -43,7 +43,7 @@ fun SettingScreenShared(onAction: (NavigationAction) -> Unit, notesSyncManager: 
 
     LaunchedEffect(key1 = syncData, key2 = restoreData){
         if (syncData){
-            val result = notesSyncManager?.syncDataToCloud(bgSync = false)
+            val result = notesSyncManager?.syncDataToCloud(isBgSync = false)
             syncData = false
             result?.getResultMsg()?.let { showToast(it) }
         } else if (restoreData){

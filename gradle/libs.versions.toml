@@ -4,6 +4,8 @@ activityCompose = "1.9.1"
 androidDatabaseSqlcipher = "4.5.4"
 androidx-junit = "1.1.5"
 androidx-material = "1.6.8"
+cameraxVersion = "1.4.2"
+carapp = "1.7.0"
 biometric = "1.1.0"
 compiler = "1.5.14"
 composeGradlePlugin = "1.6.10"
@@ -11,6 +13,9 @@ coreKtx = "1.13.1"
 espressoCore = "3.5.1"
 foundation = "1.6.8"
 fragmentKtx = "1.8.2"
+googleApiClientAndroid = "2.8.1"
+googleApiServicesDrive = "v3-rev20230822-2.0.0"
+googleHttpClientAndroid = "2.0.0"
 hiltAndroidGradlePlugin = "2.50"
 gradle = "7.2.0"
 hiltNavigationCompose = "1.2.0"
@@ -25,6 +30,7 @@ lifecycleViewmodelCompose = "2.8.4"
 material = "1.12.0"
 mockitoCore = "4.8.1"
 navigationCompose = "2.7.0-alpha07"
+playServicesAuth = "21.4.0"
 roomRuntime = "2.5.2"
 runtime = "1.6.8"
 sqliteKtx = "2.4.0"
@@ -50,10 +56,17 @@ sqlite = "2.5.0-alpha05"
 sqlcipher = "4.5.4"
 googleAccompanist = "0.30.1"
 datastore = "1.1.7"
+workRuntimeKtx = "2.10.3"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "activityCompose" }
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraxVersion" }
+androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraxVersion" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraxVersion" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraxVersion" }
+androidx-carapp-projected = { module = "androidx.car.app:app-projected", version.ref = "carapp" }
+androidx-carapp = { module = "androidx.car.app:app", version.ref = "carapp" }
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-biometric = { module = "androidx.biometric:biometric", version.ref = "biometric" }
 androidx-compiler = { module = "androidx.compose.compiler:compiler", version.ref = "compiler" }
@@ -77,6 +90,11 @@ androidx-sqlite-ktx = { module = "androidx.sqlite:sqlite-ktx", version.ref = "sq
 androidx-ui = { module = "androidx.compose.ui:ui", version.ref = "runtime" }
 androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "runtime" }
 androidx-ui-tooling-v151 = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose" }
+androidx-work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workRuntimeKtx" }
+google-api-client-android = { module = "com.google.api-client:google-api-client-android", version.ref = "googleApiClientAndroid" }
+google-api-services-drive = { module = "com.google.apis:google-api-services-drive", version.ref = "googleApiServicesDrive" }
+google-http-client-android = { module = "com.google.http-client:google-http-client-android", version.ref = "googleHttpClientAndroid" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
 compose-gradle-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeGradlePlugin" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "hiltAndroidGradlePlugin" }

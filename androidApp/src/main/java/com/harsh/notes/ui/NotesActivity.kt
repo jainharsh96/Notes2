@@ -9,6 +9,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.harsh.notes.GoogleCachedAccountProvider
+import com.harsh.notes.GoogleDriveApi
+import com.harsh.notes.NoteSyncWorker
 import com.harsh.notes.NotesSyncManagerAndroidImpl
 import com.notes.shared.NotesAndroidDependenciesInitializer
 import com.notes.shared.ui.NotesApp
@@ -27,9 +30,14 @@ class NotesActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()
+        NoteSyncWorker.syncNotes(this)
         NotesAndroidDependenciesInitializer.init(
             context = this.applicationContext,
-            notesSyncManager = NotesSyncManagerAndroidImpl(this),
+            notesSyncManager = NotesSyncManagerAndroidImpl(
+                context = this,
+                googleCachedAccount = GoogleCachedAccountProvider(this.applicationContext),
+                googleDriveApi = GoogleDriveApi(this.applicationContext)
+            ),
         )
         setContent {
             val systemUiController = rememberSystemUiController()
