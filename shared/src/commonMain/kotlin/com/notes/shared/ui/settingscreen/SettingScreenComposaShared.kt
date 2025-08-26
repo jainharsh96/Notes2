@@ -7,16 +7,24 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notes.shared.NotesSyncManager
+import com.notes.shared.coreUi.showToast
 import com.notes.shared.painterResource
 import com.notes.shared.ui.NavigationAction
 import com.notes.shared.utils.colorResource
@@ -30,6 +38,21 @@ import notes2.shared.generated.resources.white
 
 @Composable
 fun SettingScreenShared(onAction: (NavigationAction) -> Unit, notesSyncManager: NotesSyncManager?) {
+    var syncData by remember { mutableStateOf(false) }
+    var restoreData by remember { mutableStateOf(false) }
+
+    LaunchedEffect(key1 = syncData, key2 = restoreData){
+        if (syncData){
+            val result = notesSyncManager?.syncDataToCloud(bgSync = false)
+            syncData = false
+            result?.getResultMsg()?.let { showToast(it) }
+        } else if (restoreData){
+            val result = notesSyncManager?.restoreDataFromCloud()
+            restoreData = false
+            result?.getResultMsg()?.let { showToast(it) }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -47,14 +70,24 @@ fun SettingScreenShared(onAction: (NavigationAction) -> Unit, notesSyncManager: 
         if (notesSyncManager?.hasSupportSync() == true) {
             RestoreDataCard(
                 restoreData = {
-                    notesSyncManager.restoreDataFromCloud()
+                    restoreData = true
                 }
             )
             SyncDataCard(
                 syncData = {
-                    notesSyncManager.syncDataToCloud()
+                    syncData = true
                 }
             )
+        }
+    }
+    if (syncData || restoreData) {
+        Box(
+            modifier = Modifier.fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f)) // dim background
+                .clickable(enabled = false) {},  // disable clicks
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
         }
     }
 }
@@ -64,8 +97,7 @@ fun RestoreDataCard(restoreData: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
-            .clickable(onClick = restoreData),
+            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = colorResource(Res.string.white)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -73,6 +105,7 @@ fun RestoreDataCard(restoreData: () -> Unit) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable(onClick = restoreData)
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -97,8 +130,7 @@ fun SyncDataCard(syncData: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
-            .clickable(onClick = syncData),
+            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = colorResource(Res.string.white)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -106,6 +138,7 @@ fun SyncDataCard(syncData: () -> Unit) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .clickable(onClick = syncData)
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -130,14 +163,14 @@ fun DraftNoteCard(openDraftNote: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp)
-            .clickable { openDraftNote.invoke() },
+            .padding(start = 12.dp, end = 12.dp, top = 8.dp, bottom = 8.dp),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = colorResource(Res.string.white)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
+                .clickable { openDraftNote.invoke() }
                 .padding(8.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically

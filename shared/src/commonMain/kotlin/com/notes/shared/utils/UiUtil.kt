@@ -1,12 +1,10 @@
 package com.notes.shared.utils
 
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
-import org.jetbrains.compose.resources.StringResource
 import com.notes.shared.stringResource
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.channels.SendChannel
+import org.jetbrains.compose.resources.StringResource
 
 
 @Composable
@@ -36,4 +34,14 @@ private fun String.toColor(): Color {
     }
 
     return Color(red, green, blue, alpha)
+}
+
+suspend fun <T> SendChannel<T>.sendAndClose(value: T) {
+    try {
+        send(value) // suspends if needed
+    } catch (e : Exception){
+
+    } finally {
+        close()
+    }
 }

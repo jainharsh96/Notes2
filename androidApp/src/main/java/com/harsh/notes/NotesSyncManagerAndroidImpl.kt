@@ -19,10 +19,17 @@ import com.google.api.services.drive.model.File
 import com.notes.shared.AppDispatcherImpl
 import com.notes.shared.AppDispatcherProvider
 import com.notes.shared.NotesSyncManager
+import com.notes.shared.Result
+import com.notes.shared.UserNotLoggedInException
 import com.notes.shared.db.NotesDatabase
 import com.notes.shared.getDatabasePath
+import com.notes.shared.utils.sendAndClose
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -72,57 +79,73 @@ class NotesSyncManagerAndroidImpl(
         ).setApplicationName("Notes2").build()
     }
 
-    override fun syncDataToCloud() {
+    override suspend fun syncDataToCloud(isBgSync : Boolean) = callbackFlow {
         googleSignIn(
+            isBgSignIn = isBgSync,
             onLoginSuccess = { account ->
                 globalScope.launch {
                     uploadToDrive(account = account).onSuccess {
-                        showToast("successfully uploaded file")
+                        sendAndClose(Result.Success("successfully uploaded file"))
                     }.onFailure {
-                        showToast("Something went wrong while uploading data $it")
+                        sendAndClose(Result.Error("Something went wrong while uploading data $it"))
                     }
                 }
             },
             onFailure = {
-                showToast("Something went wrong while uploading data $it")
+                globalScope.launch {
+                    sendAndClose(Result.Exception(it))
+                }
             }
         )
-    }
+        awaitClose { close() }
+    }.catch { null }.firstOrNull() ?: Result.Error("Something went wrong")
 
-    override fun restoreDataFromCloud() {
+    override suspend fun restoreDataFromCloud() = callbackFlow {
         googleSignIn(
+            isBgSignIn = false,
             onLoginSuccess = { account ->
                 globalScope.launch {
                     syncFromDrive(account = account).onSuccess {
-                        showToast("successfully downloaded")
                         runCatching { NotesDatabase.reInitDatabase() }.getOrNull()
+                        sendAndClose(Result.Success("successfully downloaded"))
                     }.onFailure {
-                        showToast("Something went wrong while restoring data")
+                        sendAndClose(Result.Error("Something went wrong while restoring data $it"))
                     }
                 }
             },
             onFailure = {
-                showToast("Something went wrong while restoring data")
+                globalScope.launch {
+                    sendAndClose(Result.Exception(it))
+                }
             }
         )
+        awaitClose { close() }
+    }.catch { null }.firstOrNull() ?: Result.Error("Something went wrong")
+
+    private fun googleSignIn(isBgSignIn : Boolean, onLoginSuccess: (Account) -> Unit, onFailure: (Exception) -> Unit) {
+        val lastSignInAccount = getLastSignedInAccount()
+        if (lastSignInAccount != null){
+           onLoginSuccess(lastSignInAccount)
+        } else {
+            if (isBgSignIn){ // can not login in background
+                onFailure(UserNotLoggedInException)
+            } else {
+                val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(SERVER_CLIENT_ID)
+                    .requestEmail()
+                    .requestScopes(Scope(DriveScopes.DRIVE_FILE)) // Access to app-specific files
+                    .build()
+                val googleSignInClient = GoogleSignIn.getClient(context, gso)
+
+                this.onLoginSuccess = onLoginSuccess
+                this.onFailure = onFailure
+                signInLauncher.launch(googleSignInClient.signInIntent)
+            }
+        }
     }
 
-    private fun googleSignIn(onLoginSuccess: (Account) -> Unit, onFailure: (Exception) -> Unit) {
-        val lastSignInAccount = GoogleSignIn.getLastSignedInAccount(context)
-        if (lastSignInAccount?.account != null){
-           onLoginSuccess(lastSignInAccount.account!!)
-        } else {
-            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(SERVER_CLIENT_ID)
-                .requestEmail()
-                .requestScopes(Scope(DriveScopes.DRIVE_FILE)) // Access to app-specific files
-                .build()
-            val googleSignInClient = GoogleSignIn.getClient(context, gso)
-
-            this.onLoginSuccess = onLoginSuccess
-            this.onFailure = onFailure
-            signInLauncher.launch(googleSignInClient.signInIntent)
-        }
+    private fun getLastSignedInAccount() : Account? {
+        return GoogleSignIn.getLastSignedInAccount(context)?.account
     }
 
     private suspend fun uploadToDrive(account: Account) = kotlin.runCatching {

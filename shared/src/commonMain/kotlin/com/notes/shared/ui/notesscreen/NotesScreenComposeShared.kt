@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
@@ -30,6 +29,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Drafts
 import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -38,6 +39,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -51,8 +53,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -178,17 +180,32 @@ fun DbPasswordAlertDialog(
     onConfirm: (String) -> Unit
 ) {
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+
     Box(modifier = Modifier.fillMaxSize().background(color = Color.White)) {
-        Column(Modifier.padding(top = 100.dp).fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            Modifier.padding(top = 100.dp).fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(text = "Enter Database Password", fontSize = 24.sp)
             TextField(
                 modifier = Modifier.padding(vertical = 24.dp),
                 value = password,
+                readOnly = true,
                 onValueChange = { password = it },
                 label = { Text("Password") },
-                visualTransformation = PasswordVisualTransformation(),
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 singleLine = true,
-                isError = errorMsg?.isNotEmpty() == true
+                isError = errorMsg?.isNotEmpty() == true,
+                trailingIcon = {
+                    val image = if (passwordVisible)
+                        Icons.Default.Visibility
+                    else Icons.Default.VisibilityOff
+
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, contentDescription = null)
+                    }
+                }
             )
             Button(
                 modifier = Modifier.padding(top = 24.dp),
@@ -219,7 +236,7 @@ fun DbPasswordAlertDialog(
                 is KeyBoardButton.Number -> password = password + it.digit
                 KeyBoardButton.Space -> password = "$password "
                 KeyBoardButton.HideKeyboard -> Unit
-                is KeyBoardButton.ClipboardPaste -> Unit
+                is KeyBoardButton.ClipboardPaste -> password = password + it.msg
             }
         }
     }
@@ -386,37 +403,37 @@ fun NotesList(
             )
             SwipeToDismiss(
                 state = dismissState, directions = if (isDraftScreen) setOf(
-                DismissDirection.StartToEnd,
-                DismissDirection.EndToStart
-            ) else setOf(
-                DismissDirection.StartToEnd
-            ), dismissThresholds = {
-                FractionalThreshold(0.8f)
-            }, background = {
-                val alignment = when (dismissState.dismissDirection ?: return@SwipeToDismiss) {
-                    DismissDirection.StartToEnd -> Alignment.CenterStart
-                    DismissDirection.EndToStart -> Alignment.CenterEnd
-                }
-                val icon = when (dismissState.dismissDirection ?: return@SwipeToDismiss) {
-                    DismissDirection.StartToEnd -> if (isDraftScreen) Icons.Default.Restore else Icons.Default.Drafts
-                    DismissDirection.EndToStart -> Icons.Default.Delete
-                }
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = colorResource(Res.string.light_red)),
-                    contentAlignment = alignment
-                ) {
-                    Icon(
-                        icon,
-                        contentDescription = "",
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        tint = colorResource(Res.string.red)
-                    )
-                }
-            }, dismissContent = {
-                NoteHolder(note, event)
-            })
+                    DismissDirection.StartToEnd,
+                    DismissDirection.EndToStart
+                ) else setOf(
+                    DismissDirection.StartToEnd
+                ), dismissThresholds = {
+                    FractionalThreshold(0.8f)
+                }, background = {
+                    val alignment = when (dismissState.dismissDirection ?: return@SwipeToDismiss) {
+                        DismissDirection.StartToEnd -> Alignment.CenterStart
+                        DismissDirection.EndToStart -> Alignment.CenterEnd
+                    }
+                    val icon = when (dismissState.dismissDirection ?: return@SwipeToDismiss) {
+                        DismissDirection.StartToEnd -> if (isDraftScreen) Icons.Default.Restore else Icons.Default.Drafts
+                        DismissDirection.EndToStart -> Icons.Default.Delete
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(color = colorResource(Res.string.light_red)),
+                        contentAlignment = alignment
+                    ) {
+                        Icon(
+                            icon,
+                            contentDescription = "",
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            tint = colorResource(Res.string.red)
+                        )
+                    }
+                }, dismissContent = {
+                    NoteHolder(note, event)
+                })
         }
     }
 }
@@ -426,13 +443,15 @@ fun NoteHolder(note: NoteEntity, event: (NotesContract.Event) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable { event.invoke(NotesContract.Event.OpenNote(note.id)) },
+            .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(containerColor = colorResource(Res.string.white)),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-        Column(modifier = Modifier.padding(8.dp)) {
+        Column(
+            modifier = Modifier
+            .clickable { event.invoke(NotesContract.Event.OpenNote(note.id)) }
+            .padding(8.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
