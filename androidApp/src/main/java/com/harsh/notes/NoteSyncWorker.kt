@@ -43,28 +43,31 @@ class NoteSyncWorker(
     override suspend fun doWork(): Result {
         return try {
             val account = googleCachedAccount.getLastSignedInAccount()
-                ?: return Result.failure()
+            if (account == null){
+                makeDbEntry("UnSynced Note : no account")
+                return Result.failure()
+            }
             val result = googleDriveApi.uploadToDrive(account)
             if (result.isSuccess) {
-                makeDbEntry(false)
+                makeDbEntry("Synced Note")
                 Result.success()
             } else {
-                makeDbEntry(true)
+                makeDbEntry("UnSynced Note with error")
                 Result.failure()
             }
         } catch (e: Exception) {
-            makeDbEntry(true)
+            makeDbEntry("UnSynced Note with exception ${e.localizedMessage}")
             Result.failure()
         }
     }
 
     // todo testing only
-    private suspend fun makeDbEntry(isFailed : Boolean) {
+    private suspend fun makeDbEntry(msg : String) {
         runCatching {
             NotesDatabase.tryInitDb()
             NotesDatabase.databaseObj?.notesDao()?.let { dao ->
                 val note = com.notes.shared.db.Note(
-                    body = "Synced Note ${if (isFailed) " Failed" else " Success"}",
+                    body = msg,
                     createdDate = System.currentTimeMillis(),
                     updatedDate = System.currentTimeMillis()
                 )

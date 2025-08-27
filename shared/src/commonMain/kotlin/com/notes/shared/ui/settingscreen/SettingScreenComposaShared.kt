@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -32,7 +33,10 @@ import notes2.shared.generated.resources.Res
 import notes2.shared.generated.resources.colorPrimaryDark
 import notes2.shared.generated.resources.colorUpdate
 import notes2.shared.generated.resources.ic_arrow_back_black_24dp
+import notes2.shared.generated.resources.ic_drafted_notes
 import notes2.shared.generated.resources.ic_restore
+import notes2.shared.generated.resources.ic_restore_data
+import notes2.shared.generated.resources.ic_upload_data
 import notes2.shared.generated.resources.white
 
 
@@ -106,20 +110,24 @@ fun RestoreDataCard(restoreData: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(onClick = restoreData)
-                .padding(8.dp),
+                .padding(horizontal = 8.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(Res.drawable.ic_restore),
+                painter = painterResource(Res.drawable.ic_restore_data),
                 contentDescription = "",
                 modifier = Modifier
-                    .padding(end = 16.dp),
+                    .padding(end = 16.dp)
+                    .size(24.dp),
+                colorFilter = ColorFilter.tint(
+                    colorResource(Res.string.colorPrimaryDark)
+                )
             )
             Text(
                 text = "Restore Data from Cloud",
-                color = colorResource(Res.string.colorUpdate),
+                color = colorResource(Res.string.colorPrimaryDark),
                 style = TextStyle(fontSize = 16.sp),
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Normal
             )
         }
     }
@@ -139,20 +147,24 @@ fun SyncDataCard(syncData: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(onClick = syncData)
-                .padding(8.dp),
+                .padding(horizontal = 8.dp, vertical = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(Res.drawable.ic_restore),
+                painter = painterResource(Res.drawable.ic_upload_data),
                 contentDescription = "",
                 modifier = Modifier
-                    .padding(end = 16.dp),
+                    .padding(end = 16.dp)
+                    .size(24.dp),
+                colorFilter = ColorFilter.tint(
+                    colorResource(Res.string.colorPrimaryDark)
+                )
             )
             Text(
                 text = "Sync Data to Cloud",
-                color = colorResource(Res.string.colorUpdate),
+                color = colorResource(Res.string.colorPrimaryDark),
                 style = TextStyle(fontSize = 16.sp),
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight. Normal
             )
         }
     }
@@ -171,21 +183,25 @@ fun DraftNoteCard(openDraftNote: () -> Unit) {
         Row(
             modifier = Modifier
                 .clickable { openDraftNote.invoke() }
-                .padding(8.dp)
+                .padding(horizontal = 8.dp, vertical = 16.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(Res.drawable.ic_restore),
+                painter = painterResource(Res.drawable.ic_drafted_notes),
                 contentDescription = "",
                 modifier = Modifier
-                    .padding(end = 16.dp),
+                    .padding(end = 16.dp)
+                    .size(24.dp),
+                colorFilter = ColorFilter.tint(
+                    colorResource(Res.string.colorPrimaryDark)
+                )
             )
             Text(
                 text = "Drafted Notes",
-                color = colorResource(Res.string.colorUpdate),
+                color = colorResource(Res.string.colorPrimaryDark),
                 style = TextStyle(fontSize = 16.sp),
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Normal
             )
         }
     }
