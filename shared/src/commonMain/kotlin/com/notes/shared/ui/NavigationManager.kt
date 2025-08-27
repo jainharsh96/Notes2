@@ -9,4 +9,6 @@ sealed class NavigationAction {
     object OpenDraftNote : NavigationAction()
     object RecordNotes : NavigationAction()
     object GotoLockScreen : NavigationAction()
+    data class NavigateToAddEditReminderScreen(val reminderId: Int?, val noteId: Int?) : NavigationAction()
+    data class NavigateToShowAllRemindersScreen(val noteId: Int?) : NavigationAction()
 }

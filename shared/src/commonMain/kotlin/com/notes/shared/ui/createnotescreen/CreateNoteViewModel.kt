@@ -81,7 +81,7 @@ class CreateNoteViewModel constructor(
     private suspend fun insertNote() = withContext(dispatcher.IO) {
         with(_state.value) {
             if (enteredMsg.isNotEmpty()) {
-                val currentDateTime = DateFormatter.currentDateTime(DateFormatter.NOTE_DATE_FORMAT)
+                val currentDateTime = DateFormatter.currentDateTime()
                 val note = originalNote?.copy(body = enteredMsg, updatedDate = currentDateTime) ?: NoteEntity(
                     body = enteredMsg, createdDate = currentDateTime,
                     updatedDate = currentDateTime

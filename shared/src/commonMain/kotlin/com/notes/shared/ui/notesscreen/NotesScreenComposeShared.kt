@@ -143,7 +143,12 @@ fun NotesScreenShared(
                     containerColor = colorResource(Res.string.colorPrimaryDark),
                     onClick = remember {
                         {
-                            event(NotesContract.Event.RecordNotes)
+                            // todo update icon
+                            onAction.invoke(
+                                NavigationAction.NavigateToShowAllRemindersScreen(
+                                    noteId = null,
+                                )
+                            )
                         }
                     }
                 ) {
@@ -256,7 +261,7 @@ fun NotesContent(
             event
         )
         if (noteState.notes.isNullOrEmpty()) {
-            NoDataView()
+            NoDataView("Add Notes...")
         } else {
             Box(modifier = Modifier.fillMaxSize()) {
                 NotesList(
@@ -304,7 +309,7 @@ fun NotesContent(
 }
 
 @Composable
-fun NoDataView() {
+fun NoDataView(msg : String) {
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -312,7 +317,7 @@ fun NoDataView() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Add Notes...",
+            text = msg,
             color = colorResource(Res.string.disable),
             style = TextStyle(fontSize = 24.sp),
         )
@@ -320,13 +325,12 @@ fun NoDataView() {
 }
 
 @Composable
-fun NotesHeader(heading: String, isDraftScreen: Boolean, event: (NotesContract.Event) -> Unit) {
-    Row(
-        modifier = Modifier
+fun NotesHeader(heading: String, backArrow: Boolean, event: (NotesContract.Event) -> Unit) {
+    Box(
+        modifier = Modifier.fillMaxWidth()
             .padding(16.dp),
-        verticalAlignment = Alignment.CenterVertically
     ) {
-        if (isDraftScreen) {
+        if (backArrow) {
             Image(
                 painter = painterResource(Res.drawable.ic_arrow_back_black_24dp),
                 contentDescription = "",
@@ -338,17 +342,17 @@ fun NotesHeader(heading: String, isDraftScreen: Boolean, event: (NotesContract.E
         }
         Text(
             text = heading,
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.align(Alignment.Center),
             textAlign = TextAlign.Center,
             color = colorResource(Res.string.colorPrimaryDark),
             style = TextStyle(fontSize = 24.sp),
             fontWeight = FontWeight.Bold
         )
-        if (isDraftScreen.not()) {
+        if (backArrow.not()) {
             Image(
                 painter = painterResource(Res.drawable.ic_setting),
                 contentDescription = "",
-                modifier = Modifier
+                modifier = Modifier.align(Alignment.TopEnd)
                     .width(24.dp)
                     .height(24.dp)
                     .clickable { event.invoke(NotesContract.Event.OpenSettings) }
@@ -372,7 +376,7 @@ fun NotesList(
         if (notes.isEmpty()) {
             item {
                 Column(modifier = Modifier.fillParentMaxSize()) {
-                    NoDataView()
+                    NoDataView("Add Notes...")
                 }
             }
         }

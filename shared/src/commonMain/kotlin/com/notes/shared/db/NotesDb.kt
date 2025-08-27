@@ -1,6 +1,7 @@
 package com.notes.shared.db
 
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.notes.shared.NotesDependencies
@@ -9,36 +10,43 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
 @Database(
-    entities = [Note::class, DeletedNote::class],
+    entities = [Note::class, DeletedNote::class, Reminder::class],
     exportSchema = true,
-    version = 2,
-  //  autoMigrations = arrayOf(AutoMigration(from = 1, to = 2))
+    version = 3,
+    autoMigrations = [
+        AutoMigration(from = 2, to = 3)
+    ]
 )
 abstract class NotesDatabase : RoomDatabase() {
     abstract fun notesDao(): NotesDao
 
+    abstract fun reminderDao() : ReminderDao
+
     companion object {
         const val DATABASE_FILE_NAME_V2 = "NotesDb2.db"
 
-        private suspend fun getDBPasscode() = NotesDependencies.databasePasswordProvider?.getPassword()
+        private suspend fun getDBPasscode() =
+            NotesDependencies.databasePasswordProvider?.getPassword()
 
-        private fun getNotesDatabase(dbPassword : String) = getDatabaseBuilder(databaseName = DATABASE_FILE_NAME_V2, password = dbPassword)
-            .setJournalMode(JournalMode.TRUNCATE)
-            .setQueryCoroutineContext(Dispatchers.IO)
-            .build()
+        private fun getNotesDatabase(dbPassword: String) =
+            getDatabaseBuilder(databaseName = DATABASE_FILE_NAME_V2, password = dbPassword)
+                .setJournalMode(JournalMode.TRUNCATE)
+                .setQueryCoroutineContext(Dispatchers.IO)
+                .build()
 
-        var databaseObj : NotesDatabase? = null
+        var databaseObj: NotesDatabase? = null
 
         /*
         try to init DB with stored password and validate password is correct or not
          */
-        suspend fun tryInitDb() : Boolean {
+        suspend fun tryInitDb(): Boolean {
             if (isDBAlreadyInitialized()) return true
             val db = runCatching {
                 val dbPassword = getDBPasscode()
                 if (dbPassword.isNullOrEmpty()) return@runCatching null  // if password is not set, return null
                 val db = getNotesDatabase(dbPassword = dbPassword)
-                db.notesDao().isDbAccessible() // to check whether DB is accessible or not with given password
+                db.notesDao()
+                    .isDbAccessible() // to check whether DB is accessible or not with given password
                 databaseObj = db
                 databaseObj
             }.getOrNull()
@@ -48,7 +56,7 @@ abstract class NotesDatabase : RoomDatabase() {
         fun isDBAlreadyInitialized() = databaseObj != null
 
         suspend fun reInitDatabase() {
-            if (isDBAlreadyInitialized()){
+            if (isDBAlreadyInitialized()) {
                 databaseObj?.close()
                 databaseObj = null
             }

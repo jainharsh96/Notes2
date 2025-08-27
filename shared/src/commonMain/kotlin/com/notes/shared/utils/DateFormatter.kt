@@ -45,8 +45,8 @@ object DateFormatter {
             amPmMarker(am = "am", pm = "pm")
         }
 
-    fun format(dateInMillis: Long, format: DateTimeFormat<LocalDateTime>): String {
-        val instant = Instant.fromEpochMilliseconds(dateInMillis)
+    fun format(dateTimeInMillis: Long, format: DateTimeFormat<LocalDateTime>): String {
+        val instant = Instant.fromEpochMilliseconds(dateTimeInMillis)
         val dateTime = instant.toLocalDateTime(timeZone)
         return dateTime.format(format)
     }
@@ -55,9 +55,9 @@ object DateFormatter {
         return LocalDateTime.parse(date, format).toInstant(timeZone).toEpochMilliseconds()
     }
 
-    fun currentDateTimeLong() = Clock.System.now().toEpochMilliseconds()
+    fun currentDateTimeMillisecond() = Clock.System.now().toEpochMilliseconds()
 
-    fun currentDateTime(format: DateTimeFormat<LocalDateTime>): String {
-        return format(dateInMillis = Clock.System.now().toEpochMilliseconds(), format = format)
+    fun currentDateTime(format: DateTimeFormat<LocalDateTime> = NOTE_DATE_FORMAT): String {
+        return format(dateTimeInMillis = Clock.System.now().toEpochMilliseconds(), format = format)
     }
 }

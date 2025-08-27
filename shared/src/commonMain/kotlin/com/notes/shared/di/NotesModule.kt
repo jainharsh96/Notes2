@@ -7,8 +7,12 @@ import com.notes.shared.ScreenLockUtil
 import com.notes.shared.domain.NotesDbUseCase
 import com.notes.shared.repository.NotesRepository
 import com.notes.shared.repository.NotesRepositoryImpl
+import com.notes.shared.repository.ReminderRepository
+import com.notes.shared.repository.ReminderRepositoryImpl
 import com.notes.shared.ui.createnotescreen.CreateNoteViewModel
 import com.notes.shared.ui.notesscreen.NotesViewModel
+import com.notes.shared.ui.reminders.AddEditReminderViewModel
+import com.notes.shared.ui.reminders.ShowAllReminderViewModel
 import com.notes.shared.ui.securelockScreen.SecureLockScreenViewmodel
 import com.notes.shared.ui.settingscreen.SettingViewModel
 import org.koin.compose.viewmodel.dsl.viewModelOf
@@ -19,6 +23,7 @@ import org.koin.dsl.module
 
 val notesRepo = module {
     singleOf(::NotesRepositoryImpl).bind(NotesRepository::class)
+    singleOf(::ReminderRepositoryImpl).bind(ReminderRepository::class)
 }
 
 val dispatcherModule = module {
@@ -30,6 +35,8 @@ val viewModels = module {
     viewModelOf(::CreateNoteViewModel)
     viewModelOf(::SettingViewModel)
     viewModelOf(::SecureLockScreenViewmodel)
+    viewModelOf(::AddEditReminderViewModel)
+    viewModelOf(::ShowAllReminderViewModel)
 }
 
 val useCaseModule = module {
