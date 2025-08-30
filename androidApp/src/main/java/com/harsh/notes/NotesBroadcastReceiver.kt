@@ -7,11 +7,11 @@ import android.content.Intent
 import com.notes.shared.db.NotesDatabase
 import com.notes.shared.db.toReminder
 import com.notes.shared.db.toReminderEntity
-import com.notes.shared.repository.ReminderRepositoryImpl
+import com.notes.shared.repository.ReminderRepository
 import com.notes.shared.ui.uientity.ReminderState
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.mp.KoinPlatform.getKoin
 
 class NotesBroadcastReceiver : BroadcastReceiver() {
     companion object {
@@ -33,9 +33,10 @@ class NotesBroadcastReceiver : BroadcastReceiver() {
     }
 
     fun acknowledgeReminder(reminderId : Int) {
-        CoroutineScope(Dispatchers.IO).launch {
+        val globalScope : CoroutineScope = getKoin().get()
+        globalScope.launch {
             NotesDatabase.tryInitDb()
-            val reminderRepo = ReminderRepositoryImpl()  // todo use DI and global scope
+            val reminderRepo : ReminderRepository = getKoin().get()
             var reminder = reminderRepo.fetchReminder(reminderId)?.toReminder()
             if (reminder != null) {
                 reminder = if (reminder.frequency > 0){

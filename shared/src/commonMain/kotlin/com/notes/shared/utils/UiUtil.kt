@@ -35,14 +35,3 @@ private fun String.toColor(): Color {
 
     return Color(red, green, blue, alpha)
 }
-
-// todo optimize this
-suspend fun <T> SendChannel<T>.sendAndClose(value: T) {
-    try {
-        send(value) // suspends if needed
-    } catch (e : Exception){
-
-    } finally {
-        close()
-    }
-}

@@ -16,6 +16,8 @@ import com.notes.shared.ui.reminders.ShowAllReminderViewModel
 import com.notes.shared.ui.securelockScreen.SecureLockScreenViewmodel
 import com.notes.shared.ui.settingscreen.SettingViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import org.koin.compose.viewmodel.dsl.viewModelOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
@@ -40,9 +42,9 @@ val viewModels = module {
     viewModelOf(::ShowAllReminderViewModel)
 }
 
-//val utils = module {
-//    single { CoroutineScope(AppDispatcherImpl().IO) }  // provide global scope
-//}
+val utils = module {
+    single { CoroutineScope(Dispatchers.IO) }  // provide global scope
+}
 
 val useCaseModule = module {
     factory { NotesDbUseCase() }
@@ -50,5 +52,5 @@ val useCaseModule = module {
 }
 
 val notesModule = listOf(
-    notesRepo, dispatcherModule, viewModels, useCaseModule
+    notesRepo, dispatcherModule, viewModels, useCaseModule, utils
 )

@@ -1,15 +1,17 @@
 package com.notes.shared.repository
 
+import com.notes.shared.AppDispatcherProvider
 import com.notes.shared.db.NotesDatabase
+import com.notes.shared.db.ReminderDao
 import com.notes.shared.db.toReminder
 import com.notes.shared.db.toReminderEntity
 import com.notes.shared.ui.uientity.ReminderEntity
 import com.notes.shared.ui.uientity.ReminderState
 import com.notes.shared.utils.DateFormatter
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 
 interface ReminderRepository {
 
@@ -31,9 +33,13 @@ interface ReminderRepository {
     suspend fun deleteReminder(reminderId: Int): Int
 }
 
-class ReminderRepositoryImpl() : ReminderRepository {
+class ReminderRepositoryImpl(
+    private val globalScope: CoroutineScope,
+    private val dispatcherProvider: AppDispatcherProvider,
+) : ReminderRepository {
 
-    private val reminderDao = NotesDatabase.databaseObj!!.reminderDao()
+    private val reminderDao: ReminderDao
+        get() = NotesDatabase.databaseObj!!.reminderDao()
 
     override fun fetchAllReminders(states: List<Int>) =
         reminderDao.fetchAllReminders(states).map { it.map { it.toReminderEntity() } }
@@ -50,15 +56,19 @@ class ReminderRepositoryImpl() : ReminderRepository {
         reminderDao.findReminderById(reminderId)?.toReminderEntity()
 
     override suspend fun insertReminder(reminder: ReminderEntity) =
-        reminderDao.insertReminder(reminder.toReminder())
+        globalScope.async(dispatcherProvider.IO) {
+            reminderDao.insertReminder(reminder.toReminder())
+        }.await()
 
     override suspend fun updateOrInsertReminder(reminder: ReminderEntity): Int {
-        val flag = reminderDao.updateReminder(reminder.toReminder())
-        if (flag <= 0) {
-            return reminderDao.insertReminder(reminder.toReminder()).toInt()
-        } else {
-            return flag
-        }
+        return globalScope.async(dispatcherProvider.IO) {
+            val flag = reminderDao.updateReminder(reminder.toReminder())
+            if (flag <= 0) {
+                reminderDao.insertReminder(reminder.toReminder()).toInt()
+            } else {
+                flag
+            }
+        }.await()
     }
 
     override suspend fun deleteReminder(reminderId: Int): Int {

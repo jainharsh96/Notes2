@@ -7,10 +7,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.Scope
-import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential
-import com.google.api.client.http.javanet.NetHttpTransport
-import com.google.api.client.json.gson.GsonFactory
-import com.google.api.services.drive.Drive
 import com.google.api.services.drive.DriveScopes
 import com.notes.shared.NotesSyncManager
 import com.notes.shared.Result
@@ -18,18 +14,18 @@ import com.notes.shared.UserNotLoggedInException
 import com.notes.shared.db.NotesDatabase
 import com.notes.shared.utils.sendAndClose
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
+import org.koin.mp.KoinPlatform.getKoin
 
 class NotesSyncManagerAndroidImpl(
     private val context: ComponentActivity,
     private val googleCachedAccount: GoogleCachedAccountProvider,
     private val googleDriveApi: GoogleDriveApi,
-    private val globalScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+    private val globalScope: CoroutineScope = getKoin().get()
 ) : NotesSyncManager {
 
     companion object {

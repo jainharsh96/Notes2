@@ -3,13 +3,12 @@ package com.notes.shared.utils
 import com.notes.shared.db.Note
 import com.notes.shared.db.NotesDatabase
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.launch
+import org.koin.mp.KoinPlatform.getKoin
 
 object NotesLogger {
 
-    val globalScope = CoroutineScope(Dispatchers.IO)
+    val globalScope : CoroutineScope = getKoin().get()
 
     fun log(tag : String, message: String) {
         globalScope.launch {

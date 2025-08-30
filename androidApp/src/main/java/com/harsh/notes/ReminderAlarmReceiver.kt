@@ -5,24 +5,23 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
+import androidx.core.content.edit
 import com.notes.shared.db.NotesDatabase
-import com.notes.shared.repository.ReminderRepositoryImpl
+import com.notes.shared.utils.DateFormatter
 import com.notes.shared.utils.NotesLogger
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import androidx.core.content.edit
-import com.notes.shared.utils.DateFormatter
+import org.koin.mp.KoinPlatform.getKoin
 
 class ReminderAlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        CoroutineScope(Dispatchers.IO).launch {
+        val globalScope : CoroutineScope = getKoin().get()
+        globalScope.launch {
             try {
                 val state = NotesDatabase.tryInitDb()
                 val reminderTriggerTask = ReminderTriggerTask(
                     context = context,
-                    reminderRepository = ReminderRepositoryImpl()
+                    reminderRepository = getKoin().get()
                 )
                 reminderTriggerTask.triggerReminders()
             } catch (e : Exception){

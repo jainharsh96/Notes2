@@ -10,8 +10,8 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.harsh.notes.ReminderTriggerTask
 import com.notes.shared.db.NotesDatabase
-import com.notes.shared.repository.ReminderRepositoryImpl
 import com.notes.shared.utils.NotesLogger
+import org.koin.mp.KoinPlatform.getKoin
 import java.util.concurrent.TimeUnit
 
 class ReminderWorker(
@@ -51,7 +51,7 @@ class ReminderWorker(
             NotesDatabase.tryInitDb()
             val reminderTriggerTask = ReminderTriggerTask(
                 context = applicationContext,
-                reminderRepository = ReminderRepositoryImpl()
+                reminderRepository = getKoin().get()
             )
             reminderTriggerTask.triggerReminders()
         } catch (e : Exception){
