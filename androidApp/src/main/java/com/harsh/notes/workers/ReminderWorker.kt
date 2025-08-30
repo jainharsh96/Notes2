@@ -24,7 +24,7 @@ class ReminderWorker(
 
         fun setReminderWorker(context: Context) {
             val dailyWork = PeriodicWorkRequestBuilder<ReminderWorker>(
-                16, TimeUnit.MINUTES
+                1, TimeUnit.HOURS
             ).setConstraints(
                 Constraints.Builder()
                     .build()
