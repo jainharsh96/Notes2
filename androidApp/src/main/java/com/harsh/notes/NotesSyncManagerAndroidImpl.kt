@@ -57,19 +57,6 @@ class NotesSyncManagerAndroidImpl(
         return true
     }
 
-    private fun getDriveService(account: Account) : Drive {
-        val credential = GoogleAccountCredential.usingOAuth2(
-            context, listOf(DriveScopes.DRIVE_FILE)
-        ).apply { selectedAccount = account }
-
-        // Build Drive service
-        return Drive.Builder(
-            NetHttpTransport(),
-            GsonFactory(),
-            credential
-        ).setApplicationName("Notes2").build()
-    }
-
     override suspend fun syncDataToCloud(isBgSync : Boolean) = callbackFlow {
         googleSignIn(
             isBgSignIn = isBgSync,

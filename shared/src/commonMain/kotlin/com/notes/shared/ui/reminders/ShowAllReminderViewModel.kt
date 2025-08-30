@@ -6,6 +6,7 @@ import com.notes.shared.repository.ReminderRepository
 import com.notes.shared.ui.BaseViewModel
 import com.notes.shared.ui.NotesRoutes.ARG_NOTES_ID
 import com.notes.shared.ui.reminders.ShowAllReminderContract.SideEffect.GotoAddEditReminder
+import com.notes.shared.ui.uientity.ReminderState
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -48,7 +49,10 @@ class ShowAllReminderViewModel constructor(
             }
 
             is ShowAllReminderContract.Event.OnToggleSwitch -> {
-                // todo
+                withContext(dispatcher.IO){
+                    val state = if (event.enable) ReminderState.SET else ReminderState.PAUSED
+                    reminderRepo.updateOrInsertReminder(event.reminderEntity.copy(state = state))
+                }
             }
 
             ShowAllReminderContract.Event.ClickAddNewReminder -> {

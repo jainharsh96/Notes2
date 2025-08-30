@@ -174,8 +174,8 @@ fun ReminderItem(
         ) {
             Text(
                 modifier = Modifier.padding(end = 8.dp).widthIn(max = 80.dp),
-                text = reminder.getRemindAtTime(),
-                color = colorResource(Res.string.disable),
+                text = reminder.remindAtDate,
+                color = colorResource(Res.string.colorPrimaryDark),
                 style = TextStyle(fontSize = 12.sp),
                 maxLines = 2
             )
@@ -193,6 +193,13 @@ fun ReminderItem(
                     text = reminder.secondLineData(),
                     color = colorResource(Res.string.disable),
                     style = TextStyle(fontSize = 14.sp),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1
+                )
+                Text(
+                    text = if (reminder.frequency == 0) "Does not repeat" else "Repeat After Every ${reminder.frequency} days",
+                    color = colorResource(Res.string.disable),
+                    style = TextStyle(fontSize = 10.sp),
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1
                 )

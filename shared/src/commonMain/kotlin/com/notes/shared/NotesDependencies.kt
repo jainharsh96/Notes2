@@ -14,15 +14,17 @@ object NotesDependencies {
         private set
 
     fun init(
-        notesSyncManager: NotesSyncManager? = null,
         databasePasswordProvider: DatabasePasswordProvider? = null,
         dataStore: DataStore? = null,
         clipboardManager: ClipboardManager? = null
     ){
-        this.notesSyncManager = notesSyncManager
         this.databasePasswordProvider = databasePasswordProvider
         this.dataStore = dataStore
         this.clipboardManager = clipboardManager
+    }
+
+    fun initSyncManager(notesSyncManager: NotesSyncManager){
+        this.notesSyncManager = notesSyncManager
     }
 
     fun clearData(){

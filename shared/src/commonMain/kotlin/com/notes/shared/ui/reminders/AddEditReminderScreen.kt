@@ -49,7 +49,7 @@ fun AddEditReminderScreenShared(
     event: (AddEditReminderContract.Event) -> Unit
 ) {
 
-    val allowToSave = state.allowToSave()
+    val allowToSave = state.reminderEntity?.title?.isNotEmpty() == true
     LaunchedEffect(key1 = Unit) {
         event(AddEditReminderContract.Event.LoadReminder)
     }
@@ -82,6 +82,42 @@ fun AddEditReminderScreenShared(
                 },
             )
             BasicTextField(
+                value = state.reminderEntity?.remindAtDate.orEmpty(),
+                onValueChange = { newVal ->
+                    event(AddEditReminderContract.Event.OnSetRemindAt(newVal))
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                textStyle = TextStyle(fontSize = 16.sp),
+                decorationBox = { innerTextField ->
+                    SetHint(
+                        hint = "Enter date and time to remind",
+                        showHint = state.reminderEntity?.remindAtDate?.isEmpty() == true
+                    )
+                    innerTextField()
+                }
+            )
+
+            BasicTextField(
+                value = state.reminderEntity?.frequency.toString(),
+                onValueChange = { newVal ->
+                    event(AddEditReminderContract.Event.OnSetFrequency(newVal))
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                textStyle = TextStyle(fontSize = 16.sp),
+                decorationBox = { innerTextField ->
+                    SetHint(
+                        hint = "    Enter Frequency in days to repeat. 0 means does not repeat",
+                        showHint = state.reminderEntity?.frequency == 0
+                    )
+                    innerTextField()
+                }
+            )
+
+            BasicTextField(
                 value = state.reminderEntity?.title.orEmpty(),
                 onValueChange = { newVal ->
                     event(AddEditReminderContract.Event.OnTypeTitle(newVal))
@@ -100,7 +136,6 @@ fun AddEditReminderScreenShared(
                 }
             )
 
-            // todo pick date time here
             Button(
                 onClick = { event(AddEditReminderContract.Event.SaveReminder) },
                 modifier = Modifier

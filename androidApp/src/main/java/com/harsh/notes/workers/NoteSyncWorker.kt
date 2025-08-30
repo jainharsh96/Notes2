@@ -1,4 +1,4 @@
-package com.harsh.notes
+package com.harsh.notes.workers
 
 import android.content.Context
 import androidx.work.Constraints
@@ -8,7 +8,9 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import com.notes.shared.db.NotesDatabase
+import com.harsh.notes.GoogleCachedAccountProvider
+import com.harsh.notes.GoogleDriveApi
+import com.notes.shared.utils.NotesLogger
 import java.util.concurrent.TimeUnit
 
 class NoteSyncWorker(
@@ -28,7 +30,7 @@ class NoteSyncWorker(
                     .build()
             ).build()
 
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            WorkManager.Companion.getInstance(context).enqueueUniquePeriodicWork(
                 WORK_NAME,
                 ExistingPeriodicWorkPolicy.KEEP,
                 dailyWork
@@ -36,7 +38,8 @@ class NoteSyncWorker(
         }
     }
 
-    private val googleCachedAccount: GoogleCachedAccountProvider = GoogleCachedAccountProvider(context)
+    private val googleCachedAccount: GoogleCachedAccountProvider =
+        GoogleCachedAccountProvider(context)
     private val googleDriveApi: GoogleDriveApi = GoogleDriveApi(context)
 
 
@@ -44,35 +47,20 @@ class NoteSyncWorker(
         return try {
             val account = googleCachedAccount.getLastSignedInAccount()
             if (account == null){
-                makeDbEntry("UnSynced Note : no account")
+                NotesLogger.log(WORK_NAME,"UnSynced Note : no account")
                 return Result.failure()
             }
             val result = googleDriveApi.uploadToDrive(account)
             if (result.isSuccess) {
-                makeDbEntry("Synced Note")
+                NotesLogger.log(WORK_NAME,"Synced Note")
                 Result.success()
             } else {
-                makeDbEntry("UnSynced Note with error")
+                NotesLogger.log(WORK_NAME,"UnSynced Note with error")
                 Result.failure()
             }
         } catch (e: Exception) {
-            makeDbEntry("UnSynced Note with exception ${e.localizedMessage}")
+            NotesLogger.log(WORK_NAME,"UnSynced Note with exception ${e.toString()}")
             Result.failure()
-        }
-    }
-
-    // todo testing only
-    private suspend fun makeDbEntry(msg : String) {
-        runCatching {
-            NotesDatabase.tryInitDb()
-            NotesDatabase.databaseObj?.notesDao()?.let { dao ->
-                val note = com.notes.shared.db.Note(
-                    body = msg,
-                    createdDate = System.currentTimeMillis(),
-                    updatedDate = System.currentTimeMillis()
-                )
-                dao.insertNote(note)
-            }
         }
     }
 }

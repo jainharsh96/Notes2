@@ -7,12 +7,17 @@ import kotlin.jvm.JvmInline
 data class ReminderEntity(
     val id: Int = 0,
     val title: String,
-    var createdDate: Long?,
-    var updatedDate: Long?,
-    val remindAt: Long,
+    val createdDate: Long?,
+    val updatedDate: Long?,
+    val remindAtDate : String,
+    val frequency : Int,
     val state: ReminderState,
     val linkedNoteId: Int?,
 ) {
+
+    companion object {
+        const val FREQUENCY_NOT_REPEAT = 0 // does not repeat
+    }
     private var firstLine: String = ""
 
     private var secondLine: String = ""
@@ -40,8 +45,11 @@ data class ReminderEntity(
         return state == ReminderState.SET
     }
 
-    fun getRemindAtTime(): String {
-        return DateFormatter.format(remindAt, NOTE_DATE_FORMAT)
+    fun isRemindAtValid(): Boolean {
+        return runCatching {
+            DateFormatter.formatInLong(remindAtDate, NOTE_DATE_FORMAT)
+            true
+        }.getOrDefault(false)
     }
 }
 

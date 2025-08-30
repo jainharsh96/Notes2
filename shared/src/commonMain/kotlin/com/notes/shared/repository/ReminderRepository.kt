@@ -5,8 +5,11 @@ import com.notes.shared.db.toReminder
 import com.notes.shared.db.toReminderEntity
 import com.notes.shared.ui.uientity.ReminderEntity
 import com.notes.shared.ui.uientity.ReminderState
+import com.notes.shared.utils.DateFormatter
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 
 interface ReminderRepository {
 
@@ -17,6 +20,8 @@ interface ReminderRepository {
         states: List<Int> = ReminderState.getIncompletedStates()
     ): Flow<List<ReminderEntity>>
 
+    suspend fun getAllActiveRemindersToNotify(currentDateTime: Long = DateFormatter.currentDateTimeMillisecond()): List<ReminderEntity>
+
     suspend fun fetchReminder(reminderId: Int): ReminderEntity?
 
     suspend fun insertReminder(reminder: ReminderEntity): Long
@@ -24,7 +29,6 @@ interface ReminderRepository {
     suspend fun updateOrInsertReminder(reminder: ReminderEntity): Int
 
     suspend fun deleteReminder(reminderId: Int): Int
-
 }
 
 class ReminderRepositoryImpl() : ReminderRepository {
@@ -36,6 +40,11 @@ class ReminderRepositoryImpl() : ReminderRepository {
 
     override fun fetchNoteReminders(noteId: Int, states: List<Int>) =
         reminderDao.fetchNoteReminders(noteId, states).map { it.map { it.toReminderEntity() } }
+
+    override suspend fun getAllActiveRemindersToNotify(currentDateTime: Long): List<ReminderEntity> {
+        return reminderDao.getAllActiveReminders(ReminderState.SET.value, currentDateTime)
+            .map { it.toReminderEntity() }
+    }
 
     override suspend fun fetchReminder(reminderId: Int) =
         reminderDao.findReminderById(reminderId)?.toReminderEntity()

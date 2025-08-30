@@ -11,9 +11,11 @@ import androidx.core.view.WindowCompat
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.harsh.notes.GoogleCachedAccountProvider
 import com.harsh.notes.GoogleDriveApi
-import com.harsh.notes.NoteSyncWorker
 import com.harsh.notes.NotesSyncManagerAndroidImpl
+import com.harsh.notes.workers.NoteSyncWorker
+import com.harsh.notes.workers.ReminderWorker
 import com.notes.shared.NotesAndroidDependenciesInitializer
+import com.notes.shared.NotesDependencies
 import com.notes.shared.ui.NotesApp
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,8 +33,9 @@ class NotesActivity : BaseActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         enableEdgeToEdge()
         NoteSyncWorker.syncNotes(this)
-        NotesAndroidDependenciesInitializer.init(
-            context = this.applicationContext,
+        ReminderWorker.setReminderWorker(this)
+     //   ReminderAlarmReceiver.scheduleRepeatingAlarm(this)
+        NotesDependencies.initSyncManager(
             notesSyncManager = NotesSyncManagerAndroidImpl(
                 context = this,
                 googleCachedAccount = GoogleCachedAccountProvider(this.applicationContext),

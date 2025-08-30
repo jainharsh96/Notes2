@@ -44,6 +44,17 @@ class AddEditReminderViewModel constructor(
             }
 
             AddEditReminderContract.Event.SaveReminder -> saveReminder()
+            is AddEditReminderContract.Event.OnSetFrequency -> _state.update {
+                val enteredNumber = event.freq.toIntOrNull() ?: 0
+                val newReminder = it.reminderEntity?.copy(frequency = enteredNumber) ?: return@update it
+                it.copy(reminderEntity = newReminder)
+            }
+            is AddEditReminderContract.Event.OnSetRemindAt -> {
+                _state.update {
+                    val newReminder = it.reminderEntity?.copy(remindAtDate = event.date) ?: return@update it
+                    it.copy(reminderEntity = newReminder)
+                }
+            }
         }
     }
 
@@ -61,7 +72,8 @@ class AddEditReminderViewModel constructor(
             title = "",
             createdDate = DateFormatter.currentDateTimeMillisecond(),
             updatedDate = DateFormatter.currentDateTimeMillisecond(),
-            remindAt = DateFormatter.currentDateTimeMillisecond(),  // todo set to 0 as initial state
+            remindAtDate = DateFormatter.format(DateFormatter.currentDateTimeMillisecond(), DateFormatter.NOTE_DATE_FORMAT),
+            frequency = ReminderEntity.FREQUENCY_NOT_REPEAT,
             state = ReminderState.SET,
             linkedNoteId = noteId,
         )

@@ -10,11 +10,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ReminderDao {
 
-    @Query("SELECT * FROM reminder where state IN ( :states) ORDER BY remindAt DESC")
+    @Query("SELECT * FROM reminder where state IN ( :states) ORDER BY remindAt ASC")
     fun fetchAllReminders(states: List<Int>): Flow<List<Reminder>>
 
-    @Query("SELECT * FROM reminder where linkedNoteId = :noteId and state IN ( :states) ORDER BY remindAt DESC")
+    @Query("SELECT * FROM reminder where linkedNoteId = :noteId and state IN ( :states) ORDER BY remindAt ASC")
     fun fetchNoteReminders(noteId: Int, states: List<Int>): Flow<List<Reminder>>
+
+    @Query("SELECT * FROM reminder WHERE state = :activeState AND remindAt <= :time")
+    suspend fun getAllActiveReminders(activeState : Int, time : Long): List<Reminder>
 
     @Query("SELECT * FROM reminder WHERE id = :id")
     suspend fun findReminderById(id: Int): Reminder?
