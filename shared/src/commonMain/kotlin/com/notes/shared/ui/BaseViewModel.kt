@@ -17,7 +17,7 @@ abstract class BaseViewModel<STATE, EVENT, EFFECT> : ViewModel(){
     }
 
     fun launchCoroutine(content : suspend () -> Unit){
-        viewModelScope.launch(viewModelScope.coroutineContext + exceptionHandler) {
+        viewModelScope.launch(exceptionHandler) {
             content()
         }
     }

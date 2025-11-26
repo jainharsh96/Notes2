@@ -34,6 +34,7 @@ class NotesActivity : BaseActivity() {
         enableEdgeToEdge()
         NoteSyncWorker.syncNotes(this)
         ReminderWorker.setReminderWorker(this)
+     //   ReminderWorker.testOnTimeWorker(this)
      //   ReminderAlarmReceiver.scheduleRepeatingAlarm(this)
         NotesDependencies.initSyncManager(
             notesSyncManager = NotesSyncManagerAndroidImpl(

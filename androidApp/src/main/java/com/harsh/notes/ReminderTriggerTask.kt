@@ -61,7 +61,6 @@ class ReminderTriggerTask(
             .build()
 
         notificationManager.notify(reminder.id, notification)
-        NotesLogger.log("Notification", "successfully triggered for ${reminder.id}")
     }
 
     private fun getAcknowledgeAction(reminderId : Int): PendingIntent {
