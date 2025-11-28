@@ -4,7 +4,7 @@ import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.notes.shared.db.NotesDatabase
+import com.notes.shared.db.NotesDatabaseDelegate
 import com.notes.shared.db.toReminder
 import com.notes.shared.db.toReminderEntity
 import com.notes.shared.repository.ReminderRepository
@@ -35,7 +35,7 @@ class NotesBroadcastReceiver : BroadcastReceiver() {
     fun acknowledgeReminder(reminderId : Int) {
         val globalScope : CoroutineScope = getKoin().get()
         globalScope.launch {
-            NotesDatabase.tryInitDb()
+            NotesDatabaseDelegate.tryInitDb()
             val reminderRepo : ReminderRepository = getKoin().get()
             var reminder = reminderRepo.fetchReminder(reminderId)?.toReminder()
             if (reminder != null) {

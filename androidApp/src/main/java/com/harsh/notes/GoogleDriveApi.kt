@@ -12,7 +12,7 @@ import com.google.api.services.drive.DriveScopes
 import com.google.api.services.drive.model.File
 import com.notes.shared.AppDispatcherImpl
 import com.notes.shared.AppDispatcherProvider
-import com.notes.shared.db.NotesDatabase
+import com.notes.shared.db.NotesDatabaseDelegate
 import com.notes.shared.getDatabasePath
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -50,7 +50,7 @@ class GoogleDriveApi(
             val driveService = getDriveService(account)
             val filePath = getDatabaseFile()
             val mediaContent = FileContent(null, filePath)
-            val query = "name = '${NotesDatabase.DATABASE_FILE_NAME_V2}' and trashed = false"
+            val query = "name = '${NotesDatabaseDelegate.DATABASE_FILE_NAME_V2}' and trashed = false"
 
             // check whether file already present or not
             val fileList = driveService.files().list()
@@ -62,7 +62,7 @@ class GoogleDriveApi(
             if (fileList.files.isNullOrEmpty()) {
                 // create file
                 val fileMetadata = File().apply {
-                    name = NotesDatabase.DATABASE_FILE_NAME_V2
+                    name = NotesDatabaseDelegate.DATABASE_FILE_NAME_V2
                 }
                 driveService.files().create(fileMetadata, mediaContent)
                     .setFields("id")
@@ -82,7 +82,7 @@ class GoogleDriveApi(
             val driveService = getDriveService(account)
 
             // List files
-            val query = "name = '${NotesDatabase.DATABASE_FILE_NAME_V2}' and trashed = false"
+            val query = "name = '${NotesDatabaseDelegate.DATABASE_FILE_NAME_V2}' and trashed = false"
             val result = driveService.files().list()
                 .setQ(query)
                 .setSpaces("drive")

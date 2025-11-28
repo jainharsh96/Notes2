@@ -11,7 +11,7 @@ import com.google.api.services.drive.DriveScopes
 import com.notes.shared.NotesSyncManager
 import com.notes.shared.Result
 import com.notes.shared.UserNotLoggedInException
-import com.notes.shared.db.NotesDatabase
+import com.notes.shared.db.NotesDatabaseDelegate
 import com.notes.shared.utils.sendAndClose
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.awaitClose
@@ -80,7 +80,7 @@ class NotesSyncManagerAndroidImpl(
             onLoginSuccess = { account ->
                 globalScope.launch {
                     googleDriveApi.syncFromDrive(account = account).onSuccess {
-                        runCatching { NotesDatabase.reInitDatabase() }.getOrNull()
+                        runCatching { NotesDatabaseDelegate.reInitDatabase() }.getOrNull()
                         sendAndClose(Result.Success("successfully downloaded"))
                     }.onFailure {
                         sendAndClose(Result.Error("Something went wrong while restoring data $it"))

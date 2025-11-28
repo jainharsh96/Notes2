@@ -1,7 +1,5 @@
 plugins {
     alias(libs.plugins.kotlinKsp)
-    id("dagger.hilt.android.plugin")
-
     alias(libs.plugins.multiplatform)
     id(libs.plugins.jetBrainCompose.get().pluginId)
     id(libs.plugins.composeCompiler.get().pluginId)
@@ -13,8 +11,10 @@ plugins {
 kotlin {
     androidTarget {
         compilations.all {
-            kotlinOptions {
-                jvmTarget = "1.8"
+            compileTaskProvider.configure {
+                compilerOptions {
+                    jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
+                }
             }
         }
     }
@@ -32,9 +32,6 @@ android {
         versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
-        }
         multiDexEnabled = true
     }
 
@@ -88,11 +85,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // hilt
-    implementation(libs.hilt.android)
-    ksp(libs.dagger.compiler)
-    ksp(libs.hilt.compiler)
-
     // compose
     val compose_version = "1.5.3"
     implementation(libs.androidx.compiler)
@@ -122,14 +114,6 @@ dependencies {
 
     // compose navigation
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.hilt.navigation.compose)
-
-    // room
-    val room_version = "2.5.2"
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
-    annotationProcessor(libs.androidx.room.compiler)
 
     //sqlcipher
     implementation(libs.androidx.sqlite.ktx)

@@ -1,12 +1,9 @@
 package com.notes.shared
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver
 import com.notes.shared.db.NotesDatabase
-import com.notes.shared.db.instantiateImpl
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -33,6 +30,5 @@ actual fun getDatabaseBuilder(databaseName : String, password : String): RoomDat
     val dbFilePath = "$documentsDirectory/${databaseName}"
     return Room.databaseBuilder<NotesDatabase>(
         name = dbFilePath,
-        factory =  { NotesDatabase::class.instantiateImpl() }
     ).setDriver(BundledSQLiteDriver()).addMigrations()
 }

@@ -1,7 +1,7 @@
 package com.notes.shared.repository
 
 import com.notes.shared.AppDispatcherProvider
-import com.notes.shared.db.NotesDatabase
+import com.notes.shared.db.NotesDatabaseDelegate
 import com.notes.shared.db.ReminderDao
 import com.notes.shared.db.toReminder
 import com.notes.shared.db.toReminderEntity
@@ -39,7 +39,7 @@ class ReminderRepositoryImpl(
 ) : ReminderRepository {
 
     private val reminderDao: ReminderDao
-        get() = NotesDatabase.databaseObj!!.reminderDao()
+        get() = NotesDatabaseDelegate.databaseObj!!.reminderDao()
 
     override fun fetchAllReminders(states: List<Int>) =
         reminderDao.fetchAllReminders(states).map { it.map { it.toReminderEntity() } }

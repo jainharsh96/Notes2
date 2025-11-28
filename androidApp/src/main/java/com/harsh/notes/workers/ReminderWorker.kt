@@ -9,7 +9,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.harsh.notes.ReminderTriggerTask
-import com.notes.shared.db.NotesDatabase
+import com.notes.shared.db.NotesDatabaseDelegate
 import com.notes.shared.utils.NotesLogger
 import org.koin.mp.KoinPlatform.getKoin
 import java.util.concurrent.TimeUnit
@@ -48,7 +48,7 @@ class ReminderWorker(
 
     override suspend fun doWork(): Result {
         try {
-            NotesDatabase.tryInitDb()
+            NotesDatabaseDelegate.tryInitDb()
             val reminderTriggerTask = ReminderTriggerTask(
                 context = applicationContext,
                 reminderRepository = getKoin().get()

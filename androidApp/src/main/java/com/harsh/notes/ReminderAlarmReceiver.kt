@@ -6,7 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.edit
-import com.notes.shared.db.NotesDatabase
+import com.notes.shared.db.NotesDatabaseDelegate
 import com.notes.shared.utils.DateFormatter
 import com.notes.shared.utils.NotesLogger
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +18,7 @@ class ReminderAlarmReceiver : BroadcastReceiver() {
         val globalScope : CoroutineScope = getKoin().get()
         globalScope.launch {
             try {
-                val state = NotesDatabase.tryInitDb()
+                val state = NotesDatabaseDelegate.tryInitDb()
                 val reminderTriggerTask = ReminderTriggerTask(
                     context = context,
                     reminderRepository = getKoin().get()

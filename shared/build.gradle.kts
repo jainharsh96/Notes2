@@ -1,3 +1,5 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
 plugins {
     alias(libs.plugins.multiplatform)
     alias(libs.plugins.androidLibrary)
@@ -8,10 +10,18 @@ plugins {
 }
 
 kotlin {
+
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
+    }
+
+    jvm()
     androidTarget {
         compilations.all {
-            kotlinOptions {
-                jvmTarget = "1.8"
+            compileTaskProvider.configure {
+                compilerOptions {
+                    jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
+                }
             }
         }
     }
@@ -28,6 +38,10 @@ kotlin {
     }
 
     sourceSets {
+        all {
+            languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
+        }
+
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
             implementation(libs.android.database.sqlcipher)
@@ -39,10 +53,6 @@ kotlin {
 
         iosMain.dependencies {
 
-        }
-
-        iosMain {
-            kotlin.srcDir("build/generated/ksp/metadata")
         }
 
         commonMain.dependencies {
@@ -74,6 +84,11 @@ kotlin {
         commonTest.dependencies {
             // implementation(libs.kotlin.test)
         }
+
+        jvmMain.dependencies {
+            implementation(libs.kotlinx.coroutines.swing)
+            implementation(compose.desktop.currentOs)
+        }
     }
 }
 
@@ -81,16 +96,12 @@ compose.resources {
     publicResClass = true
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().configureEach {
-    if (name != "kspCommonMainKotlinMetadata") {
-        dependsOn("kspCommonMainKotlinMetadata")
-    }
-}
-
 dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
-    add("kspCommonMainMetadata", libs.androidx.room.compiler)
-    debugImplementation(libs.androidx.ui.tooling.v151)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspJvm", libs.androidx.room.compiler)
 }
 
 room {
@@ -116,9 +127,16 @@ android {
 composeCompiler {
     enableStrongSkippingMode = true
     reportsDestination = layout.buildDirectory.dir("compose_compiler")
-  //  stabilityConfigurationFile = rootProject.layout.projectDirectory.file("stability_config.conf")
 }
 
-//dependencies {
-//    implementation(libs.androidx.ui.tooling.v151)
-//}
+compose.desktop {
+    application {
+        mainClass = "com.notes.shared.MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "com.notes.shared"
+            packageVersion = "1.0.0"
+        }
+    }
+}

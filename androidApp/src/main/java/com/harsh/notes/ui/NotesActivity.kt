@@ -17,9 +17,7 @@ import com.harsh.notes.workers.ReminderWorker
 import com.notes.shared.NotesAndroidDependenciesInitializer
 import com.notes.shared.NotesDependencies
 import com.notes.shared.ui.NotesApp
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class NotesActivity : BaseActivity() {
 
     companion object {

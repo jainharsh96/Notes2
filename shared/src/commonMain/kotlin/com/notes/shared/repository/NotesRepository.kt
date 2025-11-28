@@ -4,7 +4,7 @@ import com.notes.shared.AppDispatcherProvider
 import com.notes.shared.db.DeletedNote
 import com.notes.shared.db.Note
 import com.notes.shared.db.NotesDao
-import com.notes.shared.db.NotesDatabase
+import com.notes.shared.db.NotesDatabaseDelegate
 import com.notes.shared.db.toNote
 import com.notes.shared.db.toNoteEntity
 import com.notes.shared.ui.uientity.NoteEntity
@@ -33,7 +33,7 @@ class NotesRepositoryImpl (
 ) : NotesRepository {
 
     private val notesDao: NotesDao
-        get() = NotesDatabase.databaseObj!!.notesDao()
+        get() = NotesDatabaseDelegate.databaseObj!!.notesDao()
 
     override
     fun fetchAllNotes(state: Int) =

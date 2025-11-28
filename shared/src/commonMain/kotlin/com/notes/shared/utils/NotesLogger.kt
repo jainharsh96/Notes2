@@ -1,7 +1,7 @@
 package com.notes.shared.utils
 
 import com.notes.shared.db.Note
-import com.notes.shared.db.NotesDatabase
+import com.notes.shared.db.NotesDatabaseDelegate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
@@ -18,9 +18,9 @@ object NotesLogger {
 
     private suspend fun makeDbEntry(tag : String, msg : String) {
         runCatching {
-            val isInit = NotesDatabase.tryInitDb()
+            val isInit = NotesDatabaseDelegate.tryInitDb()
             if (isInit){
-                NotesDatabase.databaseObj?.notesDao()?.let { dao ->
+                NotesDatabaseDelegate.databaseObj?.notesDao()?.let { dao ->
                     val note = Note(
                         body = "$tag\n$msg",
                         createdDate = DateFormatter.currentDateTimeMillisecond(),
