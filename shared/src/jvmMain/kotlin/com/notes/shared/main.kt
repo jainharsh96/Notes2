@@ -7,11 +7,11 @@ import com.notes.shared.ui.NotesApp
 import org.koin.core.context.startKoin
 
 fun main() = application {
-    NotesKoin.init()
     NotesDependencies.init(
         databasePasswordProvider = DatabasePasswordProviderJvmImpl(),
         dataStore = DataStoreJvmImpl()
     )
+    NotesKoin.init()
     Window(
         title = "Notes Desktop",
         onCloseRequest = ::exitApplication,

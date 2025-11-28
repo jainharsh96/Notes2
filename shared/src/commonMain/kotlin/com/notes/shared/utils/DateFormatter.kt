@@ -45,6 +45,26 @@ object DateFormatter {
             amPmMarker(am = "am", pm = "pm")
         }
 
+    //  "dd MMM yyyy hh:mm:ss.123 a"
+    val LOG_FORMAT
+        get() = LocalDateTime.Format {
+            dayOfMonth()
+            char(' ')
+            monthName(MonthNames(months))
+            char(' ')
+            year()
+            char(' ')
+            amPmHour()
+            char(':')
+            minute()
+            char(':')
+            second()
+            char('.')
+            secondFraction(3)
+            char(' ')
+            amPmMarker(am = "am", pm = "pm")
+        }
+
     fun format(dateTimeInMillis: Long, format: DateTimeFormat<LocalDateTime>): String {
         val instant = Instant.fromEpochMilliseconds(dateTimeInMillis)
         val dateTime = instant.toLocalDateTime(timeZone)

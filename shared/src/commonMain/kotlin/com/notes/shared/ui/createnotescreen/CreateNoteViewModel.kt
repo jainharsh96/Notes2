@@ -1,13 +1,10 @@
 package com.notes.shared.ui.createnotescreen
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.notes.shared.AppDispatcherProvider
 import com.notes.shared.repository.NotesRepository
 import com.notes.shared.ui.BaseViewModel
 import com.notes.shared.ui.NotesRoutes
-import com.notes.shared.ui.notesscreen.NotesContract
 import com.notes.shared.ui.uientity.NoteEntity
 import com.notes.shared.utils.DateFormatter
 import kotlinx.coroutines.delay
@@ -16,7 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class CreateNoteViewModel constructor(
