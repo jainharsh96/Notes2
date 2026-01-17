@@ -80,4 +80,11 @@ object DateFormatter {
     fun currentDateTime(format: DateTimeFormat<LocalDateTime> = NOTE_DATE_FORMAT): String {
         return format(dateTimeInMillis = Clock.System.now().toEpochMilliseconds(), format = format)
     }
+
+    fun addDays(
+        dateTimeInMillis: Long,
+        daysToAdd: Int
+    ): Long {
+        return dateTimeInMillis + daysToAdd.toLong() * 24 * 60 * 60 * 1000
+    }
 }

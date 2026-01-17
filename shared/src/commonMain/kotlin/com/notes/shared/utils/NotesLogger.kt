@@ -17,6 +17,7 @@ object NotesLogger {
 
     fun log(tag: String, message: String) {
         globalScope.launch {
+            inMemoryLog(tag, message)
             makeDbEntry(tag, message)
         }
     }

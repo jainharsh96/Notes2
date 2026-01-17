@@ -8,6 +8,8 @@ interface Platform {
 
     enum class PlatFormName { ANDROID, IOS, JVM_DESKTOP }
 
+    fun isDebugBuild() : Boolean = NotesDependencies.isDebugBuild
+
     fun allowShowingDebugWindow() : Boolean
 }
 

@@ -4,18 +4,23 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.notes.shared.di.NotesKoin
 import com.notes.shared.ui.NotesApp
-import org.koin.core.context.startKoin
+import com.notes.shared.utils.NotesLogger
 
 fun main() = application {
-    NotesDependencies.init(
-        databasePasswordProvider = DatabasePasswordProviderJvmImpl(),
-        dataStore = DataStoreJvmImpl()
-    )
-    NotesKoin.init()
-    Window(
-        title = "Notes Desktop",
-        onCloseRequest = ::exitApplication,
-    ) {
-        NotesApp() // shared composable UI
+    runCatching {
+        NotesDependencies.init(
+            isDebugBuild = true,  // todo
+            databasePasswordProvider = DatabasePasswordProviderJvmImpl(),
+            dataStore = DataStoreJvmImpl()
+        )
+        Window(
+            title = "Notes Desktop",
+            onCloseRequest = ::exitApplication,
+        ) {
+            NotesApp() // shared composable UI
+        }
+    }.onFailure {
+        NotesLogger.inMemoryLog("DesktopMain", "exception ${it.message}")
+        throw it
     }
 }

@@ -48,12 +48,12 @@ fun NotesApp(
         Box(modifier = Modifier.fillMaxSize()) {
             var showDebugDialog by remember { mutableStateOf(false) }
             NavHost(
-                modifier = Modifier.combinedClickable(
-                    onClick = {},
-                    onLongClick = if (getPlatform().allowShowingDebugWindow()) {
-                        { showDebugDialog = true }
-                    } else null
-                ),
+                modifier = if (getPlatform().allowShowingDebugWindow()) {
+                    Modifier.combinedClickable(
+                        onClick = {},
+                        onLongClick = { showDebugDialog = true }
+                    )
+                } else Modifier,
                 navController = navController, startDestination = startDestination
             ) {
 
@@ -161,7 +161,7 @@ fun NotesApp(
                 }
             }
 
-            if (showDebugDialog){
+            if (showDebugDialog) {
                 DebugWindow(onDismissRequest = { showDebugDialog = false })
             }
         }

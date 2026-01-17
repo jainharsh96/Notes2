@@ -15,13 +15,10 @@ object AndroidApplication {
     lateinit var context: Application
 }
 
-//const val DATABASE_PASSWORD = "thisispassword123!@#"
-
-
 class AndroidPlatform : Platform {
     override val name: Platform.PlatFormName = Platform.PlatFormName.ANDROID
     override fun allowShowingDebugWindow(): Boolean {
-        return false
+        return isDebugBuild()
     }
 }
 

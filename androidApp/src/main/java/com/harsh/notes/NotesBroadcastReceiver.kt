@@ -9,6 +9,8 @@ import com.notes.shared.db.toReminder
 import com.notes.shared.db.toReminderEntity
 import com.notes.shared.repository.ReminderRepository
 import com.notes.shared.ui.uientity.ReminderState
+import com.notes.shared.utils.DateFormatter
+import com.notes.shared.utils.NotesLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform.getKoin
@@ -18,11 +20,12 @@ class NotesBroadcastReceiver : BroadcastReceiver() {
         const val ACKNOWLEDGE_REMINDER = "ACKNOWLEDGE_REMINDER"
         const val REMINDER_ID = "reminder_id"
     }
+
     override fun onReceive(context: Context, intent: Intent) {
         when (intent.action) {
             ACKNOWLEDGE_REMINDER -> {
                 val reminderId = intent.getIntExtra(REMINDER_ID, -1)
-                if (reminderId != -1){
+                if (reminderId != -1) {
                     acknowledgeReminder(reminderId)
                     val notificationManager =
                         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -32,20 +35,25 @@ class NotesBroadcastReceiver : BroadcastReceiver() {
         }
     }
 
-    fun acknowledgeReminder(reminderId : Int) {
-        val globalScope : CoroutineScope = getKoin().get()
+    fun acknowledgeReminder(reminderId: Int) {
+        val globalScope: CoroutineScope = getKoin().get()
         globalScope.launch {
             NotesDatabaseDelegate.tryInitDb()
-            val reminderRepo : ReminderRepository = getKoin().get()
+            val reminderRepo: ReminderRepository = getKoin().get()
             var reminder = reminderRepo.fetchReminder(reminderId)?.toReminder()
             if (reminder != null) {
-                reminder = if (reminder.frequency > 0){
-                    val newDateLong = reminder.remindAt + reminder.frequency * 24 * 60 * 60 * 1000
+                reminder = if (reminder.frequency > 0) {
+                    val newDateLong = DateFormatter.addDays(
+                        dateTimeInMillis = reminder.remindAt,
+                        daysToAdd = reminder.frequency
+                    )
                     reminder.copy(remindAt = newDateLong)
                 } else {
                     reminder.copy(state = ReminderState.COMPLETED.value)
                 }
                 reminderRepo.updateOrInsertReminder(reminder.toReminderEntity())
+            } else {
+                NotesLogger.log("NotesBroadcastReceiver", "No reminder found with id $reminderId")
             }
         }
     }
