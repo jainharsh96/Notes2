@@ -34,7 +34,6 @@ class NotesActivity : BaseActivity() {
         runCatching {
             NoteSyncWorker.syncNotes(this)
             ReminderWorker.setReminderWorker(this)
-            ReminderWorker.testOnTimeWorker(this)  // todo test
             NotesDependencies.initSyncManager(
                 notesSyncManager = NotesSyncManagerAndroidImpl(
                     context = this,

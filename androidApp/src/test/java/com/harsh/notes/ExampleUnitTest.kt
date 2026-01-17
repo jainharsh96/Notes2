@@ -1,7 +1,8 @@
 package com.harsh.notes
 
+import com.notes.shared.AppDispatcherProvider
 import com.notes.shared.repository.NotesRepository
-import com.harsh.notes.ui.notesscreen.NotesViewModel
+import com.notes.shared.ui.notesscreen.NotesViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,7 +30,7 @@ class ExampleUnitTest {
 
     val testDispatcher = UnconfinedTestDispatcher()
 
-    val testDispatcherProvider = object : AppDispatcherProvider{
+    val testDispatcherProvider = object : AppDispatcherProvider {
         override val Default: CoroutineDispatcher
             get() = testDispatcher
         override val Main: CoroutineDispatcher
@@ -47,10 +48,10 @@ class ExampleUnitTest {
 
     @Before
     fun setup(){
-        Dispatchers.setMain(testDispatcher)
-        viewModel = NotesViewModel(
-            repo,testDispatcherProvider
-        )
+//        Dispatchers.setMain(testDispatcher)
+//        viewModel = NotesViewModel(
+//            repo,testDispatcherProvider
+//        )
     }
 
     @After
