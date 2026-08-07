@@ -491,7 +491,7 @@ fun NoteHolder(note: NoteEntity, event: (NotesContract.Event) -> Unit) {
 
 @Composable
 @Preview
-fun TestCompose() {
+fun PreviewNotesScreenShared() {
     val fakeNotes = List(10) { index ->
         NoteEntity(
             id = index,
