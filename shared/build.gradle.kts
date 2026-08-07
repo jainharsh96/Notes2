@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -49,6 +50,7 @@ kotlin {
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
             implementation(libs.ui.tooling.preview)
+            implementation(libs.androidx.ui.tooling.v151)
         }
 
         iosMain.dependencies {
@@ -80,6 +82,7 @@ kotlin {
             // datastore
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
+            implementation(libs.ui.tooling.preview)
         }
         commonTest.dependencies {
             // implementation(libs.kotlin.test)
@@ -94,14 +97,6 @@ kotlin {
 
 compose.resources {
     publicResClass = true
-}
-
-dependencies {
-    add("kspAndroid", libs.androidx.room.compiler)
-    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
-    add("kspIosArm64", libs.androidx.room.compiler)
-    add("kspJvm", libs.androidx.room.compiler)
 }
 
 room {
@@ -140,4 +135,13 @@ compose.desktop {
             packageVersion = "1.0.0"
         }
     }
+}
+
+dependencies {
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspJvm", libs.androidx.room.compiler)
+    debugImplementation(libs.ui.tooling.preview)
 }

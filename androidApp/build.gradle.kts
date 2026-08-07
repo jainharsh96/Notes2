@@ -28,8 +28,8 @@ android {
         applicationId = "com.harsh.notes"
         minSdk = 23
         targetSdk = 36
-        versionCode = 210
-        versionName = "2.1.0"
+        versionCode = 300
+        versionName = "3.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true

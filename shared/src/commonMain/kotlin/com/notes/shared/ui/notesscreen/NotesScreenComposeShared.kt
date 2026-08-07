@@ -57,6 +57,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notes.shared.painterResource
@@ -66,6 +67,7 @@ import com.notes.shared.ui.secureKeyboard.KeyBoardButton
 import com.notes.shared.ui.secureKeyboard.SecureAlphaNumericTypeKeyboard
 import com.notes.shared.ui.uientity.NoteEntity
 import com.notes.shared.utils.colorResource
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import notes2.shared.generated.resources.Res
 import notes2.shared.generated.resources.add_notes
@@ -486,20 +488,25 @@ fun NoteHolder(note: NoteEntity, event: (NotesContract.Event) -> Unit) {
     }
 }
 
-//@MultiDevicePreview
-//@Composable
-//fun TestCompose() {
-//    val fakeNotes = listOf(
-//        Note(id = 1, body = "hellow 1", updatedDate = Date()),
-//        Note(id = 2, body = "hellow 2", updatedDate = Date()),
-//        Note(id = 3, body = "hellow 3", updatedDate = Date()),
-//        Note(id = 4, body = "hellow 4", updatedDate = Date()),
-//        Note(id = 5, body = "hellow 5", updatedDate = Date())
-//    )
-//    val mockState = NotesContract.State(isDraftState = false, notes = fakeNotes)
-//    NotesScreen(
-//        state = mockState,
-//        effect = MutableSharedFlow(),
-//        event = {},
-//        onAction = {})
-//}
+
+@Composable
+@Preview
+fun TestCompose() {
+    val fakeNotes = List(10) { index ->
+        NoteEntity(
+            id = index,
+            body = "Note body $index\nThis is the second line of note $index",
+            createdDate = "2024-06-01",
+            updatedDate = "2024-06-02",
+            state = if (index % 2 == 0) NoteEntity.SAVED else NoteEntity.DRAFTED
+        )
+    }
+    val mockState =
+        NotesContract.State(isDraftState = false, notes = fakeNotes, unLockAppFirst = false)
+
+    NotesScreenShared(
+        state = mockState,
+        effect = MutableSharedFlow(),
+        event = {},
+        onAction = {})
+}

@@ -11,20 +11,12 @@ import org.jetbrains.compose.resources.StringResource
 
 @Composable
 fun painterResource(resource: DrawableResource): Painter {
-    return if(LocalInspectionMode.current){
-        ColorPainter(Color.Transparent)
-    }else {
-        org.jetbrains.compose.resources.painterResource(resource)
-    }
+    return org.jetbrains.compose.resources.painterResource(resource)
 }
 
 @Composable
 fun stringResource(resource: StringResource): String {
-    return if(LocalInspectionMode.current){
-        resource.key
-    }else {
-        org.jetbrains.compose.resources.stringResource(resource)
-    }
+    return org.jetbrains.compose.resources.stringResource(resource)
 }
 
 @Composable

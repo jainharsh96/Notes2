@@ -1,14 +1,12 @@
 [versions]
 
-activityCompose = "1.9.1"
-androidDatabaseSqlcipher = "4.5.4"
+activityCompose = "1.12.2"
 androidx-junit = "1.1.5"
 androidx-material = "1.6.8"
 cameraxVersion = "1.4.2"
 carapp = "1.7.0"
 biometric = "1.1.0"
 compiler = "1.5.14"
-composeGradlePlugin = "1.6.10"
 coreKtx = "1.13.1"
 espressoCore = "3.5.1"
 foundation = "1.6.8"
@@ -21,10 +19,10 @@ gradle = "7.2.0"
 hiltNavigationCompose = "1.2.0"
 junit = "4.13.2"
 kotlin = "2.2.21"
-compose = "1.9.3"
-ksp = "2.3.3"
+compose = "1.10.0"
+ksp = "2.3.6"
 room = "2.8.4"
-agp = "8.13.1"
+agp = "9.3.1"
 androidx-appcompat = "1.6.1"
 kotlinxCoroutinesTest = "1.7.1"
 lifecycleViewmodelCompose = "2.8.4"
@@ -91,7 +89,7 @@ google-api-services-drive = { module = "com.google.apis:google-api-services-driv
 google-http-client-android = { module = "com.google.http-client:google-http-client-android", version.ref = "googleHttpClientAndroid" }
 play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 ui-tooling-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
-compose-gradle-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "composeGradlePlugin" }
+compose-gradle-plugin = { module = "org.jetbrains.compose:compose-gradle-plugin", version.ref = "compose" }
 dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "hiltAndroidGradlePlugin" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroidGradlePlugin" }
 hilt-android-gradle-plugin = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hiltAndroidGradlePlugin" }
