@@ -52,10 +52,10 @@ class NoteSyncWorker(
             }
             val result = googleDriveApi.uploadToDrive(account)
             if (result.isSuccess) {
-                NotesLogger.log(WORK_NAME,"Synced Note")
+                //NotesLogger.log(WORK_NAME,"Synced Note")
                 Result.success()
             } else {
-                NotesLogger.log(WORK_NAME,"UnSynced Note with error")
+                NotesLogger.log(WORK_NAME,"UnSynced Note with error in upload to drive")
                 Result.failure()
             }
         } catch (e: Exception) {
