@@ -2,6 +2,7 @@ package com.notes.shared.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -17,6 +18,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.notes.shared.coreUi.AppTheme
 import com.notes.shared.getPlatform
 import com.notes.shared.ui.createnotescreen.CreateNoteScreenShared
 import com.notes.shared.ui.createnotescreen.CreateNoteViewModel
@@ -45,124 +47,128 @@ fun NotesApp(
     val navController = rememberNavController()
     val navActionHandler = remember { NotesActionHandler(navController) }
     KoinContext {
-        Box(modifier = Modifier.fillMaxSize()) {
-            var showDebugDialog by remember { mutableStateOf(false) }
-            NavHost(
-                modifier = if (getPlatform().allowShowingDebugWindow()) {
-                    Modifier.combinedClickable(
-                        onClick = {},
-                        onLongClick = { showDebugDialog = true }
-                    )
-                } else Modifier,
-                navController = navController, startDestination = startDestination
-            ) {
+        AppTheme {
+            Box(modifier = Modifier.fillMaxSize()) {
+                var showDebugDialog by remember { mutableStateOf(false) }
+                NavHost(
+                    modifier = if (getPlatform().allowShowingDebugWindow()) {
+                        Modifier.combinedClickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = {},
+                            onLongClick = { showDebugDialog = true }
+                        )
+                    } else Modifier,
+                    navController = navController, startDestination = startDestination
+                ) {
 
-                composable(route = NotesNavigation.SecureLockScreen.destination) {
-                    val viewModel = koinViewModel<SecureLockScreenViewmodel>()
-                    val state by viewModel.state.collectAsState()
-                    val event = remember(viewModel) {
-                        return@remember viewModel::event
-                    }
-                    SecureLockScreen(
-                        state = state,
-                        event = event,
-                        effect = viewModel.sideEffect,
-                        onGoBack = {
-                            navActionHandler.closeApp()
-                        },
-                        onGoForward = {
-                            navActionHandler.goToNotesApp()
+                    composable(route = NotesNavigation.SecureLockScreen.destination) {
+                        val viewModel = koinViewModel<SecureLockScreenViewmodel>()
+                        val state by viewModel.state.collectAsState()
+                        val event = remember(viewModel) {
+                            return@remember viewModel::event
                         }
-                    )
-                }
-                composable(
-                    route = NotesNavigation.NotesScreen.destination,
-                    arguments = NotesNavigation.NotesScreen.arguments
-                ) {
-                    val savedStateHandle = it.getSavedStateHandleWithArguments()
-                    val viewModel =
-                        koinViewModel<NotesViewModel>() { parametersOf(savedStateHandle) }
-                    val state by viewModel.state.collectAsState()
-                    val event = remember(viewModel) {
-                        return@remember viewModel::event
+                        SecureLockScreen(
+                            state = state,
+                            event = event,
+                            effect = viewModel.sideEffect,
+                            onGoBack = {
+                                navActionHandler.closeApp()
+                            },
+                            onGoForward = {
+                                navActionHandler.goToNotesApp()
+                            }
+                        )
                     }
-                    NotesScreenShared(
-                        state = state,
-                        effect = viewModel.sideEffect,
-                        onAction = navActionHandler::handleNavigationActions,
-                        event = event
-                    )
-                }
-                composable(
-                    route = NotesNavigation.CreateNotesScreen.destination,
-                    arguments = NotesNavigation.CreateNotesScreen.arguments
-                ) {
-                    val savedStateHandle = it.getSavedStateHandleWithArguments()
-                    val viewModel =
-                        koinViewModel<CreateNoteViewModel> { parametersOf(savedStateHandle) }
-                    val state by viewModel.state.collectAsState()
-                    val event = remember(viewModel) {
-                        return@remember viewModel::event
+                    composable(
+                        route = NotesNavigation.NotesScreen.destination,
+                        arguments = NotesNavigation.NotesScreen.arguments
+                    ) {
+                        val savedStateHandle = it.getSavedStateHandleWithArguments()
+                        val viewModel =
+                            koinViewModel<NotesViewModel>() { parametersOf(savedStateHandle) }
+                        val state by viewModel.state.collectAsState()
+                        val event = remember(viewModel) {
+                            return@remember viewModel::event
+                        }
+                        NotesScreenShared(
+                            state = state,
+                            effect = viewModel.sideEffect,
+                            onAction = navActionHandler::handleNavigationActions,
+                            event = event
+                        )
                     }
-                    CreateNoteScreenShared(
-                        state = state,
-                        effect = viewModel.sideEffect,
-                        onAction = navActionHandler::handleNavigationActions,
-                        event = event
-                    )
-                }
-                composable(
-                    route = NotesNavigation.NotesSettingScreen.destination,
-                    arguments = NotesNavigation.NotesSettingScreen.arguments
-                ) {
-                    val savedStateHandle = it.getSavedStateHandleWithArguments()
-                    val viewModel =
-                        koinViewModel<SettingViewModel> { parametersOf(savedStateHandle) }
-                    SettingScreenShared(
-                        onAction = navActionHandler::handleNavigationActions,
-                        viewModel.getNotesSyncManager()
-                    )
-                }
-                composable(
-                    route = NotesNavigation.ShowAllReminderScreen.destination,
-                    arguments = NotesNavigation.ShowAllReminderScreen.arguments
-                ) {
-                    val savedStateHandle = it.getSavedStateHandleWithArguments()
-                    val viewModel =
-                        koinViewModel<ShowAllReminderViewModel> { parametersOf(savedStateHandle) }
-                    val state by viewModel.state.collectAsState()
-                    val event = remember(viewModel) {
-                        return@remember viewModel::event
+                    composable(
+                        route = NotesNavigation.CreateNotesScreen.destination,
+                        arguments = NotesNavigation.CreateNotesScreen.arguments
+                    ) {
+                        val savedStateHandle = it.getSavedStateHandleWithArguments()
+                        val viewModel =
+                            koinViewModel<CreateNoteViewModel> { parametersOf(savedStateHandle) }
+                        val state by viewModel.state.collectAsState()
+                        val event = remember(viewModel) {
+                            return@remember viewModel::event
+                        }
+                        CreateNoteScreenShared(
+                            state = state,
+                            effect = viewModel.sideEffect,
+                            onAction = navActionHandler::handleNavigationActions,
+                            event = event
+                        )
                     }
-                    ShowAllReminderScreenShared(
-                        state = state,
-                        effect = viewModel.sideEffect,
-                        onAction = navActionHandler::handleNavigationActions,
-                        event = event
-                    )
-                }
-                composable(
-                    route = NotesNavigation.AddEditReminderScreen.destination,
-                    arguments = NotesNavigation.AddEditReminderScreen.arguments
-                ) {
-                    val savedStateHandle = it.getSavedStateHandleWithArguments()
-                    val viewModel =
-                        koinViewModel<AddEditReminderViewModel> { parametersOf(savedStateHandle) }
-                    val state by viewModel.state.collectAsState()
-                    val event = remember(viewModel) {
-                        return@remember viewModel::event
+                    composable(
+                        route = NotesNavigation.NotesSettingScreen.destination,
+                        arguments = NotesNavigation.NotesSettingScreen.arguments
+                    ) {
+                        val savedStateHandle = it.getSavedStateHandleWithArguments()
+                        val viewModel =
+                            koinViewModel<SettingViewModel> { parametersOf(savedStateHandle) }
+                        SettingScreenShared(
+                            onAction = navActionHandler::handleNavigationActions,
+                            viewModel.getNotesSyncManager()
+                        )
                     }
-                    AddEditReminderScreenShared(
-                        state = state,
-                        effect = viewModel.sideEffect,
-                        onAction = navActionHandler::handleNavigationActions,
-                        event = event
-                    )
+                    composable(
+                        route = NotesNavigation.ShowAllReminderScreen.destination,
+                        arguments = NotesNavigation.ShowAllReminderScreen.arguments
+                    ) {
+                        val savedStateHandle = it.getSavedStateHandleWithArguments()
+                        val viewModel =
+                            koinViewModel<ShowAllReminderViewModel> { parametersOf(savedStateHandle) }
+                        val state by viewModel.state.collectAsState()
+                        val event = remember(viewModel) {
+                            return@remember viewModel::event
+                        }
+                        ShowAllReminderScreenShared(
+                            state = state,
+                            effect = viewModel.sideEffect,
+                            onAction = navActionHandler::handleNavigationActions,
+                            event = event
+                        )
+                    }
+                    composable(
+                        route = NotesNavigation.AddEditReminderScreen.destination,
+                        arguments = NotesNavigation.AddEditReminderScreen.arguments
+                    ) {
+                        val savedStateHandle = it.getSavedStateHandleWithArguments()
+                        val viewModel =
+                            koinViewModel<AddEditReminderViewModel> { parametersOf(savedStateHandle) }
+                        val state by viewModel.state.collectAsState()
+                        val event = remember(viewModel) {
+                            return@remember viewModel::event
+                        }
+                        AddEditReminderScreenShared(
+                            state = state,
+                            effect = viewModel.sideEffect,
+                            onAction = navActionHandler::handleNavigationActions,
+                            event = event
+                        )
+                    }
                 }
-            }
 
-            if (showDebugDialog) {
-                DebugWindow(onDismissRequest = { showDebugDialog = false })
+                if (showDebugDialog) {
+                    DebugWindow(onDismissRequest = { showDebugDialog = false })
+                }
             }
         }
     }

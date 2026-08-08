@@ -1,5 +1,6 @@
 package com.notes.shared.ui.createnotescreen
 
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.SavedStateHandle
 import com.notes.shared.AppDispatcherProvider
 import com.notes.shared.repository.NotesRepository
@@ -46,22 +47,23 @@ class CreateNoteViewModel constructor(
         }
     }
 
-    private fun onType(newMsg: String) {
+    private fun onType(newMsg: TextFieldValue) {
         _state.update {
             it.copy(enteredMsg = newMsg)
         }
     }
 
-    private fun addMsg(newMsg: String) {
+    private fun addMsg(newMsg: TextFieldValue) {
+        val newMsg = _state.value.enteredMsg.text + newMsg.text
         _state.update {
-            it.copy(enteredMsg = it.enteredMsg.plus(newMsg))
+            it.copy(enteredMsg = TextFieldValue(newMsg))
         }
     }
 
     private fun clickUndo() {
         _state.update {
             it.copy(
-                enteredMsg = it.originalNote?.body ?: ""
+                enteredMsg = TextFieldValue(it.originalNote?.body ?: "")
             )
         }
     }
@@ -76,10 +78,10 @@ class CreateNoteViewModel constructor(
 
     private suspend fun insertNote() = withContext(dispatcher.IO) {
         with(_state.value) {
-            if (enteredMsg.isNotEmpty()) {
+            if (enteredMsg.text.isNotEmpty()) {
                 val currentDateTime = DateFormatter.currentDateTime()
-                val note = originalNote?.copy(body = enteredMsg, updatedDate = currentDateTime) ?: NoteEntity(
-                    body = enteredMsg, createdDate = currentDateTime,
+                val note = originalNote?.copy(body = enteredMsg.text, updatedDate = currentDateTime) ?: NoteEntity(
+                    body = enteredMsg.text, createdDate = currentDateTime,
                     updatedDate = currentDateTime
                 )
                 val isSaved = notesRepository.updateOrInsertNote(note)
@@ -98,7 +100,7 @@ class CreateNoteViewModel constructor(
             it.copy(
                 isLoading = false,
                 originalNote = originalNote,
-                enteredMsg = originalNote?.body ?: ""
+                enteredMsg = TextFieldValue(originalNote?.body ?: "")
             )
         }
         delay(50)

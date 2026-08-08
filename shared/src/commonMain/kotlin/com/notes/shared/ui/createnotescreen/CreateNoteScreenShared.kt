@@ -3,35 +3,43 @@ package com.notes.shared.ui.createnotescreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.notes.shared.coreUi.SecureBasicTextField
+import com.notes.shared.coreUi.secureKeyboard.KeyboardType
 import com.notes.shared.painterResource
 import com.notes.shared.ui.NavigationAction
-import com.notes.shared.ui.secureKeyboard.KeyBoardButton
-import com.notes.shared.ui.secureKeyboard.SecureAlphaNumericTypeKeyboard
 import com.notes.shared.utils.colorResource
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import notes2.shared.generated.resources.Res
@@ -153,15 +161,12 @@ fun CreateNoteHeader(hasNote: Boolean, event: (CreateNoteContract.Event) -> Unit
 
 @Composable
 fun NoteInfo(state: CreateNoteContract.State, event: (CreateNoteContract.Event) -> Unit) {
-    var enteredChar by remember(key1 = state.enteredMsg) { mutableStateOf(state.enteredMsg) }
-    val showSystemKeyboard = state.showSystemKeyboard
     Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val focusRequester = remember { FocusRequester() }
-        BasicTextField(
-            enabled = showSystemKeyboard,
+        SecureBasicTextField(
+            useSecureKeyBoard = state.showSystemKeyboard.not(),
             value = state.enteredMsg,
             onValueChange = { newVal ->
                 event.invoke(CreateNoteContract.Event.OnType(newVal))
@@ -169,28 +174,23 @@ fun NoteInfo(state: CreateNoteContract.State, event: (CreateNoteContract.Event) 
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .padding(16.dp)
-                .focusRequester(focusRequester),
+                .padding(16.dp),
             textStyle = TextStyle(fontSize = 20.sp),
             decorationBox = { innerTextField ->
-                SetHint(hint = "Write Note", showHint = state.enteredMsg.isEmpty())
+                SetHint(hint = "Write Note", showHint = state.enteredMsg.text.isEmpty())
                 innerTextField()
-            }
+            },
+            keyboardType = KeyboardType.AlphaNumeric,
         )
-        LaunchedEffect(state) {
-            if (state.isLoading.not() && state.hasNote().not()){
-                focusRequester.requestFocus()
-            }
-        }
 
         Button(
             onClick = { event(CreateNoteContract.Event.SaveNote) },
             modifier = Modifier
                 .padding(8.dp)
                 .fillMaxWidth(),
-            enabled = state.enteredMsg.isNotEmpty(),
+            enabled = state.enteredMsg.text.isNotEmpty(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(if(state.enteredMsg.isEmpty()) Res.string.disable else Res.string.colorUpdate)
+                containerColor = colorResource(if(state.enteredMsg.text.isEmpty()) Res.string.disable else Res.string.colorUpdate)
             ),
             elevation = ButtonDefaults.buttonElevation(defaultElevation = 12.dp),
             shape = RoundedCornerShape(12.dp)
@@ -201,20 +201,6 @@ fun NoteInfo(state: CreateNoteContract.State, event: (CreateNoteContract.Event) 
                     colorResource(Res.string.white)
                 )
             )
-        }
-        if (showSystemKeyboard.not()){
-            SecureAlphaNumericTypeKeyboard(modifier = Modifier.background(color = Color.Black.copy(alpha = 0.1f))) {
-                when(it){
-                    is KeyBoardButton.Action -> Unit
-                    is KeyBoardButton.AlphaNumeric -> enteredChar = enteredChar + it.char
-                    is KeyBoardButton.Back -> enteredChar = runCatching { enteredChar.substring(0, enteredChar.length - 1) }.getOrElse { enteredChar }
-                    is KeyBoardButton.Number -> enteredChar = enteredChar + it.digit
-                    KeyBoardButton.Space -> enteredChar = "$enteredChar "
-                    KeyBoardButton.HideKeyboard -> event.invoke(CreateNoteContract.Event.HideKeyboard)
-                    is KeyBoardButton.ClipboardPaste -> enteredChar = enteredChar + it.msg
-                }
-                event.invoke(CreateNoteContract.Event.OnType(enteredChar))
-            }
         }
     }
 }
@@ -234,4 +220,18 @@ fun SetHint(hint: String, showHint: Boolean) {
             )
         }
     }
+}
+
+@Composable
+@Preview
+private fun PreviewCreateNoteScreenShared() {
+    CreateNoteScreenShared(
+        state = CreateNoteContract.State(
+            enteredMsg = TextFieldValue(""),
+            showSystemKeyboard = false
+        ),
+        effect = MutableSharedFlow(),
+        event = {},
+        onAction = {}
+    )
 }

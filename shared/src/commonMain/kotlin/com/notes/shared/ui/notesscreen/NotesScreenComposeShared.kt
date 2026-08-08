@@ -63,8 +63,9 @@ import androidx.compose.ui.unit.sp
 import com.notes.shared.painterResource
 import com.notes.shared.ui.NavigationAction
 import com.notes.shared.ui.NavigationAction.NavigateToCreateNoteScreen
-import com.notes.shared.ui.secureKeyboard.KeyBoardButton
-import com.notes.shared.ui.secureKeyboard.SecureAlphaNumericTypeKeyboard
+import com.notes.shared.coreUi.secureKeyboard.KeyBoardButton
+import com.notes.shared.coreUi.secureKeyboard.KeyboardType
+import com.notes.shared.coreUi.secureKeyboard.SecureKeyBoard
 import com.notes.shared.ui.uientity.NoteEntity
 import com.notes.shared.utils.colorResource
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -226,9 +227,9 @@ fun DbPasswordAlertDialog(
                 Text("OK")
             }
         }
-        SecureAlphaNumericTypeKeyboard(
-            modifier = Modifier.align(Alignment.BottomCenter)
-                .background(color = Color.Black.copy(alpha = 0.1f))
+        SecureKeyBoard(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            keyboardType = KeyboardType.AlphaNumeric
         ) {
             when (it) {
                 is KeyBoardButton.Action -> Unit
@@ -498,7 +499,7 @@ fun PreviewNotesScreenShared() {
             body = "Note body $index\nThis is the second line of note $index",
             createdDate = "2024-06-01",
             updatedDate = "2024-06-02",
-            state = if (index % 2 == 0) NoteEntity.SAVED else NoteEntity.DRAFTED
+            state = NoteEntity.SAVED
         )
     }
     val mockState =

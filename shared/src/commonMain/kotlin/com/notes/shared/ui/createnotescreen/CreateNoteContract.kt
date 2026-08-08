@@ -1,13 +1,13 @@
 package com.notes.shared.ui.createnotescreen
 
 import androidx.compose.runtime.Immutable
-import com.notes.shared.coreUi.UniDirectionalViewModel
+import androidx.compose.ui.text.input.TextFieldValue
 import com.notes.shared.ui.uientity.NoteEntity
 
 interface CreateNoteContract {
 
     @Immutable
-    data class State(val isLoading : Boolean = true, val originalNote: NoteEntity? = null, val enteredMsg: String = "", val showSystemKeyboard : Boolean = true) {
+    data class State(val isLoading : Boolean = true, val originalNote: NoteEntity? = null, val enteredMsg: TextFieldValue = TextFieldValue(""), val showSystemKeyboard : Boolean = true) {
 
         fun hasNote() = originalNote?.body?.isNotEmpty() ?: false
 
@@ -25,8 +25,8 @@ interface CreateNoteContract {
         object ClickUndo : Event()
         object SaveNote : Event()
         object FetchNote : Event()
-        data class OnType(val msg: String) : Event()
-        data class AddMessage(val msg: String) : Event()
+        data class OnType(val msg: TextFieldValue) : Event()
+        data class AddMessage(val msg: TextFieldValue) : Event()
     }
 
     sealed class SideEffect{

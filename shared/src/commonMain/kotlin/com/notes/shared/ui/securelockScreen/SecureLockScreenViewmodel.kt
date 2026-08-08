@@ -1,5 +1,6 @@
 package com.notes.shared.ui.securelockScreen
 
+import androidx.compose.ui.text.input.TextFieldValue
 import com.notes.shared.ScreenLockUtil
 import com.notes.shared.ui.BaseViewModel
 import kotlinx.coroutines.Dispatchers
@@ -50,23 +51,25 @@ class SecureLockScreenViewmodel(
                     }
 
                     is SecureLockScreenContract.Event.OnClickAction -> {
-                        if (event.password.isEmpty()) return@withContext
+                        if (event.password.text.isEmpty()) return@withContext
 
                         if (_state.value.passwordState == SecureLockScreenContract.PasswordState.SET_PASS) {
-                            if (event.password.length >= 4 && event.password.length <= 8) {
-                                matchingPassword = event.password
+                            if (event.password.text.length >= 4 && event.password.text.length <= 8) {
+                                matchingPassword = event.password.text
                                 _state.update {
-                                    it.copy(passwordState = SecureLockScreenContract.PasswordState.RE_ENTER_PASS, enteredPassword = "", representedPassword = "")
+                                    it.copy(passwordState = SecureLockScreenContract.PasswordState.RE_ENTER_PASS, enteredPassword = TextFieldValue(
+                                        ""
+                                    ))
                                 }
                             }
                         } else if (_state.value.passwordState == SecureLockScreenContract.PasswordState.RE_ENTER_PASS){
-                            if (event.password == matchingPassword){
-                                screenLockUtil.setUnlockPassword(event.password)
+                            if (event.password.text == matchingPassword){
+                                screenLockUtil.setUnlockPassword(event.password.text)
                                 screenLockUtil.setScreenUnlocked()
                                 _sideEffect.emit(SecureLockScreenContract.SideEffect.GoForward)
                             }
                         } else {
-                            if (event.password == matchingPassword){
+                            if (event.password.text == matchingPassword){
                                 screenLockUtil.setScreenUnlocked()
                                 _sideEffect.emit(SecureLockScreenContract.SideEffect.GoForward)
                             }
@@ -74,9 +77,9 @@ class SecureLockScreenViewmodel(
                     }
 
                     is SecureLockScreenContract.Event.OnEnterPassword -> {
-                        if (event.password.length <= 8){
+                        if (event.password.text.length <= 8){
                             _state.update {
-                                it.copy(enteredPassword = event.password, representedPassword = "*".repeat(event.password.length))
+                                it.copy(enteredPassword = event.password)
                             }
                         }
                     }

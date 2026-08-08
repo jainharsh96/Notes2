@@ -1,10 +1,12 @@
 package com.notes.shared.ui.securelockScreen
 
+import androidx.compose.ui.text.input.TextFieldValue
+
 interface SecureLockScreenContract {
 
-    data class State(val passwordState : PasswordState, val enteredPassword: String, val representedPassword : String) {
+    data class State(val passwordState : PasswordState, val enteredPassword: TextFieldValue) {
         companion object {
-            fun initialState() = State(passwordState = PasswordState.ENTER_PASS, enteredPassword = "", representedPassword = "")
+            fun initialState() = State(passwordState = PasswordState.ENTER_PASS, enteredPassword = TextFieldValue(""))
         }
 
         fun getPasswordHeader() = when(passwordState){
@@ -18,8 +20,8 @@ interface SecureLockScreenContract {
 
     sealed class Event {
         object ClickBack : Event()
-        data class OnEnterPassword(val password: String) : Event()
-        data class OnClickAction(val password: String) : Event()
+        data class OnEnterPassword(val password: TextFieldValue) : Event()
+        data class OnClickAction(val password: TextFieldValue) : Event()
     }
 
     sealed class SideEffect {

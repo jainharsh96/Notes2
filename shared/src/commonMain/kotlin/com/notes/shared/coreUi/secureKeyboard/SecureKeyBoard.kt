@@ -1,25 +1,29 @@
-package com.notes.shared.ui.secureKeyboard
+package com.notes.shared.coreUi.secureKeyboard
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -32,31 +36,158 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.notes.shared.NotesDependencies
+import com.notes.shared.coreUi.nonScaledSp
 import com.notes.shared.getScreenWidth
+import com.notes.shared.painterResource
 import notes2.shared.generated.resources.Res
 import notes2.shared.generated.resources.backspace_icon
+import notes2.shared.generated.resources.ic_arrow_back_black_24dp
 import notes2.shared.generated.resources.keyboard_allcap_1
 import notes2.shared.generated.resources.keyboard_allcap_2
 import notes2.shared.generated.resources.keyboard_allcap_3
 import notes2.shared.generated.resources.keyboard_arrow_down
 import notes2.shared.generated.resources.keyboard_newline
 import org.jetbrains.compose.resources.DrawableResource
-import org.jetbrains.compose.resources.painterResource
+
 
 @Composable
-fun SecureAlphaNumericTypeKeyboard(
+fun SecureFloatingKeyBoard(
+    keyboardType: KeyboardType,
+    onPressKey: (KeyBoardButton) -> Unit
+) {
+    Popup(
+        properties = PopupProperties(focusable = false),
+        alignment = Alignment.BottomCenter,
+        onDismissRequest = {
+           // onPressKey(KeyBoardButton.HideKeyboard)
+        }
+    ) {
+        SecureKeyBoard(
+            modifier = Modifier.fillMaxWidth(),
+            keyboardType = keyboardType,
+            onPressKey = onPressKey
+        )
+    }
+}
+
+@Composable
+fun SecureKeyBoard(
     modifier: Modifier = Modifier,
-    onClickButton: (KeyBoardButton) -> Unit
+    keyboardType: KeyboardType,
+    onPressKey: (KeyBoardButton) -> Unit
+) {
+    when (keyboardType) {
+        KeyboardType.NumberOnly -> {
+            SecureNumberTypeKeyboard(modifier = modifier.background(color = Color.White), onPressKey = onPressKey)
+        }
+
+        KeyboardType.AlphaNumeric -> {
+            SecureAlphaNumericTypeKeyboard(modifier = modifier.background(color = Color.White), onPressKey = onPressKey)
+        }
+    }
+}
+
+
+@Composable
+private fun SecureNumberTypeKeyboard(
+    modifier: Modifier = Modifier,
+    onPressKey: (KeyBoardButton) -> Unit
+) {
+    val keyBoardButtons = remember {
+        KeyBoardButton.numberTypeKeyboardAllButton()
+    }
+    val hapticFeedback = LocalHapticFeedback.current
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Bottom
+    ) {
+        LazyVerticalGrid(
+            modifier = Modifier.widthIn(max = 400.dp),
+            columns = GridCells.Fixed(3),
+            contentPadding = PaddingValues(8.dp)
+        ) {
+            items(items = keyBoardButtons) {
+                NumberKeyboardButton(
+                    button = it,
+                    onPressKey = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                        onPressKey(it)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun NumberKeyboardButton(
+    button: KeyBoardButton,
+    onPressKey: (KeyBoardButton) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .padding(4.dp)
+            .aspectRatio(2f)
+            .clip(RoundedCornerShape(8.dp))
+            .clickable { onPressKey(button) }
+            .background(color = Color.Black.copy(alpha = 0.1f)),
+        contentAlignment = Alignment.Center
+    ) {
+        when (button) {
+            is KeyBoardButton.Action -> {
+                Text(
+                    text = button.txt,
+                    fontSize = 18.nonScaledSp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.Blue.copy(0.8f),
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            is KeyBoardButton.Back -> {
+                Image(
+                    painter = painterResource(Res.drawable.ic_arrow_back_black_24dp),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .size(24.dp),
+                )
+            }
+
+            is KeyBoardButton.Number -> {
+                Text(
+                    text = button.digit.toString(),
+                    fontSize = 24.nonScaledSp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Black.copy(0.8f),
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            else -> Unit
+        }
+    }
+}
+
+@Composable
+private fun SecureAlphaNumericTypeKeyboard(
+    modifier: Modifier = Modifier,
+    onPressKey: (KeyBoardButton) -> Unit
 ) {
 
     val numericButtons = remember {
@@ -90,10 +221,12 @@ fun SecureAlphaNumericTypeKeyboard(
     var row2Buttons by remember { mutableStateOf(allAlphaNumerics[0]) }
     var row3Buttons by remember { mutableStateOf(allAlphaNumerics[1]) }
     var row4Buttons by remember { mutableStateOf(allAlphaNumerics[2]) }
+    val hapticFeedback = LocalHapticFeedback.current
 
-    val onClickButtonInternal = remember(allCapButtonState) {
+    val onPressKeyInternal = remember(allCapButtonState) {
         { keyboard: KeyBoardButton ->
-            onClickButton(keyboard)
+            hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+            onPressKey(keyboard)
             if (allCapButtonState == 1) {
                 allCapButtonState = 0
             }
@@ -126,28 +259,28 @@ fun SecureAlphaNumericTypeKeyboard(
 
         ShowClipboardData(
             modifier = Modifier.padding(bottom = 8.dp).fillMaxWidth(),
-            onSelectData = { onClickButtonInternal(KeyBoardButton.ClipboardPaste(it)) }
+            onSelectData = { onPressKeyInternal(KeyBoardButton.ClipboardPaste(it)) }
         )
 
         AlphaNumericButtonsRow(
             modifier = Modifier,
             buttons = numericButtons
         ) {
-            onClickButtonInternal(it)
+            onPressKeyInternal(it)
         }
 
         AlphaNumericButtonsRow(
             modifier = Modifier,
             buttons = row2Buttons
         ) {
-            onClickButtonInternal(it)
+            onPressKeyInternal(it)
         }
 
         AlphaNumericButtonsRow(
             modifier = Modifier,
             buttons = row3Buttons
         ) {
-            onClickButtonInternal(it)
+            onPressKeyInternal(it)
         }
 
         Row(
@@ -165,7 +298,7 @@ fun SecureAlphaNumericTypeKeyboard(
                     modifier = Modifier
                         .padding(4.dp)
                         .width(40.dp),
-                    contentPadding = PaddingValues(vertical = 12.dp, horizontal = 4.dp)
+                    paddingModifier = Modifier.padding(vertical = 12.dp, horizontal = 4.dp)
                 )
             } else {
                 Spacer(modifier = Modifier.width(20.dp))
@@ -174,13 +307,13 @@ fun SecureAlphaNumericTypeKeyboard(
                 modifier = Modifier,
                 buttons = row4Buttons
             ) {
-                onClickButtonInternal(it)
+                onPressKeyInternal(it)
             }
 
             IconButton(
                 iconDrawable = backButton.icon,
-                onClick = { onClickButtonInternal(backButton) },
-                contentPadding = PaddingValues(vertical = 12.dp),
+                onClick = { onPressKeyInternal(backButton) },
+                paddingModifier = Modifier.padding(vertical = 12.dp, horizontal = 12.dp),
                 modifier = Modifier
                     .padding(4.dp)
             )
@@ -194,39 +327,39 @@ fun SecureAlphaNumericTypeKeyboard(
                 button = if (showSpecialChar) KeyBoardButton.Action("ABC") else KeyBoardButton.Action(
                     "!#1"
                 ),
-                onClickButton = { showSpecialChar = showSpecialChar.not() },
+                onPressKey = { showSpecialChar = showSpecialChar.not() },
                 modifier = Modifier
                     .padding(4.dp)
                     .width(60.dp)
             )
             AlphaNumericButton(
                 button = KeyBoardButton.AlphaNumeric(','),
-                onClickButton = { onClickButtonInternal(KeyBoardButton.AlphaNumeric(',')) },
+                onPressKey = { onPressKeyInternal(KeyBoardButton.AlphaNumeric(',')) },
                 modifier = Modifier
                     .padding(4.dp)
                     .width(30.dp)
             )
             AlphaNumericButton(
                 button = KeyBoardButton.Space,
-                onClickButton = { onClickButtonInternal(KeyBoardButton.Space) },
+                onPressKey = { onPressKeyInternal(KeyBoardButton.Space) },
                 modifier = Modifier
                     .padding(4.dp)
                     .weight(1f)
             )
             AlphaNumericButton(
                 button = KeyBoardButton.AlphaNumeric('.'),
-                onClickButton = { onClickButtonInternal(KeyBoardButton.AlphaNumeric('.')) },
+                onPressKey = { onPressKeyInternal(KeyBoardButton.AlphaNumeric('.')) },
                 modifier = Modifier
                     .padding(4.dp)
                     .width(30.dp)
             )
             IconButton(
                 iconDrawable = Res.drawable.keyboard_newline,
-                onClick = { onClickButtonInternal(newLineCharButton) },
+                onClick = { onPressKeyInternal(newLineCharButton) },
                 modifier = Modifier
                     .padding(4.dp)
                     .width(60.dp),
-                contentPadding = PaddingValues(vertical = 12.dp)
+                paddingModifier = Modifier.padding(vertical = 12.dp)
             )
         }
 
@@ -235,12 +368,12 @@ fun SecureAlphaNumericTypeKeyboard(
             horizontalArrangement = Arrangement.End
         ) {
             Image(
-                painter = painterResource(Res.drawable.keyboard_arrow_down),
+                painter = org.jetbrains.compose.resources.painterResource(Res.drawable.keyboard_arrow_down),
                 contentDescription = "",
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier.padding(end = 20.dp, top = 4.dp, bottom = 4.dp)
                     .clip(CircleShape)
-                    .clickable { onClickButtonInternal(KeyBoardButton.HideKeyboard) }
+                    .clickable { onPressKeyInternal(KeyBoardButton.HideKeyboard) }
                     .padding(8.dp)
                     .size(24.dp),
             )
@@ -280,7 +413,7 @@ private fun ShowClipboardData(modifier: Modifier, onSelectData: (String) -> Unit
                     .clickable { onSelectData(data) }
                     .padding(vertical = 8.dp, horizontal = 16.dp),
                 text = data,
-                fontSize = 12.sp,
+                fontSize = 12.nonScaledSp,
                 fontWeight = FontWeight.Medium,
                 color = Color.Black.copy(0.8f),
                 textAlign = TextAlign.Center
@@ -293,7 +426,7 @@ private fun ShowClipboardData(modifier: Modifier, onSelectData: (String) -> Unit
 private fun AlphaNumericButtonsRow(
     modifier: Modifier = Modifier,
     buttons: List<KeyBoardButton>,
-    onClickButton: (KeyBoardButton) -> Unit,
+    onPressKey: (KeyBoardButton) -> Unit,
 ) {
     val screenWidth = getScreenWidth()
     val buttonSize = screenWidth / 10
@@ -302,7 +435,7 @@ private fun AlphaNumericButtonsRow(
         buttons.forEach { button ->
             AlphaNumericButton(
                 button = button,
-                onClickButton = { onClickButton(button) },
+                onPressKey = { onPressKey(button) },
                 modifier = Modifier
                     .padding(4.dp)
                     .widthIn(max = 40.dp)
@@ -323,23 +456,24 @@ private fun getAllCapButtonRes(allCapState: Int) = when (allCapState) {
 private fun AlphaNumericButton(
     modifier: Modifier = Modifier,
     button: KeyBoardButton,
-    onClickButton: (KeyBoardButton) -> Unit
+    onPressKey: (KeyBoardButton) -> Unit
 ) {
-    Button(
-        modifier = modifier,
-        shape = RoundedCornerShape(4.dp),
-        colors = ButtonDefaults.buttonColors()
-            .copy(containerColor = Color.White),
-        onClick = {
-            onClickButton(button)
-        },
-        contentPadding = PaddingValues(vertical = 12.dp)
+
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(4.dp))
+            .clickable {
+                onPressKey(button)
+            }
+            .background(color = Color.Black.copy(alpha = 0.1f))
+            .padding(vertical = 12.dp),
+        contentAlignment = Alignment.Center
     ) {
         when (button) {
             is KeyBoardButton.Action -> {
                 Text(
                     text = button.txt,
-                    fontSize = 18.sp,
+                    fontSize = 18.nonScaledSp,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.Blue.copy(0.8f),
                     textAlign = TextAlign.Center
@@ -348,7 +482,7 @@ private fun AlphaNumericButton(
 
             is KeyBoardButton.Back -> {
                 Image(
-                    painter = painterResource(button.icon),
+                    painter = org.jetbrains.compose.resources.painterResource(button.icon),
                     contentDescription = "",
                     modifier = Modifier.padding(horizontal = 8.dp)
                         .size(24.dp),
@@ -358,7 +492,7 @@ private fun AlphaNumericButton(
             is KeyBoardButton.Number -> {
                 Text(
                     text = button.digit.toString(),
-                    fontSize = 18.sp,
+                    fontSize = 18.nonScaledSp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black.copy(0.8f),
                     textAlign = TextAlign.Center
@@ -368,7 +502,7 @@ private fun AlphaNumericButton(
             is KeyBoardButton.AlphaNumeric -> {
                 Text(
                     text = button.char.toString(),
-                    fontSize = 18.sp,
+                    fontSize = 18.nonScaledSp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black.copy(0.8f),
                     textAlign = TextAlign.Center
@@ -378,7 +512,7 @@ private fun AlphaNumericButton(
             KeyBoardButton.Space -> {
                 Text(
                     text = "Space",
-                    fontSize = 18.sp,
+                    fontSize = 18.nonScaledSp,
                     fontWeight = FontWeight.Medium,
                     color = Color.Black.copy(0.8f),
                     textAlign = TextAlign.Center
@@ -395,25 +529,63 @@ private fun AlphaNumericButton(
 private fun IconButton(
     iconDrawable: DrawableResource,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues,
+    paddingModifier: Modifier,
     onClick: () -> Unit
 ) {
-    Button(
-        modifier = modifier,
-        shape = RoundedCornerShape(4.dp),
-        colors = ButtonDefaults.buttonColors()
-            .copy(containerColor = Color.Black.copy(alpha = 0.1f)),
-        onClick = {
-            onClick()
-        },
-        contentPadding = contentPadding
-    ) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(4.dp))
+            .clickable(onClick = onClick)
+            .background(color = Color.Black.copy(alpha = 0.1f))
+            .then(paddingModifier),
+        contentAlignment = Alignment.Center
+    )
+    {
         Image(
-            painter = painterResource(iconDrawable),
+            painter = org.jetbrains.compose.resources.painterResource(iconDrawable),
             contentDescription = "",
             contentScale = ContentScale.FillBounds,
             modifier = Modifier
                 .size(24.dp),
         )
+    }
+}
+
+
+@Composable
+@Preview
+private fun PreviewSecureNumberTypeKeyboard() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+        SecureKeyBoard(
+            modifier = Modifier,
+            keyboardType = KeyboardType.NumberOnly,
+        ) {
+            // Handle button click for preview
+        }
+    }
+}
+
+@Composable
+@Preview
+private fun PreviewSecureAlphaNumericKeyboard() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+        SecureKeyBoard(
+            modifier = Modifier,
+            keyboardType = KeyboardType.AlphaNumeric,
+        ) {
+            // Handle button click for preview
+        }
+    }
+}
+
+@Composable
+@Preview
+private fun PreviewSecureAlphaNumericKeyboardFloating() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+        SecureFloatingKeyBoard(
+            keyboardType = KeyboardType.NumberOnly,
+        ) {
+            // Handle button click for preview
+        }
     }
 }
