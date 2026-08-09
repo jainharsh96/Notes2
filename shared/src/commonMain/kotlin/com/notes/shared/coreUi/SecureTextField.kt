@@ -1,12 +1,13 @@
 package com.notes.shared.coreUi
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -14,6 +15,8 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.InterceptPlatformTextInput
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
@@ -43,9 +46,14 @@ fun SecureBasicTextField(
     decorationBox: @Composable (innerTextField: @Composable () -> Unit) -> Unit =
         @Composable { innerTextField -> innerTextField() },
 ) {
-    var showSecureKeyBoard by remember(useSecureKeyBoard) { mutableStateOf(useSecureKeyBoard) }
-
+    val showSecureKeyBoard = remember(useSecureKeyBoard) { mutableStateOf(false) }
     val updatedValue by rememberUpdatedState(value)
+
+    LaunchedEffect(Unit){
+        if (useSecureKeyBoard) {
+            showSecureKeyBoard.value = true
+        }
+    }
 
     InterceptPlatformTextInput(
         interceptor = { request, nextHandler ->
@@ -58,15 +66,14 @@ fun SecureBasicTextField(
     ) {
         BasicTextField(
             modifier = modifier
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() },
-                    enabled = useSecureKeyBoard
-                ) {
-                    if (showSecureKeyBoard.not()) {
-                        showSecureKeyBoard = true
+                .then(if (useSecureKeyBoard) Modifier.pointerInput(useSecureKeyBoard) {
+                    awaitEachGesture {
+                        awaitFirstDown(pass = PointerEventPass.Initial)
+                        if (showSecureKeyBoard.value.not()) {
+                            showSecureKeyBoard.value = true
+                        }
                     }
-                },
+                } else Modifier),
             value = updatedValue,
             onValueChange = { newValue ->
                 onValueChange(newValue)
@@ -77,50 +84,49 @@ fun SecureBasicTextField(
         )
     }
 
-    if (showSecureKeyBoard) {
-        SecureFloatingKeyBoard(
-            keyboardType = keyboardType,
-            onPressKey = { key ->
-                when (key) {
-                    is KeyBoardButton.Action -> onPressKeyBoardAction(key)
-                    is KeyBoardButton.AlphaNumeric -> onValueChange(
-                        SecureTextFieldUtil.insertChar(
-                            key.char.toString(),
-                            updatedValue
-                        )
+    SecureFloatingKeyBoard(
+        showKeyBoard = showSecureKeyBoard.value,
+        keyboardType = keyboardType,
+        onPressKey = { key ->
+            when (key) {
+                is KeyBoardButton.Action -> onPressKeyBoardAction(key)
+                is KeyBoardButton.AlphaNumeric -> onValueChange(
+                    SecureTextFieldUtil.insertChar(
+                        key.char.toString(),
+                        updatedValue
                     )
+                )
 
-                    is KeyBoardButton.Back -> onValueChange(
-                        SecureTextFieldUtil.handleBackspace(
-                            updatedValue
-                        )
+                is KeyBoardButton.Back -> onValueChange(
+                    SecureTextFieldUtil.handleBackspace(
+                        updatedValue
                     )
+                )
 
-                    is KeyBoardButton.ClipboardPaste -> onValueChange(
-                        SecureTextFieldUtil.insertChar(
-                            key.msg,
-                            updatedValue
-                        )
+                is KeyBoardButton.ClipboardPaste -> onValueChange(
+                    SecureTextFieldUtil.insertChar(
+                        key.msg,
+                        updatedValue
                     )
+                )
 
-                    KeyBoardButton.HideKeyboard -> if (canHideKeyboard) showSecureKeyBoard = false
-                    is KeyBoardButton.Number -> onValueChange(
-                        SecureTextFieldUtil.insertChar(
-                            key.digit.toString(),
-                            updatedValue
-                        )
+                KeyBoardButton.HideKeyboard -> if (canHideKeyboard) showSecureKeyBoard.value = false
+                is KeyBoardButton.Number -> onValueChange(
+                    SecureTextFieldUtil.insertChar(
+                        key.digit.toString(),
+                        updatedValue
                     )
+                )
 
-                    KeyBoardButton.Space -> onValueChange(
-                        SecureTextFieldUtil.insertChar(
-                            " ",
-                            updatedValue
-                        )
+                KeyBoardButton.Space -> onValueChange(
+                    SecureTextFieldUtil.insertChar(
+                        " ",
+                        updatedValue
                     )
-                }
+                )
             }
-        )
-    }
+        }
+    )
 }
 
 

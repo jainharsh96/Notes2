@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notes.shared.coreUi.SecureBasicTextField
 import com.notes.shared.coreUi.secureKeyboard.KeyboardType
+import com.notes.shared.coreUi.secureKeyboard.secureKeyBoardPadding
 import com.notes.shared.painterResource
 import com.notes.shared.ui.NavigationAction
 import com.notes.shared.utils.colorResource
@@ -43,6 +46,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import notes2.shared.generated.resources.Res
+import notes2.shared.generated.resources.colorActionButton
 import notes2.shared.generated.resources.colorPrimaryDark
 import notes2.shared.generated.resources.colorUpdate
 import notes2.shared.generated.resources.disable
@@ -90,9 +94,11 @@ fun CreateNoteScreenShared(
             .statusBarsPadding()
             .navigationBarsPadding()
             .imePadding()
+            .secureKeyBoardPadding()
     ) {
         CreateNoteHeader(
             hasNote = state.hasNote(),
+            isShowingSystemKeyBoard = state.showSystemKeyboard,
             event = event
         )
         NoteInfo(state = state, event = event)
@@ -101,7 +107,7 @@ fun CreateNoteScreenShared(
 
 @OptIn(ExperimentalResourceApi::class)
 @Composable
-fun CreateNoteHeader(hasNote: Boolean, event: (CreateNoteContract.Event) -> Unit) {
+fun CreateNoteHeader(hasNote: Boolean, isShowingSystemKeyBoard : Boolean, event: (CreateNoteContract.Event) -> Unit) {
     Row(
         modifier = Modifier
             .padding(12.dp),
@@ -123,38 +129,36 @@ fun CreateNoteHeader(hasNote: Boolean, event: (CreateNoteContract.Event) -> Unit
             style = TextStyle(fontSize = 24.sp),
             fontWeight = FontWeight.Bold,
         )
-        Image(
+        Icon(
             painter = painterResource(Res.drawable.voice_note),
             contentDescription = "",
             modifier = Modifier
-                .width(24.dp)
-                .height(24.dp)
-                .clickable { event(CreateNoteContract.Event.ClickRecordNotes) },
-            colorFilter = ColorFilter.tint(
-                colorResource(Res.string.colorPrimaryDark)
-            )
+                .size(40.dp)
+                .clickable { event(CreateNoteContract.Event.ClickRecordNotes) }
+                .padding(8.dp),
+            tint = colorResource(Res.string.colorPrimaryDark),
         )
         if (hasNote) {
             Spacer(modifier = Modifier.padding(8.dp))
-            Image(
+            Icon(
                 painter = painterResource(Res.drawable.ic_undo),
                 contentDescription = "",
                 modifier = Modifier
-                    .width(24.dp)
-                    .height(24.dp)
+                    .size(40.dp)
                     .clickable { event(CreateNoteContract.Event.ClickUndo) }
+                    .padding(8.dp),
+                tint = colorResource(Res.string.colorPrimaryDark),
             )
         }
-        Image(
+        Icon(
             painter = painterResource(Res.drawable.keyboard),
             contentDescription = "",
             modifier = Modifier.padding(8.dp)
-                .width(24.dp)
-                .height(24.dp)
-                .clickable { event(CreateNoteContract.Event.ClickChangeKeyboard) },
-            colorFilter = ColorFilter.tint(
-                colorResource(Res.string.colorPrimaryDark)
-            )
+                .size(40.dp)
+                .clickable { event(CreateNoteContract.Event.ClickChangeKeyboard) }
+                .padding(8.dp)
+            ,
+            tint = colorResource(if (isShowingSystemKeyBoard) Res.string.colorPrimaryDark else Res.string.colorActionButton),
         )
     }
 }

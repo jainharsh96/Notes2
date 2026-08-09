@@ -1,6 +1,11 @@
 package com.notes.shared.coreUi.secureKeyboard
 
-import androidx.compose.foundation.Image
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,10 +29,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,13 +45,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
@@ -53,34 +64,83 @@ import com.notes.shared.NotesDependencies
 import com.notes.shared.coreUi.nonScaledSp
 import com.notes.shared.getScreenWidth
 import com.notes.shared.painterResource
+import com.notes.shared.utils.colorResource
 import notes2.shared.generated.resources.Res
 import notes2.shared.generated.resources.backspace_icon
+import notes2.shared.generated.resources.colorActionButton
+import notes2.shared.generated.resources.colorPrimaryDark
 import notes2.shared.generated.resources.ic_arrow_back_black_24dp
 import notes2.shared.generated.resources.keyboard_allcap_1
 import notes2.shared.generated.resources.keyboard_allcap_2
 import notes2.shared.generated.resources.keyboard_allcap_3
 import notes2.shared.generated.resources.keyboard_arrow_down
+import notes2.shared.generated.resources.keyboard_button_bg
 import notes2.shared.generated.resources.keyboard_newline
 import org.jetbrains.compose.resources.DrawableResource
 
+private val secureKeyBoardPaddingValue = mutableStateOf(0.dp)
+
+fun Modifier.secureKeyBoardPadding() = this.padding(bottom = secureKeyBoardPaddingValue.value)
 
 @Composable
 fun SecureFloatingKeyBoard(
+    showKeyBoard : Boolean = true,
     keyboardType: KeyboardType,
     onPressKey: (KeyBoardButton) -> Unit
 ) {
-    Popup(
-        properties = PopupProperties(focusable = false),
-        alignment = Alignment.BottomCenter,
-        onDismissRequest = {
-           // onPressKey(KeyBoardButton.HideKeyboard)
+    val visibleState = remember { MutableTransitionState(false) }
+    visibleState.targetState = showKeyBoard
+    if (visibleState.currentState || visibleState.targetState){
+        Popup(
+            properties = PopupProperties(focusable = false),
+            popupPositionProvider = object : androidx.compose.ui.window.PopupPositionProvider {
+                override fun calculatePosition(
+                    anchorBounds: androidx.compose.ui.unit.IntRect,
+                    windowSize: androidx.compose.ui.unit.IntSize,
+                    layoutDirection: androidx.compose.ui.unit.LayoutDirection,
+                    popupContentSize: androidx.compose.ui.unit.IntSize
+                ): IntOffset {
+                    val x = (windowSize.width - popupContentSize.width) / 2
+                    val y = windowSize.height
+                    return IntOffset(x, y)
+                }
+            },
+            onDismissRequest = {
+                // onPressKey(KeyBoardButton.HideKeyboard)
+            }
+        ) {
+            DisposableEffect(Unit) {
+                onDispose {
+                    secureKeyBoardPaddingValue.value = 0.dp
+                }
+            }
+            val density = LocalDensity.current
+            AnimatedVisibility(
+                modifier = Modifier,
+                visibleState = visibleState,
+                enter = slideInVertically(
+                    // Sync this duration with your modifier's padding animation!
+                    animationSpec = tween(250, easing = LinearEasing),
+                    // Start exactly 1 full height below the screen
+                    initialOffsetY = { fullHeight -> fullHeight }
+                ),
+                exit = slideOutVertically(
+                    animationSpec = tween(250, easing = LinearEasing),
+                    // Slide down exactly 1 full height
+                    targetOffsetY = { fullHeight -> fullHeight }
+                )
+            ) {
+                SecureKeyBoard(
+                    modifier = Modifier.fillMaxWidth().onGloballyPositioned {
+                        val rect = it.boundsInWindow()
+                        val paddingInt = (rect.bottom - rect.top).toInt().coerceIn(0, it.size.height)
+                        secureKeyBoardPaddingValue.value = with(density) { paddingInt.toDp() }
+                    },
+                    keyboardType = keyboardType,
+                    onPressKey = onPressKey
+                )
+            }
         }
-    ) {
-        SecureKeyBoard(
-            modifier = Modifier.fillMaxWidth(),
-            keyboardType = keyboardType,
-            onPressKey = onPressKey
-        )
     }
 }
 
@@ -90,13 +150,20 @@ fun SecureKeyBoard(
     keyboardType: KeyboardType,
     onPressKey: (KeyBoardButton) -> Unit
 ) {
-    when (keyboardType) {
-        KeyboardType.NumberOnly -> {
-            SecureNumberTypeKeyboard(modifier = modifier.background(color = Color.White), onPressKey = onPressKey)
-        }
+    CompositionLocalProvider(
+        LocalKeyBoardBgColor provides colorResource(Res.string.keyboard_button_bg),
+        LocalKeyBoardButtonBgColor provides Color.White,
+        LocalKeyBoardButtonColor provides colorResource(Res.string.colorPrimaryDark),
+        LocalKeyBoardActionButtonColor provides colorResource(Res.string.colorActionButton)
+    ){
+        when (keyboardType) {
+            KeyboardType.NumberOnly -> {
+                SecureNumberTypeKeyboard(modifier = modifier.background(color = LocalKeyBoardBgColor.current), onPressKey = onPressKey)
+            }
 
-        KeyboardType.AlphaNumeric -> {
-            SecureAlphaNumericTypeKeyboard(modifier = modifier.background(color = Color.White), onPressKey = onPressKey)
+            KeyboardType.AlphaNumeric -> {
+                SecureAlphaNumericTypeKeyboard(modifier = modifier.background(color = LocalKeyBoardBgColor.current), onPressKey = onPressKey)
+            }
         }
     }
 }
@@ -146,7 +213,7 @@ private fun NumberKeyboardButton(
             .aspectRatio(2f)
             .clip(RoundedCornerShape(8.dp))
             .clickable { onPressKey(button) }
-            .background(color = Color.Black.copy(alpha = 0.1f)),
+            .background(color = LocalKeyBoardButtonBgColor.current),
         contentAlignment = Alignment.Center
     ) {
         when (button) {
@@ -155,17 +222,18 @@ private fun NumberKeyboardButton(
                     text = button.txt,
                     fontSize = 18.nonScaledSp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.Blue.copy(0.8f),
+                    color = LocalKeyBoardActionButtonColor.current,
                     textAlign = TextAlign.Center
                 )
             }
 
             is KeyBoardButton.Back -> {
-                Image(
+                Icon(
                     painter = painterResource(Res.drawable.ic_arrow_back_black_24dp),
                     contentDescription = "",
                     modifier = Modifier
                         .size(24.dp),
+                    tint = LocalKeyBoardButtonColor.current
                 )
             }
 
@@ -173,8 +241,8 @@ private fun NumberKeyboardButton(
                 Text(
                     text = button.digit.toString(),
                     fontSize = 24.nonScaledSp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black.copy(0.8f),
+                    fontWeight = FontWeight.SemiBold,
+                    color = LocalKeyBoardButtonColor.current,
                     textAlign = TextAlign.Center
                 )
             }
@@ -291,7 +359,9 @@ private fun SecureAlphaNumericTypeKeyboard(
             if (showSpecialChar.not()) {
                 IconButton(
                     iconDrawable = getAllCapButtonRes(allCapButtonState),
+                    tint = getAllCapButtonTintColor(allCapButtonState),
                     onClick = {
+                        hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
                         allCapButtonState =
                             if (allCapButtonState >= 2) 0 else allCapButtonState + 1
                     },
@@ -327,7 +397,10 @@ private fun SecureAlphaNumericTypeKeyboard(
                 button = if (showSpecialChar) KeyBoardButton.Action("ABC") else KeyBoardButton.Action(
                     "!#1"
                 ),
-                onPressKey = { showSpecialChar = showSpecialChar.not() },
+                onPressKey = {
+                    hapticFeedback.performHapticFeedback(HapticFeedbackType.KeyboardTap)
+                    showSpecialChar = showSpecialChar.not()
+                             },
                 modifier = Modifier
                     .padding(4.dp)
                     .width(60.dp)
@@ -359,7 +432,7 @@ private fun SecureAlphaNumericTypeKeyboard(
                 modifier = Modifier
                     .padding(4.dp)
                     .width(60.dp),
-                paddingModifier = Modifier.padding(vertical = 12.dp)
+                paddingModifier = Modifier.padding(vertical = 12.dp),
             )
         }
 
@@ -367,15 +440,15 @@ private fun SecureAlphaNumericTypeKeyboard(
             modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            Image(
+            Icon(
                 painter = org.jetbrains.compose.resources.painterResource(Res.drawable.keyboard_arrow_down),
                 contentDescription = "",
-                contentScale = ContentScale.FillBounds,
                 modifier = Modifier.padding(end = 20.dp, top = 4.dp, bottom = 4.dp)
                     .clip(CircleShape)
                     .clickable { onPressKeyInternal(KeyBoardButton.HideKeyboard) }
                     .padding(8.dp)
                     .size(24.dp),
+                tint = LocalKeyBoardButtonColor.current
             )
         }
     }
@@ -409,13 +482,13 @@ private fun ShowClipboardData(modifier: Modifier, onSelectData: (String) -> Unit
             Text(
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
-                    .background(color = Color.Black.copy(alpha = 0.1f))
+                    .background(color = LocalKeyBoardButtonBgColor.current)
                     .clickable { onSelectData(data) }
                     .padding(vertical = 8.dp, horizontal = 16.dp),
                 text = data,
                 fontSize = 12.nonScaledSp,
                 fontWeight = FontWeight.Medium,
-                color = Color.Black.copy(0.8f),
+                color = LocalKeyBoardButtonColor.current,
                 textAlign = TextAlign.Center
             )
         }
@@ -451,6 +524,13 @@ private fun getAllCapButtonRes(allCapState: Int) = when (allCapState) {
     else -> Res.drawable.keyboard_allcap_3
 }
 
+@Composable
+private fun getAllCapButtonTintColor(allCapState: Int) = when (allCapState) {
+    0 -> LocalKeyBoardButtonColor.current
+    1 -> LocalKeyBoardActionButtonColor.current
+    else -> LocalKeyBoardButtonColor.current
+}
+
 
 @Composable
 private fun AlphaNumericButton(
@@ -458,15 +538,14 @@ private fun AlphaNumericButton(
     button: KeyBoardButton,
     onPressKey: (KeyBoardButton) -> Unit
 ) {
-
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
             .clickable {
                 onPressKey(button)
             }
-            .background(color = Color.Black.copy(alpha = 0.1f))
-            .padding(vertical = 12.dp),
+            .background(color = LocalKeyBoardButtonBgColor.current)
+            .padding(vertical = 10.dp, horizontal = 4.dp),
         contentAlignment = Alignment.Center
     ) {
         when (button) {
@@ -475,26 +554,27 @@ private fun AlphaNumericButton(
                     text = button.txt,
                     fontSize = 18.nonScaledSp,
                     fontWeight = FontWeight.SemiBold,
-                    color = Color.Blue.copy(0.8f),
+                    color = LocalKeyBoardActionButtonColor.current,
                     textAlign = TextAlign.Center
                 )
             }
 
             is KeyBoardButton.Back -> {
-                Image(
+                Icon(
                     painter = org.jetbrains.compose.resources.painterResource(button.icon),
                     contentDescription = "",
                     modifier = Modifier.padding(horizontal = 8.dp)
                         .size(24.dp),
+                    tint = LocalKeyBoardButtonColor.current
                 )
             }
 
             is KeyBoardButton.Number -> {
                 Text(
                     text = button.digit.toString(),
-                    fontSize = 18.nonScaledSp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black.copy(0.8f),
+                    fontSize = 22.nonScaledSp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = LocalKeyBoardButtonColor.current,
                     textAlign = TextAlign.Center
                 )
             }
@@ -502,9 +582,9 @@ private fun AlphaNumericButton(
             is KeyBoardButton.AlphaNumeric -> {
                 Text(
                     text = button.char.toString(),
-                    fontSize = 18.nonScaledSp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black.copy(0.8f),
+                    fontSize = 22.nonScaledSp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = LocalKeyBoardButtonColor.current,
                     textAlign = TextAlign.Center
                 )
             }
@@ -513,8 +593,8 @@ private fun AlphaNumericButton(
                 Text(
                     text = "Space",
                     fontSize = 18.nonScaledSp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Black.copy(0.8f),
+                    fontWeight = FontWeight.Normal,
+                    color = LocalKeyBoardButtonColor.current,
                     textAlign = TextAlign.Center
                 )
             }
@@ -530,26 +610,32 @@ private fun IconButton(
     iconDrawable: DrawableResource,
     modifier: Modifier = Modifier,
     paddingModifier: Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    tint : Color = LocalKeyBoardButtonColor.current
 ) {
     Box(
         modifier = modifier
             .clip(RoundedCornerShape(4.dp))
             .clickable(onClick = onClick)
-            .background(color = Color.Black.copy(alpha = 0.1f))
+            .background(color = LocalKeyBoardButtonBgColor.current)
             .then(paddingModifier),
         contentAlignment = Alignment.Center
     )
     {
-        Image(
+        Icon(
             painter = org.jetbrains.compose.resources.painterResource(iconDrawable),
             contentDescription = "",
-            contentScale = ContentScale.FillBounds,
             modifier = Modifier
                 .size(24.dp),
+            tint = tint
         )
     }
 }
+
+private val LocalKeyBoardBgColor = compositionLocalOf { Color.White }
+private val LocalKeyBoardButtonBgColor = compositionLocalOf { Color.Black.copy(alpha = 0.1f) }
+private val LocalKeyBoardButtonColor = compositionLocalOf { Color.Black.copy(0.8f) }
+private val LocalKeyBoardActionButtonColor = compositionLocalOf { Color.Blue.copy(0.8f) }
 
 
 @Composable
@@ -566,24 +652,12 @@ private fun PreviewSecureNumberTypeKeyboard() {
 }
 
 @Composable
-@Preview
+@PreviewScreenSizes
 private fun PreviewSecureAlphaNumericKeyboard() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
         SecureKeyBoard(
             modifier = Modifier,
             keyboardType = KeyboardType.AlphaNumeric,
-        ) {
-            // Handle button click for preview
-        }
-    }
-}
-
-@Composable
-@Preview
-private fun PreviewSecureAlphaNumericKeyboardFloating() {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-        SecureFloatingKeyBoard(
-            keyboardType = KeyboardType.NumberOnly,
         ) {
             // Handle button click for preview
         }

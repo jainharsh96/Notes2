@@ -28,7 +28,6 @@ kotlin {
     }
 
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64()
     ).forEach {
@@ -83,6 +82,7 @@ kotlin {
             implementation(libs.androidx.datastore)
             implementation(libs.androidx.datastore.preferences)
             implementation(libs.ui.tooling.preview)
+            implementation(libs.navigationevent.compose)
         }
         commonTest.dependencies {
             // implementation(libs.kotlin.test)
@@ -140,7 +140,7 @@ compose.desktop {
 dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    add("kspIosX64", libs.androidx.room.compiler)
+//    add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspJvm", libs.androidx.room.compiler)
     debugImplementation(libs.ui.tooling.preview)

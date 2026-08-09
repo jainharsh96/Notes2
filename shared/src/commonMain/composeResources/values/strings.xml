@@ -20,7 +20,9 @@
     <string name="colorUpdate">#66BB6A</string>
     <string name="floatingbar">#303F9F</string>
     <string name="disable">#9E9E9E</string>
+    <string name="keyboard_button_bg">#F2F2F2</string>
     <string name="background">#FFFFFF</string>
     <string name="light_red">#1EDD2C00</string>
     <string name="red">#D50000</string>
+    <string name="colorActionButton">#4C69F4</string>
 </resources>
