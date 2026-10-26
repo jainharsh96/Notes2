@@ -15,8 +15,3 @@ interface Platform {
 
 expect fun getPlatform(): Platform
 
-expect fun getDatabaseBuilder(
-    databaseName: String,
-    password: String
-): RoomDatabase.Builder<NotesDatabase>
-

@@ -7,7 +7,13 @@ import com.notes.shared.ui.uientity.NoteEntity
 interface CreateNoteContract {
 
     @Immutable
-    data class State(val isLoading : Boolean = true, val originalNote: NoteEntity? = null, val enteredMsg: TextFieldValue = TextFieldValue(""), val showSystemKeyboard : Boolean = true) {
+    data class State(
+        val isLoading: Boolean = true,
+        val originalNote: NoteEntity? = null,
+        val enteredMsg: TextFieldValue = TextFieldValue(""),
+        val showSystemKeyboard: Boolean = true,
+        val takeVoiceNote: Boolean = false,
+    ) {
 
         fun hasNote() = originalNote?.body?.isNotEmpty() ?: false
 
@@ -16,7 +22,7 @@ interface CreateNoteContract {
         }
     }
 
-    sealed class Event{
+    sealed class Event {
         object ClickBack : Event()
         object ClickRecordNotes : Event()
         object ClickChangeKeyboard : Event()
@@ -29,10 +35,10 @@ interface CreateNoteContract {
         data class AddMessage(val msg: TextFieldValue) : Event()
     }
 
-    sealed class SideEffect{
+    sealed class SideEffect {
         object ClickBack : SideEffect()
         object StartRecordNotes : SideEffect()
         object SavedNote : SideEffect()
-        data class ShowError(val msg : String) : SideEffect()
+        data class ShowError(val msg: String) : SideEffect()
     }
 }

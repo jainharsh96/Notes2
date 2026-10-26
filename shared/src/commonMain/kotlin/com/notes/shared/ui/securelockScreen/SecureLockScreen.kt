@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,10 +22,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.notes.shared.coreUi.SecureBasicTextField
 import com.notes.shared.coreUi.secureKeyboard.KeyboardType
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 
@@ -56,47 +59,64 @@ fun SecureLockScreen(
             .navigationBarsPadding()
             .padding(top = 60.dp)
     ) {
-        Text(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            text = "Unlock Notes",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Medium,
-            color = Color.Blue.copy(0.8f),
-            textAlign = TextAlign.Center
-        )
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 32.dp)
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Center
-        ) {
+        if (state.setupNotesState == null){
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                text = state.getPasswordHeader(),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Normal,
+                text = "Unlock Notes",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Medium,
                 color = Color.Blue.copy(0.8f),
                 textAlign = TextAlign.Center
             )
-            SecureBasicTextField(
-                value = state.enteredPassword,
-                onValueChange = {
-                    event(SecureLockScreenContract.Event.OnEnterPassword(it))
-                },
-                onPressKeyBoardAction = {
-                    event(SecureLockScreenContract.Event.OnClickAction(state.enteredPassword))
-                },
-                modifier = Modifier.fillMaxWidth().padding(top = 12.dp).focusable(true),
-                textStyle = TextStyle(fontSize = 18.sp, textAlign = TextAlign.Center),
-                keyboardType = KeyboardType.NumberOnly,
-                canHideKeyboard = false,
-                visualTransformation = PasswordVisualTransformation(mask = '*')
-            )
-            Spacer(
-                modifier = Modifier.fillMaxWidth().height(2.dp)
-                    .background(color = Color.Black.copy(0.5f))
-            )
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 32.dp)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    text = state.getPasswordHeader(),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Normal,
+                    color = Color.Blue.copy(0.8f),
+                    textAlign = TextAlign.Center
+                )
+                SecureBasicTextField(
+                    value = state.enteredPassword,
+                    onValueChange = {
+                        event(SecureLockScreenContract.Event.OnEnterLockPassword(it))
+                    },
+                    onPressKeyBoardAction = {
+                        event(SecureLockScreenContract.Event.OnClickAction(state.enteredPassword))
+                    },
+                    modifier = Modifier.fillMaxWidth().padding(top = 12.dp).focusable(true),
+                    textStyle = TextStyle(fontSize = 18.sp, textAlign = TextAlign.Center),
+                    keyboardType = KeyboardType.NumberOnly,
+                    canHideKeyboard = false,
+                    visualTransformation = PasswordVisualTransformation(mask = '*')
+                )
+                Spacer(
+                    modifier = Modifier.fillMaxWidth().height(2.dp)
+                        .background(color = Color.Black.copy(0.5f))
+                )
+            }
+        } else {
+            DbPasswordSetupScreen(modifier = Modifier.fillMaxSize(), setupNotesState = state.setupNotesState, event = event)
         }
     }
+}
+
+@Composable
+@Preview
+private fun PreviewSecureLockScreen() {
+    val mockState = remember { SecureLockScreenContract.State.initialState() }
+    SecureLockScreen(
+        state = mockState,
+        effect = MutableSharedFlow(),
+        event = {},
+        onGoBack = {},
+        onGoForward = {}
+    )
 }

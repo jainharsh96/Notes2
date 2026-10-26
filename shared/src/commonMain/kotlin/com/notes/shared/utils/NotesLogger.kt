@@ -38,9 +38,9 @@ object NotesLogger {
 
     private suspend fun makeDbEntry(tag: String, msg: String) {
         runCatching {
-            val isInit = NotesDatabaseDelegate.tryInitDb()
+            val isInit = NotesDatabaseDelegate.tryToOpenDatabase()
             if (isInit) {
-                NotesDatabaseDelegate.databaseObj?.notesDao()?.let { dao ->
+                NotesDatabaseDelegate.getDatabase()?.notesDao()?.let { dao ->
                     val note = Note(
                         body = "$tag\n$msg",
                         createdDate = DateFormatter.currentDateTimeMillisecond(),

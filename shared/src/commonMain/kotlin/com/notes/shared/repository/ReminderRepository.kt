@@ -39,7 +39,7 @@ class ReminderRepositoryImpl(
 ) : ReminderRepository {
 
     private val reminderDao: ReminderDao
-        get() = NotesDatabaseDelegate.databaseObj!!.reminderDao()
+        get() = NotesDatabaseDelegate.getDatabase()!!.reminderDao()
 
     override fun fetchAllReminders(states: List<Int>) =
         reminderDao.fetchAllReminders(states).map { it.map { it.toReminderEntity() } }

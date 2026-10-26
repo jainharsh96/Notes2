@@ -39,10 +39,10 @@ import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.core.parameter.parametersOf
 
 
-@OptIn(KoinExperimentalAPI::class, ExperimentalFoundationApi::class)
+@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun NotesApp(
-    startDestination: String = NotesNavigation.NotesScreen.path(),
+    startDestination: String = NotesNavigation.SecureLockScreen.path(),
 ) {
     val navController = rememberNavController()
     val navActionHandler = remember { NotesActionHandler(navController) }
@@ -61,7 +61,6 @@ fun NotesApp(
                     } else Modifier,
                     navController = navController, startDestination = startDestination
                 ) {
-
                     composable(route = NotesNavigation.SecureLockScreen.destination) {
                         val viewModel = koinViewModel<SecureLockScreenViewmodel>()
                         val state by viewModel.state.collectAsState()

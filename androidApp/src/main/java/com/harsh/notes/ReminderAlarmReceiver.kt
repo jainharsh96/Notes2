@@ -18,7 +18,7 @@ class ReminderAlarmReceiver : BroadcastReceiver() {
         val globalScope : CoroutineScope = getKoin().get()
         globalScope.launch {
             try {
-                val state = NotesDatabaseDelegate.tryInitDb()
+                val state = NotesDatabaseDelegate.tryToOpenDatabase()
                 val reminderTriggerTask = ReminderTriggerTask(
                     context = context,
                     reminderRepository = getKoin().get()

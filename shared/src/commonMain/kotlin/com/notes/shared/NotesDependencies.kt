@@ -1,12 +1,16 @@
 package com.notes.shared
 
 import com.notes.shared.coreUi.ClipboardManager
+import com.notes.shared.db.NotesDataBaseHelper
 import com.notes.shared.di.NotesKoin
 
 object NotesDependencies {
     var notesSyncManager : NotesSyncManager? = null
         private set
     var databasePasswordProvider : DatabasePasswordProvider? = null
+        private set
+
+    var notesDatabaseHelper : NotesDataBaseHelper? = null
         private set
     var dataStore : DataStore? = null
         private set
@@ -19,11 +23,13 @@ object NotesDependencies {
     fun init(
         isDebugBuild: Boolean,
         databasePasswordProvider: DatabasePasswordProvider? = null,
+        notesDatabaseHelper: NotesDataBaseHelper? = null,
         dataStore: DataStore? = null,
         clipboardManager: ClipboardManager? = null
     ){
         this.isDebugBuild = isDebugBuild
         this.databasePasswordProvider = databasePasswordProvider
+        this.notesDatabaseHelper = notesDatabaseHelper
         this.dataStore = dataStore
         this.clipboardManager = clipboardManager
         NotesKoin.init()
@@ -36,6 +42,7 @@ object NotesDependencies {
     fun clearData(){
         notesSyncManager = null
         databasePasswordProvider = null
+        notesDatabaseHelper = null
         dataStore = null
         clipboardManager = null
     }

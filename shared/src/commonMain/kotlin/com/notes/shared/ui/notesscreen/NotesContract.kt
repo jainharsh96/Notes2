@@ -6,7 +6,6 @@ interface NotesContract {
 
     data class State(
         val isDraftState: Boolean,
-        val alertDialogState : AlertDialogState? = null,
         val notes: List<NoteEntity>?,
         val confirmToDeleteNoteId: Int? = null,
         val unLockAppFirst : Boolean
@@ -33,7 +32,6 @@ interface NotesContract {
         data class DeleteNote(val noteId: Int) : Event()
         data class DraftNote(val noteId: Int) : Event()
         data class RestoreNote(val noteId: Int) : Event()
-        data class EnteredPassword(val password: String?) : Event()
         // add load more notes event
     }
 

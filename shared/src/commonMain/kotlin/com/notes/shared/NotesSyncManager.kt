@@ -24,6 +24,10 @@ sealed class Result<out T> {
             }
         }
     }
+
+    fun isSuccess() : Boolean {
+        return this is Success
+    }
 }
 
 object UserNotLoggedInException : Exception()

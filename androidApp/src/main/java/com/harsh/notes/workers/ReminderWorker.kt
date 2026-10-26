@@ -48,7 +48,7 @@ class ReminderWorker(
 
     override suspend fun doWork(): Result {
         try {
-            NotesDatabaseDelegate.tryInitDb()
+            NotesDatabaseDelegate.tryToOpenDatabase()
             val reminderTriggerTask = ReminderTriggerTask(
                 context = applicationContext,
                 reminderRepository = getKoin().get()

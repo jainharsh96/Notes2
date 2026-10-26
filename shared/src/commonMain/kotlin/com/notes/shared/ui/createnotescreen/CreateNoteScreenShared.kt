@@ -56,7 +56,6 @@ import notes2.shared.generated.resources.ic_undo
 import notes2.shared.generated.resources.keyboard
 import notes2.shared.generated.resources.voice_note
 import notes2.shared.generated.resources.white
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 
 @Composable
@@ -99,15 +98,20 @@ fun CreateNoteScreenShared(
         CreateNoteHeader(
             hasNote = state.hasNote(),
             isShowingSystemKeyBoard = state.showSystemKeyboard,
+            takeVoiceNote = state.takeVoiceNote,
             event = event
         )
         NoteInfo(state = state, event = event)
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 @Composable
-fun CreateNoteHeader(hasNote: Boolean, isShowingSystemKeyBoard : Boolean, event: (CreateNoteContract.Event) -> Unit) {
+fun CreateNoteHeader(
+    hasNote: Boolean,
+    isShowingSystemKeyBoard : Boolean,
+    takeVoiceNote : Boolean,
+    event: (CreateNoteContract.Event) -> Unit
+) {
     Row(
         modifier = Modifier
             .padding(12.dp),
@@ -129,15 +133,17 @@ fun CreateNoteHeader(hasNote: Boolean, isShowingSystemKeyBoard : Boolean, event:
             style = TextStyle(fontSize = 24.sp),
             fontWeight = FontWeight.Bold,
         )
-        Icon(
-            painter = painterResource(Res.drawable.voice_note),
-            contentDescription = "",
-            modifier = Modifier
-                .size(40.dp)
-                .clickable { event(CreateNoteContract.Event.ClickRecordNotes) }
-                .padding(8.dp),
-            tint = colorResource(Res.string.colorPrimaryDark),
-        )
+        if (takeVoiceNote){
+            Icon(
+                painter = painterResource(Res.drawable.voice_note),
+                contentDescription = "",
+                modifier = Modifier
+                    .size(40.dp)
+                    .clickable { event(CreateNoteContract.Event.ClickRecordNotes) }
+                    .padding(8.dp),
+                tint = colorResource(Res.string.colorPrimaryDark),
+            )
+        }
         if (hasNote) {
             Spacer(modifier = Modifier.padding(8.dp))
             Icon(

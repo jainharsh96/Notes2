@@ -38,7 +38,7 @@ class NotesBroadcastReceiver : BroadcastReceiver() {
     fun acknowledgeReminder(reminderId: Int) {
         val globalScope: CoroutineScope = getKoin().get()
         globalScope.launch {
-            NotesDatabaseDelegate.tryInitDb()
+            NotesDatabaseDelegate.tryToOpenDatabase()
             val reminderRepo: ReminderRepository = getKoin().get()
             var reminder = reminderRepo.fetchReminder(reminderId)?.toReminder()
             if (reminder != null) {

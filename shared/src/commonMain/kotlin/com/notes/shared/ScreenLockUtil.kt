@@ -5,8 +5,7 @@ class ScreenLockUtil(private val dataStore: DataStore?) {
         private const val KEY_SCREEN_LOCK = "screen_lock"
     }
 
-    var isScreenUnLocked : Boolean = false
-        private set
+    private var isScreenUnLocked : Boolean = false
 
     suspend fun getUnlockPassword() = dataStore?.getData(KEY_SCREEN_LOCK)
 
@@ -15,4 +14,6 @@ class ScreenLockUtil(private val dataStore: DataStore?) {
     fun setScreenUnlocked() {
         isScreenUnLocked = true
     }
+
+    fun isScreenUnlocked() = isScreenUnLocked
 }

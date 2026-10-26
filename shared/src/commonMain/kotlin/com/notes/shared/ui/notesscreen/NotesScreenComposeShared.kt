@@ -6,7 +6,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,8 +28,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Drafts
 import androidx.compose.material.icons.filled.Restore
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -39,22 +36,14 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,22 +52,19 @@ import androidx.compose.ui.unit.sp
 import com.notes.shared.painterResource
 import com.notes.shared.ui.NavigationAction
 import com.notes.shared.ui.NavigationAction.NavigateToCreateNoteScreen
-import com.notes.shared.coreUi.secureKeyboard.KeyBoardButton
-import com.notes.shared.coreUi.secureKeyboard.KeyboardType
-import com.notes.shared.coreUi.secureKeyboard.SecureKeyBoard
 import com.notes.shared.ui.uientity.NoteEntity
 import com.notes.shared.utils.colorResource
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import notes2.shared.generated.resources.Res
 import notes2.shared.generated.resources.add_notes
+import notes2.shared.generated.resources.alarm_reminder
 import notes2.shared.generated.resources.colorPrimaryDark
 import notes2.shared.generated.resources.disable
 import notes2.shared.generated.resources.ic_arrow_back_black_24dp
 import notes2.shared.generated.resources.ic_setting
 import notes2.shared.generated.resources.light_red
 import notes2.shared.generated.resources.red
-import notes2.shared.generated.resources.voice_note
 import notes2.shared.generated.resources.white
 
 @Composable
@@ -146,7 +132,6 @@ fun NotesScreenShared(
                     containerColor = colorResource(Res.string.colorPrimaryDark),
                     onClick = remember {
                         {
-                            // todo update icon
                             onAction.invoke(
                                 NavigationAction.NavigateToShowAllRemindersScreen(
                                     noteId = null,
@@ -156,7 +141,7 @@ fun NotesScreenShared(
                     }
                 ) {
                     Image(
-                        painter = painterResource(Res.drawable.voice_note),
+                        painter = painterResource(Res.drawable.alarm_reminder),
                         contentDescription = ""
                     )
                 }
@@ -171,86 +156,9 @@ fun NotesScreenShared(
                 }
             }
         }
-        if (state.alertDialogState != null) {
-            DbPasswordAlertDialog(
-                errorMsg = state.alertDialogState.errorMsg,
-                onConfirm = {
-                    event(NotesContract.Event.EnteredPassword(it))
-                }
-            )
-        }
     }
 }
 
-@Composable
-fun DbPasswordAlertDialog(
-    errorMsg: String?,
-    onConfirm: (String) -> Unit
-) {
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
-
-    Box(modifier = Modifier.fillMaxSize().background(color = Color.White)) {
-        Column(
-            Modifier.padding(top = 100.dp).fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(text = "Enter Database Password", fontSize = 24.sp)
-            TextField(
-                modifier = Modifier.padding(vertical = 24.dp),
-                value = password,
-                readOnly = true,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                singleLine = true,
-                isError = errorMsg?.isNotEmpty() == true,
-                trailingIcon = {
-                    val image = if (passwordVisible)
-                        Icons.Default.Visibility
-                    else Icons.Default.VisibilityOff
-
-                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = image, contentDescription = null)
-                    }
-                }
-            )
-            Button(
-                modifier = Modifier.padding(top = 24.dp),
-                onClick = {
-                    if (password.isNotEmpty()) {
-                        onConfirm(password)
-                    }
-                },
-                contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
-            ) {
-                Text("OK")
-            }
-        }
-        SecureKeyBoard(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            keyboardType = KeyboardType.AlphaNumeric
-        ) {
-            when (it) {
-                is KeyBoardButton.Action -> Unit
-                is KeyBoardButton.AlphaNumeric -> password = password + it.char
-                is KeyBoardButton.Back -> password = runCatching {
-                    password.substring(
-                        0,
-                        password.length - 1
-                    )
-                }.getOrElse { "" }
-
-                is KeyBoardButton.Number -> password = password + it.digit
-                KeyBoardButton.Space -> password = "$password "
-                KeyBoardButton.HideKeyboard -> Unit
-                is KeyBoardButton.ClipboardPaste -> password = password + it.msg
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotesContent(
     noteState: NotesContract.State,

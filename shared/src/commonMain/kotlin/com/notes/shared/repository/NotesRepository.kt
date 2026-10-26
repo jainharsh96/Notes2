@@ -33,7 +33,7 @@ class NotesRepositoryImpl (
 ) : NotesRepository {
 
     private val notesDao: NotesDao
-        get() = NotesDatabaseDelegate.databaseObj!!.notesDao()
+        get() = NotesDatabaseDelegate.getDatabase()!!.notesDao()
 
     override
     fun fetchAllNotes(state: Int) =

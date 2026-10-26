@@ -24,7 +24,7 @@ class GoogleDriveApi(
 ) {
     private fun getDatabaseFile(): java.io.File? {
         return try {
-            java.io.File(getDatabasePath())
+            java.io.File(getDatabasePath(NotesDatabaseDelegate.DATABASE_FILE_NAME_V2))
         } catch (e: Exception) {
             Log.e("harshtag", "error in getting file $e")
             null

@@ -1,7 +1,6 @@
 package com.notes.shared
 
 import com.notes.shared.coreUi.ClipboardManagerIOSImpl
-import com.notes.shared.di.NotesKoin
 import kotlin.experimental.ExperimentalNativeApi
 import kotlin.native.Platform
 
@@ -15,6 +14,7 @@ object NotesIOSDependenciesInitializer {
             isDebugBuild = Platform.isDebugBinary,
             dataStore = DataStoreIOSImpl(dataStore = DataStoreProvider.dataStore),
             databasePasswordProvider = DatabasePasswordProviderIOSImpl(),
+            notesDatabaseHelper = NotesDatabaseHelperIOSImpl(),
             clipboardManager = ClipboardManagerIOSImpl()
         )
     }

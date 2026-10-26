@@ -80,7 +80,7 @@ class NotesSyncManagerAndroidImpl(
             onLoginSuccess = { account ->
                 globalScope.launch {
                     googleDriveApi.syncFromDrive(account = account).onSuccess {
-                        runCatching { NotesDatabaseDelegate.reInitDatabase() }.getOrNull()
+                        runCatching { NotesDatabaseDelegate.reOpenDatabase() }.getOrNull()
                         sendAndClose(Result.Success("successfully downloaded"))
                     }.onFailure {
                         sendAndClose(Result.Error("Something went wrong while restoring data $it"))

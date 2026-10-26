@@ -2,10 +2,10 @@ package com.notes.shared.ui.notesscreen
 
 import androidx.lifecycle.SavedStateHandle
 import com.notes.shared.AppDispatcherProvider
-import com.notes.shared.NotesDependencies
 import com.notes.shared.ScreenLockUtil
 import com.notes.shared.db.Note
 import com.notes.shared.domain.NotesDbUseCase
+import com.notes.shared.domain.isDatabaseReady
 import com.notes.shared.repository.NotesRepository
 import com.notes.shared.ui.BaseViewModel
 import com.notes.shared.ui.NotesRoutes.ARG_IS_DRAFT_SCREEN
@@ -40,13 +40,11 @@ class NotesViewModel constructor(
     init {
         launchCoroutine {
             withContext(dispatcher.IO){
-                if (screenLockUtil.isScreenUnLocked){
-                    if (isDbPasswordSet()){
+                if (screenLockUtil.isScreenUnlocked()){
+                    if (notesDbUseCase.getAppDatabaseState().isDatabaseReady()){
                         fetchNotes(if (isDraftScreen) Note.DRAFTED else Note.SAVED)
                     } else {
-                        _state.update {
-                            it.copy(alertDialogState = NotesContract.AlertDialogState())
-                        }
+                        _sideEffect.emit(NotesContract.SideEffect.ClickBack)
                     }
                 } else {
                     _state.update {
@@ -76,33 +74,8 @@ class NotesViewModel constructor(
                 is NotesContract.Event.RecordNotes -> _sideEffect.emit(NotesContract.SideEffect.RecordNotes)
                 is NotesContract.Event.OpenSettings -> _sideEffect.emit(NotesContract.SideEffect.OpenSettings)
                 is NotesContract.Event.IsDraftScreen -> Unit
-                is NotesContract.Event.EnteredPassword -> {
-                    event.password?.let {
-                        onEnterPassword(it)
-                    }
-                }
             }
         }
-    }
-
-    private suspend fun onEnterPassword(password : String) = withContext(dispatcher.IO){
-        if (password.isNotEmpty()){
-            notesDbUseCase.setPassword(password)
-            if (notesDbUseCase.tryInitDb()){
-                _state.update {
-                    it.copy(alertDialogState = null)
-                }
-                fetchNotes(if (isDraftScreen) Note.DRAFTED else Note.SAVED)
-            } else {
-                _state.update {
-                    it.copy(alertDialogState = NotesContract.AlertDialogState(errorMsg = "wrong password"))
-                }
-            }
-        }
-    }
-
-    private suspend fun isDbPasswordSet() = withContext(dispatcher.IO){
-        return@withContext notesDbUseCase.tryInitDb()
     }
 
     private fun confirmDeleteNote(noteId: Int?) {
@@ -130,11 +103,9 @@ class NotesViewModel constructor(
 
     private fun fetchNotes(state: Int) = launchCoroutine {
         withContext(dispatcher.IO) {
-            if (notesDbUseCase.isDBInitialized()){
-                notesRepository.fetchAllNotes(state).catch { emptyList<Note>() }.collect { notes ->
-                    _state.update {
-                        it.copy(notes = notes)
-                    }
+            notesRepository.fetchAllNotes(state).catch { emptyList<Note>() }.collect { notes ->
+                _state.update {
+                    it.copy(notes = notes)
                 }
             }
         }

@@ -8,6 +8,7 @@ object NotesAndroidDependenciesInitializer {
     fun init(context: Application) {
         NotesDependencies.init(
             isDebugBuild = BuildConfig.DEBUG,
+            notesDatabaseHelper = NotesDatabaseHelperAndroidImpl(),
             dataStore = DataStoreAndroidImpl(dataStore = DataStoreProvider.get(context)),
             databasePasswordProvider = DatabasePasswordProviderAndroidImpl(dataStore = DataStoreProvider.get(context)),
             clipboardManager = ClipboardManagerAndroidImpl(context)
